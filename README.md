@@ -1,5 +1,9 @@
 # strocknar.github.io
 
+# Guides
+
+- [Homelab AI and Home Assistant Setup](home-ai-guide/)
+
 # Development
 
 ## Privacy Policies
