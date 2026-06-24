@@ -69,8 +69,13 @@ echo "Enabled: false" >> /etc/apt/sources.list.d/pve-enterprise.sources
 sed -i '/Enabled/c\Enabled: false' /etc/apt/sources.list.d/ceph.sources
 
 # Add no-subscription repo
-echo "deb http://download.proxmox.com/debian/pve bookworm pve-no-subscription" \
-  > /etc/apt/sources.list.d/pve-no-subscription.list
+cat << EOF > /etc/apt/sources.list.d/ceph-no-subscription.sources
+Types: deb
+URIs: http://proxmox.com
+Suites: trixie
+Components: no-subscription
+Signed-By: /etc/apt/trusted.gpg.d/proxmox-release-trixie.gpg
+EOF
 
 # Update
 apt update && apt full-upgrade -y
