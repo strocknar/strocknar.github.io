@@ -11,7 +11,7 @@
 | Phase | Change | Trigger | Cost |
 |---|---|---|---|
 | **Phase 1** | UM890 Pro refurb + RAM + NVMe | Now | ~$940–$983 |
-| **Phase 2** | Add DEG1 + RM850x + RX 7900 XTX | 32B performance needed | +~$1,268–$1,289 |
+| **Phase 2** | Add DEG1 + RM850x + RTX 3090 (used) | 32B performance needed | +~$1,268–$1,289 |
 | **Phase 3** | Add 2nd NVMe (2TB) for models | Storage pressure on 1TB | +~$80–100 |
 | **Phase 4** | Swap to AI X1 Pro-470 barebones | Better iGPU or 3-slot NVMe needed | +~$500–550 net (sell UM890) |
 | **Phase 5** | Upgrade to 64GB RAM | VM workload pressure | +~$150–200 (new kit) |
@@ -22,7 +22,7 @@
 | Phase | Change | Trigger | Cost |
 |---|---|---|---|
 | **Phase 1** | AI X1 Pro-470 + RAM + NVMe | Now | ~$1,316–$1,359 |
-| **Phase 2** | Add DEG1 + RM850x + RX 7900 XTX | 32B performance needed | +~$1,268–$1,289 |
+| **Phase 2** | Add DEG1 + RM850x + RTX 3090 (used) | 32B performance needed | +~$1,268–$1,289 |
 | **Phase 3** | Add 2nd NVMe (2TB) for models | Storage pressure on 1TB | +~$80–100 |
 | **Phase 4** | Add 3rd NVMe (2TB) for media | External SSD inconvenience | +~$80–100 |
 | **Phase 5** | Upgrade to 64GB RAM | VM workload pressure | +~$150–200 (new kit) |
@@ -58,11 +58,11 @@ The RAM and NVMe you bought for the UM890 Pro transfer directly — both machine
 
 See [eGPU Setup](07-egpu-setup.md) for the complete process. Summary:
 
-1. Assemble DEG1 with RM850x and RX 7900 XTX
+1. Assemble DEG1 with RM850x and RTX 3090 (used)
 2. Power DEG1 before the UM890 Pro (or AI X1 Pro-470 if already upgraded)
-3. Enable VFIO binding for XTX PCI IDs in Proxmox
-4. Add XTX as PCI passthrough device to Ollama VM
-5. Verify ROCm detection in Ollama VM
+3. Enable VFIO binding for RTX 3090 PCI IDs in Proxmox
+4. Add RTX 3090 as PCI passthrough device to Ollama VM
+5. Verify CUDA detection in Ollama VM
 6. Pull 32B model and confirm ~45–55 tok/s
 
 ---
@@ -107,21 +107,20 @@ If free memory is consistently below 4GB, upgrade time.
 The DEG1 enclosure and RM850x PSU are reused for any future GPU. The swap process:
 
 1. Power off everything
-2. Remove RX 7900 XTX from DEG1
+2. Remove RTX 3090 from DEG1
 3. Install new GPU
 4. Update VFIO binding in Proxmox with new GPU PCI IDs (steps 7.1–7.2)
 5. Update Ollama VM PCI passthrough device
 
 **Future GPU candidates:**
 
+> Starting from an RTX 3090 baseline. The 3090 handles 32B comfortably; upgrade when 70B fully-in-VRAM is a hard requirement.
+
 | GPU | VRAM | Notes |
 |---|---|---|
-| RTX 3090 (used) | 24GB | ~$700–850; CUDA ecosystem; same 32B performance as 7900 XTX; no warranty |
 | RTX 5090 | 32GB | ~$2,000+; strong 32B; offloads ~11GB for 70B; CUDA |
 | AMD RDNA 4 (RX 9070 XT+) | 16GB | 32B offloads; wait for 24GB+ RDNA 4 variant |
 | AMD Radeon PRO W7900 | 48GB | 70B fits fully; ~$3,500 — only if 70B is a hard requirement |
-
-> **RTX 3090 note:** Proxmox VFIO passthrough neutralizes the two common objections to NVIDIA on Linux (eGPU driver instability, iGPU driver conflict). The GPU binds to vfio-pci at the hypervisor level; the Ollama VM sees it as native PCIe. CUDA's ecosystem advantage over ROCm for Ollama and ComfyUI is real and meaningful.
 
 ---
 
@@ -131,8 +130,7 @@ Proxmox scales cleanly. Common additions:
 
 **Nextcloud LXC** — self-hosted file sync/cloud storage:
 ```bash
-# Use the tteck Proxmox helper script
-bash -c "$(wget -qLO - https://github.com/tteck/Proxmox/raw/main/ct/nextcloud.sh)"
+bash -c "$(wget -qLO - https://github.com/community-scripts/ProxmoxVE/raw/main/ct/nextcloud.sh)"
 ```
 
 **Jellyfin** — open-source Plex alternative (no account required):
@@ -217,7 +215,7 @@ docker stop open-webui && docker rm open-webui
 # Re-run the docker run command from section 4.5
 ```
 
-> Pin ROCm and Ollama versions if an update breaks GPU detection. Known-good versions: ROCm 6.2, Ollama 0.3.x. Check the Ollama GitHub releases for AMD GPU regression notes before upgrading.
+> If an Ollama update breaks GPU detection, check the Ollama GitHub releases page for CUDA regression notes before upgrading. `nvidia-smi` should continue to show the RTX 3090 — Ollama CUDA issues are typically a library path problem resolvable with `sudo apt install --reinstall nvidia-cuda-toolkit`.
 
 ---
 
