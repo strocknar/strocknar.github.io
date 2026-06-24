@@ -86,7 +86,7 @@ Verify ROCm sees a GPU:
 rocm-smi
 ```
 
-> **Phase 1 (iGPU passthrough):** The 780M (gfx1103) is RDNA 3 mobile. ROCm support is functional but not tier-1. If `rocm-smi` shows no GPU or GFX version errors, set `HSA_OVERRIDE_GFX_VERSION=11.0.0` in the Ollama service override (same as section 7.5 in the previous guide — add it to the `[Service]` block in `sudo systemctl edit ollama`). Check `https://rocm.docs.amd.com` for gfx1103 support status.
+> **Phase 1 (iGPU passthrough):** The 780M (gfx1103) is RDNA 3 mobile. ROCm support is functional but not tier-1. If `rocm-smi` shows no GPU or GFX version errors, set `HSA_OVERRIDE_GFX_VERSION=11.0.0` by running `sudo systemctl edit ollama` and adding `Environment="HSA_OVERRIDE_GFX_VERSION=11.0.0"` to the `[Service]` block, then `sudo systemctl daemon-reload && sudo systemctl restart ollama`. Check `https://rocm.docs.amd.com` for gfx1103 support status.
 
 ---
 

@@ -15,7 +15,7 @@ A complete start-to-finish guide for building a local AI system with Home Assist
 | eGPU Dock | Minisforum DEG1 (OCuLink PCIe 4.0 x4) | $109 |
 | PSU | Corsair RM850x 850W ATX | $129.99 |
 | GPU | RTX 3090 24GB (used) | ~$700–850 |
-| **Full Build Total** | | **$1,879–$2,052** |
+| **Full Build Total** | | **$1,879–$2,072** |
 
 > RAM and NVMe move directly to the AI X1 Pro-470 if you upgrade later — no components stranded.
 
@@ -31,7 +31,7 @@ A complete start-to-finish guide for building a local AI system with Home Assist
 | GPU | RTX 3090 24GB (used) | ~$700–850 |
 | **Total** | | **$2,255–$2,448** |
 
-> **Phase 1 (no eGPU):** $1,316–$1,359 — fully functional for HA and 7B–13B LLM inference  
+> **Phase 1 (no eGPU):** $1,316–$1,359 — fully functional for HA and 7B–14B LLM inference  
 > **Phase 2:** Add eGPU stack when ready (+$939–$1,089)
 
 ## Sections
@@ -54,7 +54,7 @@ A complete start-to-finish guide for building a local AI system with Home Assist
 
 ```
 Proxmox VE (bare metal, Debian-based)
-├── VM:  Home Assistant OS        (4GB RAM, 32GB disk, iGPU for voice)
+├── VM:  Home Assistant OS        (4GB RAM, 32GB disk)
 ├── VM:  Ollama + Open WebUI      (14GB RAM, iGPU Phase 1 / RTX 3090 Phase 2)
 │   └── ComfyUI                   (image generation, Phase 2 only)
 ├── LXC: Docker host              (6GB RAM, homelab containers)
@@ -76,7 +76,7 @@ Proxmox VE (bare metal, Debian-based)
 
 ## LLM Performance Reference
 
-| Phase | Hardware | GPU | 7B tok/s | 13B tok/s | 32B tok/s |
+| Phase | Hardware | GPU | 7B tok/s | 14B tok/s | 32B tok/s |
 |---|---|---|---|---|---|
 | Phase 1 (Option A) | UM890 Pro | 780M iGPU | ~15–18 | ~8–10 | ~3–5 |
 | Phase 1 (Option B) | AI X1 Pro-470 | 890M iGPU | ~20–25 | ~10–14 | ~3–5 |

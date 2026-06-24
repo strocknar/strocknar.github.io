@@ -58,7 +58,7 @@ pip install torch torchvision torchaudio --index-url https://download.pytorch.or
 pip install -r requirements.txt
 ```
 
-> **CUDA PyTorch:** `cu124` covers CUDA 12.4, which matches NVIDIA drivers ≥525. Check `nvidia-smi` — the CUDA version shown in the top-right corner tells you which wheel to use. For CUDA 12.6 use `cu126`. Available wheel indexes: `download.pytorch.org/whl/torch_stable.html`.
+> **CUDA PyTorch:** PyTorch bundles its own CUDA runtime, so the pip wheel works regardless of your system driver version. Check `nvidia-smi` — the CUDA version shown in the top-right corner is a guide for which wheel to use: `cu124` for CUDA 12.4, `cu126` for CUDA 12.6. `ubuntu-drivers autoinstall` on Ubuntu 24.04 typically installs driver 535–545 (CUDA 12.2), which works fine with `cu124`. Available wheel indexes: `download.pytorch.org/whl/torch_stable.html`.
 
 ---
 

@@ -11,7 +11,7 @@
 | Phase | Change | Trigger | Cost |
 |---|---|---|---|
 | **Phase 1** | UM890 Pro refurb + RAM + NVMe | Now | ~$940–$983 |
-| **Phase 2** | Add DEG1 + RM850x + RTX 3090 (used) | 32B performance needed | +~$1,268–$1,289 |
+| **Phase 2** | Add DEG1 + RM850x + RTX 3090 (used) | 32B performance needed | +~$939–$1,089 |
 | **Phase 3** | Add 2nd NVMe (2TB) for models | Storage pressure on 1TB | +~$80–100 |
 | **Phase 4** | Swap to AI X1 Pro-470 barebones | Better iGPU or 3-slot NVMe needed | +~$500–550 net (sell UM890) |
 | **Phase 5** | Upgrade to 64GB RAM | VM workload pressure | +~$150–200 (new kit) |
@@ -22,7 +22,7 @@
 | Phase | Change | Trigger | Cost |
 |---|---|---|---|
 | **Phase 1** | AI X1 Pro-470 + RAM + NVMe | Now | ~$1,316–$1,359 |
-| **Phase 2** | Add DEG1 + RM850x + RTX 3090 (used) | 32B performance needed | +~$1,268–$1,289 |
+| **Phase 2** | Add DEG1 + RM850x + RTX 3090 (used) | 32B performance needed | +~$939–$1,089 |
 | **Phase 3** | Add 2nd NVMe (2TB) for models | Storage pressure on 1TB | +~$80–100 |
 | **Phase 4** | Add 3rd NVMe (2TB) for media | External SSD inconvenience | +~$80–100 |
 | **Phase 5** | Upgrade to 64GB RAM | VM workload pressure | +~$150–200 (new kit) |
@@ -62,8 +62,8 @@ See [eGPU Setup](07-egpu-setup.md) for the complete process. Summary:
 2. Power DEG1 before the UM890 Pro (or AI X1 Pro-470 if already upgraded)
 3. Enable VFIO binding for RTX 3090 PCI IDs in Proxmox
 4. Add RTX 3090 as PCI passthrough device to Ollama VM
-5. Verify CUDA detection in Ollama VM
-6. Pull 32B model and confirm ~45–55 tok/s
+5. Verify CUDA detection in Ollama VM (`nvidia-smi`)
+6. Pull 32B model and confirm ~40–50 tok/s
 
 ---
 

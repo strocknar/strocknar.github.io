@@ -101,7 +101,7 @@ Save and exit BIOS.
    - The DEG1 uses the PSU to power both the enclosure and the GPU
 3. Install the RTX 3090 into the PCIe x16 slot
 4. Connect PCIe power cables from PSU to GPU
-   - RTX 3090 requires 2× 8-pin connectors — the RM850x includes these
+   - RTX 3090 requires 2× or 3× 8-pin connectors depending on the card (most AIB cards use 3× 8-pin; Founders Edition uses 2× via 12-pin adapter) — the RM850x includes enough cables for either
    - 850W is sufficient: RTX 3090 TDP is ~350W + ~65W system = ~415W peak
 
 > **Verify clearance:** The RTX 3090 is a large triple-fan card. Confirm it fits within the DEG1 chassis before fully assembling. Check minisforum.com for DEG1 internal dimensions if uncertain.
