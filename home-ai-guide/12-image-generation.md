@@ -249,9 +249,9 @@ With LLM models (~30–50 GB) added, a 2TB models drive fills up. Prune models y
 
 ## 12.8 Phase 1 (No eGPU)
 
-Image generation on the 890M iGPU before the eGPU arrives is possible but slow:
+Image generation on the 780M iGPU before the eGPU arrives is possible but slow:
 
-| Model | 890M iGPU speed |
+| Model | 780M iGPU speed |
 |---|---|
 | SD 1.5 | ~2–4 min/image |
 | SDXL | ~8–15 min/image |

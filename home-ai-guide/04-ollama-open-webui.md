@@ -8,7 +8,7 @@
 
 Ollama (model backend) and Open WebUI (chat interface) run in a dedicated Proxmox VM. This VM gets the RX 7900 XTX passed through to it exclusively — no GPU sharing with other workloads.
 
-**Phase 1 (no eGPU):** Ollama uses the 890M iGPU via ROCm or falls back to CPU inference. Functional for 7B–13B models.  
+**Phase 1 (no eGPU):** Ollama uses the 780M iGPU via ROCm or falls back to CPU inference. Functional for 7B–13B models.  
 **Phase 2 (eGPU installed):** Ollama uses the RX 7900 XTX via ROCm. Full 32B model capability.
 
 ---
@@ -71,7 +71,7 @@ Verify ROCm sees a GPU:
 rocm-smi
 ```
 
-> **Phase 1 (no eGPU):** If `rocm-smi` shows no GPU or gfx1151 errors, the 890M iGPU ROCm support may not be stable yet. Ollama will fall back to CPU — this is fine. 7B models will still run at ~10–12 tok/s via CPU. Check `https://rocm.docs.amd.com` for gfx1151 (RDNA 3.5 mobile) support status updates.
+> **Phase 1 (no eGPU):** If `rocm-smi` shows no GPU or gfx1151 errors, the 780M iGPU ROCm support may not be stable yet. Ollama will fall back to CPU — this is fine. 7B models will still run at ~8–10 tok/s via CPU. Check `https://rocm.docs.amd.com` for gfx1103 (RDNA 3 mobile) support status updates.
 
 ---
 

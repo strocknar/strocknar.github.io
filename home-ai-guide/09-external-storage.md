@@ -17,7 +17,7 @@ Internal 1TB NVMe stays clean: Proxmox OS + all VM/LXC system disks only.
 
 ## 9.1 Format External Drives
 
-Connect both SSDs to the AI X1 Pro-470's USB ports. In the Proxmox shell:
+Connect both SSDs to the UM890 Pro's USB ports. In the Proxmox shell:
 
 ```bash
 # List connected drives
@@ -171,7 +171,7 @@ OLLAMA_MODELS=~/.ollama/models ollama pull qwen2.5-coder:7b
 
 When storage prices normalize, replacing external SSDs with internal NVMe drives is straightforward:
 
-1. The AI X1 Pro-470 has 2 empty NVMe slots
+1. The UM890 Pro has 1 empty NVMe slot (2 slots total, 1 used for the OS drive)
 2. Install new NVMe, copy data from external SSD, update fstab paths
 3. External SSDs become portable backup drives
 

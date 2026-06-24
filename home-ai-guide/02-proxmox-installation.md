@@ -26,7 +26,7 @@ dd if=proxmox-ve_8.x-1.iso of=/dev/sdX bs=1M status=progress
 
 ## 2.2 Install Proxmox
 
-1. Boot the AI X1 Pro-470 from the USB drive (tap `F7` or `F11` for boot menu on POST)
+1. Boot the UM890 Pro from the USB drive (tap `F7` or `F11` for boot menu on POST)
 2. Select **Install Proxmox VE (Graphical)**
 3. Accept the EULA
 4. **Target disk:** Select the WD Black SN770 1TB
@@ -125,7 +125,7 @@ echo "blacklist amdgpu" >> /etc/modprobe.d/blacklist.conf
 echo "blacklist radeon" >> /etc/modprobe.d/blacklist.conf
 ```
 
-> **Important:** Do NOT blacklist amdgpu if you want the 890M iGPU available on the host for Plex transcoding LXC. The blacklist here targets the external 7900 XTX only. See [eGPU Setup](07-egpu-setup.md) for the correct targeted approach using device IDs.
+> **Important:** Do NOT blacklist amdgpu if you want the 780M iGPU available on the host for Plex transcoding LXC. The blacklist here targets the external 7900 XTX only. See [eGPU Setup](07-egpu-setup.md) for the correct targeted approach using device IDs.
 
 ### Update initramfs and Reboot
 

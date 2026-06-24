@@ -97,7 +97,7 @@ In HA: **Settings → Add Integration → Z-Wave JS**
 
 If you flash Wyze cameras to RTSP, adding **Frigate** gives you local AI person/vehicle/animal detection without any cloud service. Runs as a Docker container in the Docker LXC.
 
-Frigate uses the 890M iGPU for object detection inference — add to `docker-compose.yml`:
+Frigate uses the 780M iGPU for object detection inference — add to `docker-compose.yml`:
 
 ```yaml
   frigate:
@@ -113,7 +113,7 @@ Frigate uses the 890M iGPU for object detection inference — add to `docker-com
       - ./frigate/config.yml:/config/config.yml
       - /media/frigate:/media/frigate
     devices:
-      - /dev/dri/renderD128  # 890M iGPU for detection
+      - /dev/dri/renderD128  # 780M iGPU for detection
 ```
 
 Frigate integrates with HA natively — motion events, object detection alerts, and camera streams all appear in HA automatically.

@@ -35,7 +35,7 @@ Install each of the following:
    language: en
    model: small-int8
    ```
-   > `small-int8` is the best balance of speed and accuracy for English. On the 890M iGPU via the HA VM, it runs in ~1–3 seconds per utterance. Use `tiny-int8` if latency is too high.
+   > `small-int8` is the best balance of speed and accuracy for English. On the 780M iGPU via the HA VM, it runs in ~1–3 seconds per utterance. Use `tiny-int8` if latency is too high.
 4. Start the add-on and enable **Start on boot**
 
 ### Wyoming Piper (Text-to-Speech)

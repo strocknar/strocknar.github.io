@@ -59,7 +59,7 @@ The RAM and NVMe you bought for the UM890 Pro transfer directly — both machine
 See [eGPU Setup](07-egpu-setup.md) for the complete process. Summary:
 
 1. Assemble DEG1 with RM850x and RX 7900 XTX
-2. Power DEG1 before the AI X1 Pro-470
+2. Power DEG1 before the UM890 Pro (or AI X1 Pro-470 if already upgraded)
 3. Enable VFIO binding for XTX PCI IDs in Proxmox
 4. Add XTX as PCI passthrough device to Ollama VM
 5. Verify ROCm detection in Ollama VM
@@ -95,7 +95,7 @@ If free memory is consistently below 4GB, upgrade time.
 
 **Process:**
 1. Shut down all VMs
-2. Power off AI X1 Pro-470
+2. Power off the mini PC
 3. Replace both SO-DIMM sticks with 2× 32GB DDR5-5600 kit (~$150–200 at normalized prices)
 4. Power on, verify Proxmox shows 64GB
 5. Increase Ollama VM RAM allocation: **VM 101 → Hardware → Memory → 24576 MB (24GB)**
@@ -116,9 +116,12 @@ The DEG1 enclosure and RM850x PSU are reused for any future GPU. The swap proces
 
 | GPU | VRAM | Notes |
 |---|---|---|
-| RTX 5090 | 32GB | Strong 32B; still offloads ~11GB for 70B; CUDA ecosystem |
-| AMD RDNA 4 (RX 8900 class) | TBD | Watch for 24–32GB models; better ROCm support expected |
-| AMD Radeon PRO W7900 | 48GB | 70B fits fully; $3,500 GPU — only if 70B is a hard requirement |
+| RTX 3090 (used) | 24GB | ~$700–850; CUDA ecosystem; same 32B performance as 7900 XTX; no warranty |
+| RTX 5090 | 32GB | ~$2,000+; strong 32B; offloads ~11GB for 70B; CUDA |
+| AMD RDNA 4 (RX 9070 XT+) | 16GB | 32B offloads; wait for 24GB+ RDNA 4 variant |
+| AMD Radeon PRO W7900 | 48GB | 70B fits fully; ~$3,500 — only if 70B is a hard requirement |
+
+> **RTX 3090 note:** Proxmox VFIO passthrough neutralizes the two common objections to NVIDIA on Linux (eGPU driver instability, iGPU driver conflict). The GPU binds to vfio-pci at the hypervisor level; the Ollama VM sees it as native PCIe. CUDA's ecosystem advantage over ROCm for Ollama and ComfyUI is real and meaningful.
 
 ---
 

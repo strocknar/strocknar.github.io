@@ -4,9 +4,39 @@
 
 ---
 
+## GPU Options
+
+This guide uses the RX 7900 XTX as the primary GPU. The RTX 3090 (used) is a legitimate alternative — see the comparison below before purchasing.
+
+### RX 7900 XTX vs RTX 3090
+
+| | RX 7900 XTX (new) | RTX 3090 (used) |
+|---|---|---|
+| Price | ~$1,029–$1,050 | ~$700–850 |
+| VRAM | 24 GB GDDR6 | 24 GB GDDR6X |
+| Memory bandwidth | ~960 GB/s | ~936 GB/s |
+| 32B tok/s | ~45–55 | ~40–50 |
+| Ecosystem | ROCm | **CUDA — best in class** |
+| Ollama stability | ⚠️ ROCm maintenance | ✅ Just works |
+| ComfyUI custom nodes | ⚠️ Many CUDA-only | ✅ Native |
+| Warranty | ✅ New | ❌ None (used) |
+| Age | Current gen | 2020 (6 years) |
+
+**Why NVIDIA + Proxmox works cleanly despite the Linux eGPU reputation:**
+Proxmox binds the eGPU to `vfio-pci` at the hypervisor level before any GPU driver loads. The Ollama VM sees it as a native PCIe device — NVIDIA drivers inside the VM behave identically to bare metal. The unreliable Linux eGPU experience is a bare-metal problem only.
+
+The 780M iGPU binds to `amdgpu` on the Proxmox host (for Plex). The RTX 3090 binds to `vfio-pci` and passes through to the Ollama VM where only the `nvidia` driver runs. The two drivers never coexist on the same OS layer.
+
+**Choose RX 7900 XTX if:** you want new hardware with a warranty and are comfortable maintaining ROCm.  
+**Choose RTX 3090 if:** you find a clean used unit from a reputable seller at $700–800 and want CUDA's superior ecosystem for Ollama and ComfyUI.
+
+> If using an RTX 3090, substitute `nvidia-smi` for `rocm-smi`, skip the ROCm install steps, and install NVIDIA drivers in the Ollama VM instead. The Proxmox VFIO passthrough steps are identical for both GPUs.
+
+---
+
 ## Prerequisites
 
-- DEG1 dock assembled with RM850x PSU and RX 7900 XTX installed ([Hardware Assembly §3](01-hardware-assembly.md))
+- DEG1 dock assembled with PSU and GPU installed ([Hardware Assembly §3](01-hardware-assembly.md))
 - Proxmox IOMMU configured ([Proxmox Installation §2.5](02-proxmox-installation.md))
 - Proxmox rebooted with IOMMU active
 
@@ -14,13 +44,13 @@
 
 ## 7.1 Identify the GPU's PCI IDs
 
-Power on the DEG1 before the AI X1 Pro-470 (always). In the Proxmox shell:
+Power on the DEG1 before the UM890 Pro (always). In the Proxmox shell:
 
 ```bash
 lspci -nn | grep -i amd
 ```
 
-You will see two AMD entries — the 890M iGPU and the 7900 XTX. Identify the XTX by its device name. Note the PCI ID in brackets, e.g.:
+You will see two AMD entries — the 780M iGPU and the 7900 XTX. Identify the XTX by its device name. Note the PCI ID in brackets, e.g.:
 
 ```
 01:00.0 VGA compatible controller [0300]: Advanced Micro Devices [AMD/ATI] Navi 31 [1002:744c]
@@ -43,7 +73,7 @@ nano /etc/modprobe.d/vfio.conf
 options vfio-pci ids=1002:744c,1002:ab30
 ```
 
-> Use the IDs from step 7.1. This binds only the XTX to VFIO, leaving the 890M iGPU available for Proxmox and the Plex LXC.
+> Use the IDs from step 7.1. This binds only the XTX to VFIO, leaving the 780M iGPU available for Proxmox and the Plex LXC.
 
 Update initramfs and reboot:
 

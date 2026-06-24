@@ -216,7 +216,7 @@ Same process as the Docker LXC but:
 | Disk | `20GB` (media stored on external SSD — see [External Storage](09-external-storage.md)) |
 | Privileged | ✅ Yes |
 
-### Pass 890M iGPU to Plex LXC
+### Pass 780M iGPU to Plex LXC
 
 In Proxmox host shell:
 

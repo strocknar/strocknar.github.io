@@ -6,7 +6,7 @@
 
 ## What You'll Need
 
-- Minisforum AI X1 Pro-470 (barebones unit)
+- Minisforum UM890 Pro (barebones unit or refurb)
 - 2× Crucial 16GB DDR5-5600 SO-DIMM (sold as 32GB dual-channel kit)
 - WD Black SN770 1TB M.2 2280 NVMe
 - Phillips head screwdriver (small)
@@ -18,11 +18,11 @@
 
 ### 1.1 Open the Unit
 
-The AI X1 Pro-470 bottom panel is held by 4 screws. Remove them and slide the panel off. The RAM slots and NVMe bays are immediately accessible.
+The UM890 Pro uses a magnetic top cover for access. Flip the unit upside down, then slide the magnetic cover off. There are 4 screws at the corners of an internal shield. Unscrew those and carefully pull up the shield.
 
 ### 1.2 Install RAM
 
-> **Critical:** Install both sticks for dual-channel. Single-channel halves iGPU memory bandwidth and cuts LLM inference speed in half (~10 tok/s vs ~20 tok/s on 7B models).
+> **Critical:** Install both sticks for dual-channel. Single-channel halves iGPU memory bandwidth and cuts LLM inference speed in half (~7–9 tok/s vs ~15–18 tok/s on 7B models).
 
 1. Align the SO-DIMM notch with the slot keying
 2. Insert at ~30° angle, press down until both retention clips snap closed
@@ -35,11 +35,11 @@ The AI X1 Pro-470 bottom panel is held by 4 screws. Remove them and slide the pa
 2. Insert the SN770 at ~30° angle into the M.2 connector
 3. Press flat and secure with the single retention screw
 
-> The AI X1 Pro-470 has 3 NVMe slots total. Slots 2 and 3 are empty — leave them for future model weight and media storage drives.
+> The UM890 Pro has 2 NVMe slots total. One slot is used for the OCuLink card. The second should be used for the NVMe drive.
 
 ### 1.4 Reassemble
 
-Replace the bottom panel and screws. Do not overtighten.
+Replace the shield and screws. Do not overtighten. Then replace the top magnetic cover.
 
 ### 1.5 First Power-On Test
 
@@ -89,7 +89,7 @@ Save and exit BIOS.
 
 - Minisforum DEG1 GPU Docking Station
 - Corsair RM850x 850W ATX PSU
-- Radeon RX 7900 XTX
+- Radeon RX 7900 XTX (or RTX 3090 used)
 - OCuLink cable (confirm included with DEG1 — if not, purchase separately)
 - ATX 24-pin, PCIe 8-pin/16-pin power cables (included with RM850x)
 
@@ -108,10 +108,10 @@ Save and exit BIOS.
 
 ### 3.2 Connect OCuLink
 
-1. Power off the AI X1 Pro-470 completely
-2. Connect the OCuLink cable from the DEG1 to the OCuLink port on the AI X1 Pro-470
+1. Power off the UM890 Pro completely
+2. Connect the OCuLink cable from the DEG1 to the OCuLink port on the UM890 Pro
 3. OCuLink is keyed — it only inserts one way
-4. Power on the DEG1 enclosure first, then the AI X1 Pro-470
+4. Power on the DEG1 enclosure first, then the UM890 Pro
 
 > **Boot order matters:** Always power the DEG1 before the mini PC so Proxmox detects the GPU during POST. Hot-plug is unreliable on Linux — treat the OCuLink connection as permanent.
 
@@ -123,7 +123,7 @@ After boot, in Proxmox shell:
 lspci | grep -i amd
 ```
 
-Expected output should show both the 890M iGPU and the RX 7900 XTX as separate PCI devices. Continue to [eGPU Setup](07-egpu-setup.md) to configure passthrough.
+Expected output should show both the 780M iGPU and the RX 7900 XTX as separate PCI devices. Continue to [eGPU Setup](07-egpu-setup.md) to configure passthrough.
 
 ---
 
