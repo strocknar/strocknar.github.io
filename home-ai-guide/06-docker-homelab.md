@@ -218,6 +218,8 @@ Same process as the Docker LXC but:
 
 ### Pass 780M iGPU to Plex LXC
 
+> **Phase 1 note:** In Phase 1, the 780M iGPU is passed through to the Ollama VM. The `/dev/dri/` device will not be present on the host until Phase 2 (when the RTX 3090 replaces the iGPU in VFIO binding). Skip the hardware transcoding setup for now and configure it after completing [eGPU Setup](07-egpu-setup.md).
+
 In Proxmox host shell:
 
 ```bash
