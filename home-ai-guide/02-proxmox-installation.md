@@ -14,12 +14,12 @@ Proxmox VE is a bare-metal hypervisor based on Debian. It runs Home Assistant OS
 
 On another machine:
 
-1. Download Proxmox VE ISO from `proxmox.com/downloads` (current version: 8.x)
+1. Download Proxmox VE ISO from `proxmox.com/downloads` (current version: 9.2-1)
 2. Flash to USB drive using Balena Etcher or `dd`:
 
 ```bash
 # macOS/Linux — replace /dev/sdX with your USB device
-dd if=proxmox-ve_8.x-1.iso of=/dev/sdX bs=1M status=progress
+dd if=proxmox-ve_9.2-1.iso of=/dev/sdX bs=1M status=progress
 ```
 
 ---
@@ -121,19 +121,29 @@ update-grub
 echo "vfio" >> /etc/modules
 echo "vfio_iommu_type1" >> /etc/modules
 echo "vfio_pci" >> /etc/modules
-echo "vfio_virqfd" >> /etc/modules
 ```
 
-### Blacklist AMD GPU from Host
+### Bind iGPU to VFIO (Phase 1)
 
-This prevents Proxmox from claiming the RX 7900 XTX, leaving it available for VM passthrough:
+This reserves the 780M iGPU exclusively for the Ollama VM via passthrough. First, identify your iGPU's PCI IDs:
 
 ```bash
-echo "blacklist amdgpu" >> /etc/modprobe.d/blacklist.conf
-echo "blacklist radeon" >> /etc/modprobe.d/blacklist.conf
+lspci -nn | grep -i amd
 ```
 
-> **Important:** Do NOT blacklist amdgpu if you want the 780M iGPU available on the host for Plex transcoding LXC. The blacklist here targets the external 7900 XTX only. See [eGPU Setup](07-egpu-setup.md) for the correct targeted approach using device IDs.
+Look for the entry with "Hawk Point" or "Radeon 780M" — note the IDs in brackets. Standard IDs are `1002:1900` (video) and `1002:1640` (audio), but confirm yours match.
+
+Create the targeted VFIO binding:
+
+```bash
+nano /etc/modprobe.d/vfio.conf
+```
+
+```
+options vfio-pci ids=1002:1900,1002:1640
+```
+
+> Use the IDs from `lspci -nn`. This binds only the iGPU to VFIO. In Phase 2, you will replace these IDs with the RTX 3090's IDs — see [eGPU Setup](07-egpu-setup.md).
 
 ### Update initramfs and Reboot
 
@@ -161,10 +171,10 @@ for d in /sys/kernel/iommu_groups/*/devices/*; do
   n=${d#*/iommu_groups/*}; n=${n%%/*}
   printf 'IOMMU Group %s ' "$n"
   lspci -nns "${d##*/}"
-done | grep -i amd | sort -V
+done | grep -E "AMD|NVIDIA" | sort -V
 ```
 
-Note the PCI IDs for the RX 7900 XTX (format: `xxxx:xxxx`). You'll need these in [eGPU Setup](07-egpu-setup.md).
+Note the PCI IDs for the 780M iGPU (format: `xxxx:xxxx`). Confirm they match what you put in `vfio.conf`.
 
 ---
 
