@@ -6,7 +6,7 @@
 
 ## Why Proxmox
 
-Proxmox VE is a bare-metal hypervisor based on Debian. It runs Home Assistant OS as a proper VM (better than HA Supervised), passes the RX 7900 XTX through to the Ollama VM via VFIO, and manages Docker LXCs for homelab services — all from a single web UI.
+Proxmox VE is a bare-metal hypervisor based on Debian. It runs Home Assistant OS as a proper VM (better than HA Supervised), passes the 780M iGPU through to the Ollama VM via VFIO (Phase 1) or the RTX 3090 (Phase 2), and manages Docker LXCs for homelab services — all from a single web UI.
 
 ---
 
@@ -91,7 +91,7 @@ reboot
 
 ## 2.5 Configure IOMMU for GPU Passthrough
 
-This enables PCIe device passthrough to VMs — required for the RX 7900 XTX to be passed to the Ollama VM.
+This enables PCIe device passthrough to VMs — required for GPU passthrough to the Ollama VM.
 
 ### Edit GRUB
 
