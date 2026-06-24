@@ -6,10 +6,10 @@
 
 ## Architecture
 
-Ollama (model backend) and Open WebUI (chat interface) run in a dedicated Proxmox VM. This VM gets the RX 7900 XTX passed through to it exclusively — no GPU sharing with other workloads.
+Ollama (model backend) and Open WebUI (chat interface) run in a dedicated Proxmox VM. The 780M iGPU is passed through via VFIO for Phase 1, then the VM is destroyed and rebuilt with NVIDIA drivers for Phase 2.
 
-**Phase 1 (no eGPU):** Ollama uses the 780M iGPU via ROCm or falls back to CPU inference. Functional for 7B–13B models.  
-**Phase 2 (eGPU installed):** Ollama uses the RX 7900 XTX via ROCm. Full 32B model capability.
+**Phase 1 (iGPU):** The 780M iGPU is passed through to this VM from Proxmox. Ollama uses it via ROCm. Functional for 7B–14B models at ~15–18 tok/s on 7B.  
+**Phase 2 (RTX 3090):** Destroy and rebuild this VM (see [eGPU Setup](07-egpu-setup.md)). NVIDIA drivers replace ROCm. Full 32B capability at ~40–50 tok/s.
 
 ---
 
@@ -34,6 +34,21 @@ In Proxmox web UI: **local storage → ISO Images → Download from URL**
 
 URL: `https://releases.ubuntu.com/24.04/ubuntu-24.04-live-server-amd64.iso`
 
+### Add iGPU Passthrough to VM
+
+After creating the VM but **before starting it**, add the 780M iGPU as a PCI passthrough device:
+
+In Proxmox web UI: **VM 101 → Hardware → Add → PCI Device**
+
+| Setting | Value |
+|---|---|
+| Raw device | Select the 780M iGPU (identified by `1002:1900`) |
+| All Functions | ✅ Checked |
+| ROM-Bar | ✅ Checked |
+| PCI-Express | ✅ Checked |
+
+Now start the VM and proceed with Ubuntu installation.
+
 ### Install Ubuntu
 
 Start the VM, open the console, follow the Ubuntu Server installer:
@@ -56,9 +71,9 @@ ssh aiuser@<ollama-vm-ip>
 Install ROCm (AMD's GPU compute stack, required for Ollama to use AMD GPUs):
 
 ```bash
-# Add ROCm repo
-wget https://repo.radeon.com/amdgpu-install/6.2/ubuntu/noble/amdgpu-install_6.2.60200-1_all.deb
-sudo apt install ./amdgpu-install_6.2.60200-1_all.deb
+# Check https://repo.radeon.com/amdgpu-install/ for the latest version directory, then:
+wget https://repo.radeon.com/amdgpu-install/<version>/ubuntu/noble/amdgpu-install_<version>-1_all.deb
+sudo apt install ./amdgpu-install_<version>-1_all.deb
 sudo amdgpu-install --usecase=rocm --no-dkms
 sudo usermod -a -G render,video aiuser
 ```
@@ -71,7 +86,7 @@ Verify ROCm sees a GPU:
 rocm-smi
 ```
 
-> **Phase 1 (no eGPU):** If `rocm-smi` shows no GPU or gfx1151 errors, the 780M iGPU ROCm support may not be stable yet. Ollama will fall back to CPU — this is fine. 7B models will still run at ~8–10 tok/s via CPU. Check `https://rocm.docs.amd.com` for gfx1103 (RDNA 3 mobile) support status updates.
+> **Phase 1 (iGPU passthrough):** The 780M (gfx1103) is RDNA 3 mobile. ROCm support is functional but not tier-1. If `rocm-smi` shows no GPU or GFX version errors, set `HSA_OVERRIDE_GFX_VERSION=11.0.0` in the Ollama service override (same as section 7.5 in the previous guide — add it to the `[Service]` block in `sudo systemctl edit ollama`). Check `https://rocm.docs.amd.com` for gfx1103 support status.
 
 ---
 
@@ -175,10 +190,14 @@ In Open WebUI, select a model from the dropdown and send a message. Verify:
 - Response generates (even slowly on CPU is fine for Phase 1)
 - No error messages in the UI
 
-Check GPU utilization during inference (Phase 2 with eGPU):
+Check GPU utilization during inference:
 
 ```bash
+# Phase 1 (iGPU via ROCm):
 watch -n 1 rocm-smi
+
+# Phase 2 (RTX 3090 via CUDA — after VM rebuild):
+watch -n 1 nvidia-smi
 ```
 
 GPU memory usage should increase as the model runs.
