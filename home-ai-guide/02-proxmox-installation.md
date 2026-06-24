@@ -59,11 +59,14 @@ Accept the self-signed certificate warning. Login as `root` with the password yo
 
 Proxmox defaults to an enterprise repo that requires a paid subscription. Switch to the free repo:
 
-In the Proxmox web UI: **Node → Shell**
+In the Proxmox web UI: **<NodeName> → Shell**
 
 ```bash
 # Disable enterprise repo
-echo "# disabled" > /etc/apt/sources.list.d/pve-enterprise.list
+echo "Enabled: false" >> /etc/apt/sources.list.d/ceph.sources
+echo "Enabled: false" >> /etc/apt/sources.list.d/pve-enterprise.sources
+
+sed -i '/Enabled/c\Enabled: false' /etc/apt/sources.list.d/ceph.sources
 
 # Add no-subscription repo
 echo "deb http://download.proxmox.com/debian/pve bookworm pve-no-subscription" \
