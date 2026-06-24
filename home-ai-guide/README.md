@@ -14,8 +14,8 @@ A complete start-to-finish guide for building a local AI system with Home Assist
 | **Phase 1 Total** | | **$940–$983** |
 | eGPU Dock | Minisforum DEG1 (OCuLink PCIe 4.0 x4) | $109 |
 | PSU | Corsair RM850x 850W ATX | $129.99 |
-| GPU | RX 7900 XTX 24GB (new) **or** RTX 3090 24GB (used) | $700–$1,050 |
-| **Full Build Total** | | **$1,879–$2,272** |
+| GPU | RTX 3090 24GB (used) | ~$700–850 |
+| **Full Build Total** | | **$1,879–$2,052** |
 
 > RAM and NVMe move directly to the AI X1 Pro-470 if you upgrade later — no components stranded.
 
@@ -28,11 +28,11 @@ A complete start-to-finish guide for building a local AI system with Home Assist
 | NVMe | WD Black SN770 1TB | $175–$210 |
 | eGPU Dock | Minisforum DEG1 (OCuLink PCIe 4.0 x4) | $109 |
 | PSU | Corsair RM850x 850W ATX | $129.99 |
-| GPU | RX 7900 XTX 24GB (new) **or** RTX 3090 24GB (used) | $700–$1,050 |
-| **Total** | | **$2,255–$2,648** |
+| GPU | RTX 3090 24GB (used) | ~$700–850 |
+| **Total** | | **$2,255–$2,448** |
 
 > **Phase 1 (no eGPU):** $1,316–$1,359 — fully functional for HA and 7B–13B LLM inference  
-> **Phase 2:** Add eGPU stack when ready (+$1,268–$1,289)
+> **Phase 2:** Add eGPU stack when ready (+$939–$1,089)
 
 ## Sections
 
@@ -55,8 +55,8 @@ A complete start-to-finish guide for building a local AI system with Home Assist
 ```
 Proxmox VE (bare metal, Debian-based)
 ├── VM:  Home Assistant OS        (4GB RAM, 32GB disk, iGPU for voice)
-├── VM:  Ollama + Open WebUI      (14GB RAM, RX 7900 XTX passthrough)
-│   └── ComfyUI                   (image generation, shares RX 7900 XTX)
+├── VM:  Ollama + Open WebUI      (14GB RAM, iGPU Phase 1 / RTX 3090 Phase 2)
+│   └── ComfyUI                   (image generation, Phase 2 only)
 ├── LXC: Docker host              (6GB RAM, homelab containers)
 │   ├── SearXNG                   (web search)
 │   ├── Grafana                   (monitoring)
@@ -80,7 +80,6 @@ Proxmox VE (bare metal, Debian-based)
 |---|---|---|---|---|---|
 | Phase 1 (Option A) | UM890 Pro | 780M iGPU | ~15–18 | ~8–10 | ~3–5 |
 | Phase 1 (Option B) | AI X1 Pro-470 | 890M iGPU | ~20–25 | ~10–14 | ~3–5 |
-| Phase 2 — AMD | + RX 7900 XTX | eGPU | ~80+ | ~60+ | ~45–55 |
-| Phase 2 — NVIDIA | + RTX 3090 (used) | eGPU | ~75–90 | ~55–65 | ~40–50 |
+| Phase 2 | + RTX 3090 (used) | eGPU | ~75–90 | ~55–65 | ~40–50 |
 
-> See [eGPU Setup](07-egpu-setup.md) for a full GPU comparison including RTX 3090 vs RX 7900 XTX tradeoffs under Proxmox.
+> See [eGPU Setup](07-egpu-setup.md) for the complete Phase 2 setup process.

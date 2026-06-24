@@ -89,7 +89,7 @@ Save and exit BIOS.
 
 - Minisforum DEG1 GPU Docking Station
 - Corsair RM850x 850W ATX PSU
-- Radeon RX 7900 XTX (or RTX 3090 used)
+- NVIDIA RTX 3090 24GB (used)
 - OCuLink cable (confirm included with DEG1 — if not, purchase separately)
 - ATX 24-pin, PCIe 8-pin/16-pin power cables (included with RM850x)
 
@@ -99,12 +99,12 @@ Save and exit BIOS.
 2. Install the ATX PSU into the DEG1 chassis
    - Route 24-pin ATX power to the DEG1 motherboard connector
    - The DEG1 uses the PSU to power both the enclosure and the GPU
-3. Install the RX 7900 XTX into the PCIe x16 slot
+3. Install the RTX 3090 into the PCIe x16 slot
 4. Connect PCIe power cables from PSU to GPU
-   - RX 7900 XTX requires 2× 8-pin or 1× 16-pin (PCIe 5.0 connector) — use what the RM850x provides
-   - 850W is sufficient: XTX TDP is ~355W + ~65W system = ~420W peak
+   - RTX 3090 requires 2× 8-pin connectors — the RM850x includes these
+   - 850W is sufficient: RTX 3090 TDP is ~350W + ~65W system = ~415W peak
 
-> **Verify clearance:** The RX 7900 XTX is a triple-fan card. Confirm it fits within the DEG1 chassis before fully assembling. Check minisforum.com for DEG1 internal dimensions if uncertain.
+> **Verify clearance:** The RTX 3090 is a large triple-fan card. Confirm it fits within the DEG1 chassis before fully assembling. Check minisforum.com for DEG1 internal dimensions if uncertain.
 
 ### 3.2 Connect OCuLink
 
@@ -120,10 +120,10 @@ Save and exit BIOS.
 After boot, in Proxmox shell:
 
 ```bash
-lspci | grep -i amd
+lspci | grep -E "AMD|NVIDIA"
 ```
 
-Expected output should show both the 780M iGPU and the RX 7900 XTX as separate PCI devices. Continue to [eGPU Setup](07-egpu-setup.md) to configure passthrough.
+Expected output should show both the AMD 780M iGPU and the NVIDIA RTX 3090 as separate PCI devices. Continue to [eGPU Setup](07-egpu-setup.md) to configure passthrough.
 
 ---
 
