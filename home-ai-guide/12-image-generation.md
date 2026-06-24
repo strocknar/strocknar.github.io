@@ -6,10 +6,10 @@
 
 ## Architecture
 
-Image generation runs in the same Ollama VM where the RX 7900 XTX lives. ComfyUI serves as the backend; Open WebUI connects to it for chat-integrated image generation.
+Image generation runs in the same Ollama VM where the RTX 3090 lives. ComfyUI serves as the backend; Open WebUI connects to it for chat-integrated image generation.
 
 ```
-Ollama VM (RX 7900 XTX passthrough)
+Ollama VM (RTX 3090 passthrough)
 ├── Ollama        — LLM inference
 └── ComfyUI       — image generation backend
     └── Open WebUI — unified chat + image interface
@@ -21,7 +21,7 @@ Ollama VM (RX 7900 XTX passthrough)
 
 ## Model Quality Reference
 
-| Model | VRAM | Disk | Quality | Speed (7900 XTX est.) |
+| Model | VRAM | Disk | Quality | Speed (RTX 3090 est.) |
 |---|---|---|---|---|
 | SD 1.5 | 4–6 GB | ~2 GB | Dated — skip | ~3–5 sec |
 | SDXL 1.0 | 8–10 GB | ~7 GB | Good | ~8–15 sec |
@@ -54,11 +54,11 @@ git clone https://github.com/comfyanonymous/ComfyUI.git
 cd ComfyUI
 python3 -m venv venv
 source venv/bin/activate
-pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/rocm6.2
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu124
 pip install -r requirements.txt
 ```
 
-> **ROCm PyTorch:** The `--index-url` above installs the ROCm-enabled PyTorch build. Match the ROCm version to what you installed in [section 4.2](04-ollama-open-webui.md) — if you installed ROCm 6.2, use `rocm6.2`. Check available versions at `download.pytorch.org/whl/rocm6.2`.
+> **CUDA PyTorch:** `cu124` covers CUDA 12.4, which matches NVIDIA drivers ≥525. Check `nvidia-smi` — the CUDA version shown in the top-right corner tells you which wheel to use. For CUDA 12.6 use `cu126`. Available wheel indexes: `download.pytorch.org/whl/torch_stable.html`.
 
 ---
 
@@ -113,7 +113,7 @@ http://<ollama-vm-ip>:8188
 In ComfyUI terminal output, look for:
 
 ```
-Using device: cuda  (ROCm reports as cuda to PyTorch)
+Using device: cuda
 VAE dtype: torch.float16
 ```
 
@@ -121,7 +121,7 @@ During generation, monitor GPU usage:
 
 ```bash
 # In a second terminal
-watch -n 1 rocm-smi
+watch -n 1 nvidia-smi
 ```
 
 GPU memory should climb to 16–20 GB during FLUX inference.
@@ -272,25 +272,22 @@ curl http://localhost:11434/api/generate -d '{"model":"","keep_alive":0}'
 
 **ComfyUI not using GPU (running on CPU):**
 ```bash
-# Verify ROCm PyTorch installation
+# Verify CUDA PyTorch installation
 cd ~/ComfyUI && source venv/bin/activate
 python -c "import torch; print(torch.cuda.is_available())"
 # Should print: True
 ```
 
-If `False`, reinstall PyTorch with the correct ROCm version:
+If `False`, reinstall PyTorch with the correct CUDA version:
 ```bash
-pip install torch --index-url https://download.pytorch.org/whl/rocm6.2 --force-reinstall
+pip install torch --index-url https://download.pytorch.org/whl/cu124 --force-reinstall
 ```
 
 **Slow generation despite GPU usage:**
-Check that `HSA_OVERRIDE_GFX_VERSION` is set if needed (same as Ollama — see [section 7.5](07-egpu-setup.md)):
+Ensure Ollama has released VRAM (check `OLLAMA_KEEP_ALIVE` setting in [section 12.4](12-image-generation.md)). Confirm no other process is holding GPU memory:
 ```bash
-export HSA_OVERRIDE_GFX_VERSION=11.0.0
-python main.py --listen 0.0.0.0 --port 8188
+nvidia-smi
 ```
-
-Add to the systemd service `Environment=` line if needed.
 
 ---
 
