@@ -20,10 +20,12 @@ Running Home Assistant OS in a Proxmox VM is the **officially supported** path r
 The Home Assistant team maintains an official Proxmox installation script. In the Proxmox shell:
 
 ```bash
-bash -c "$(wget -qLO - https://github.com/tteck/Proxmox/raw/main/vm/haos-vm.sh)"
+bash -c "$(wget -qLO - https://github.com/community-scripts/ProxmoxVE/raw/main/vm/haos-vm.sh)"
 ```
 
-> This script is maintained by the community (tteck) and is the standard method used by thousands of homelab users. It creates the VM with correct settings automatically.
+> If this script returns a 404, check `https://github.com/community-scripts/ProxmoxVE` for the current script path — filenames occasionally change between releases.
+
+This script is maintained by the community and is the standard method used by thousands of homelab users. It creates the VM with correct settings automatically.
 
 Follow the prompts:
 - **VM ID:** Accept default (e.g., `100`)
