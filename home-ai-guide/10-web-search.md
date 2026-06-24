@@ -143,7 +143,7 @@ In the chat interface, click the **globe icon** (or use the `+` menu) to enable 
 
 The model cites sources inline in its response.
 
-> **Model recommendation for web-augmented queries:** Use `llama3.1:8b` or `qwen2.5:14b` for general web Q&A. The 32B coding model is overkill for factual lookups and slower to respond. Switch models in the Open WebUI dropdown per task.
+> **Model recommendation for web-augmented queries:** Use `qwen3:8b-q4_K_M` for general web Q&A. The 30B coding model is overkill for factual lookups and slower to respond. Switch models in the Open WebUI dropdown per task.
 
 ---
 

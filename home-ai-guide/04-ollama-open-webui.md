@@ -128,28 +128,31 @@ sudo systemctl restart ollama
 
 ## 4.4 Pull Your First Models
 
+These are current as of mid-2026. All three are Q4_K_M quantizations — the standard Ollama default for the best quality/size tradeoff.
+
 ```bash
-# 7B — fast, good for HA assistant
-ollama pull qwen2.5-coder:7b
+# 8B — fast, low-latency for HA assistant + quick queries (Phase 1)
+ollama pull qwen3:8b-q4_K_M
 
-# 14B — balanced quality/speed (iGPU phase)
-ollama pull qwen2.5-coder:14b
+# 14B — daily coding driver, fits iGPU VRAM (Phase 1)
+ollama pull qwen3:14b-q4_K_M
 
-# 32B — primary coding assistant (requires eGPU for good performance)
-ollama pull qwen2.5-coder:32b
+# 30B MoE — primary coding assistant (Phase 2, RTX 3090 required)
+ollama pull qwen3-coder:30b-a3b-q4_K_M
 ```
 
 > Models are stored in `~/.ollama/models` by default. On a 1TB drive, you have room for several models. Use `ollama rm <model>` to remove ones you're not using.
+
+> **Qwen3 thinking mode:** Qwen3 models support an optional reasoning/chain-of-thought mode. For Home Assistant voice and quick queries, suppress it by prefixing your prompt with `/no_think` or setting `keep_alive` low. Full thinking mode is useful for complex coding tasks but adds latency.
 
 ### Useful Models Reference
 
 | Model | Size | Best for |
 |---|---|---|
-| `qwen2.5-coder:7b` | ~4.5GB | HA LLM agent, quick queries |
-| `qwen2.5-coder:14b` | ~9GB | Daily coding, Phase 1 |
-| `qwen2.5-coder:32b` | ~19GB | Primary coding assistant, Phase 2 |
-| `llama3.1:8b` | ~5GB | General Q&A |
-| `mistral:7b` | ~4.5GB | Fast general use |
+| `qwen3:8b-q4_K_M` | ~5.2GB | HA LLM agent, quick queries |
+| `qwen3:14b-q4_K_M` | ~9.3GB | Daily coding, Phase 1 |
+| `qwen3-coder:30b-a3b-q4_K_M` | ~19GB | Primary coding assistant, Phase 2 |
+| `devstral:24b-small-2505-q4_K_M` | ~14GB | Alternative Phase 2: pure coding agent, top SWE-Bench scores |
 
 ---
 
@@ -209,7 +212,7 @@ GPU memory usage should increase as the model runs.
 In HA web UI: **Settings → Devices & Services → Add Integration → Ollama**
 
 - **URL:** `http://<ollama-vm-ip>:11434`
-- **Model:** Select `qwen2.5-coder:7b` (or whichever model you want HA to use)
+- **Model:** Select `qwen3:8b-q4_K_M` (or whichever model you want HA to use — prefer the 8B for low-latency voice responses)
 
 This enables Ollama as the conversation agent for voice commands and automations.
 

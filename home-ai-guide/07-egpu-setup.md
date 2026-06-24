@@ -173,7 +173,7 @@ sudo systemctl restart ollama
 Verify Ollama detects the GPU:
 
 ```bash
-ollama run qwen2.5-coder:7b "say hello"
+ollama run qwen3:8b-q4_K_M "say hello"
 ```
 
 In a second terminal:
@@ -213,8 +213,8 @@ docker run -d \
 ## 7.7 Pull and Test 32B Model
 
 ```bash
-ollama pull qwen2.5-coder:32b
-ollama run qwen2.5-coder:32b "explain the difference between a mutex and a semaphore"
+ollama pull qwen3-coder:30b-a3b-q4_K_M
+ollama run qwen3-coder:30b-a3b-q4_K_M "explain the difference between a mutex and a semaphore"
 ```
 
 Expected performance: **~40–50 tok/s** with the model fully loaded in 24GB VRAM.

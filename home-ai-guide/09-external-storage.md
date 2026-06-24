@@ -160,7 +160,7 @@ USB drives can disconnect unexpectedly. Configure graceful handling:
 
 ```bash
 # In Ollama VM — store one model internally as fallback
-OLLAMA_MODELS=~/.ollama/models ollama pull qwen2.5-coder:7b
+OLLAMA_MODELS=~/.ollama/models ollama pull qwen3:8b-q4_K_M
 ```
 
 **Plex:** Plex handles missing media directories gracefully — it just shows those items as unavailable until the drive reconnects.
