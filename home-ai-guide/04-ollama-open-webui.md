@@ -15,6 +15,16 @@ Ollama (model backend) and Open WebUI (chat interface) run in a dedicated Proxmo
 
 ## 4.1 Create the Ollama VM
 
+### Download Ubuntu ISO
+
+In Proxmox web UI: **Datacenter → <Name> → local → ISO Images → Download from URL**
+
+URL: `https://releases.ubuntu.com/26.04/ubuntu-26.04-live-server-amd64.iso`
+
+Click `Query URL` to fill in the other fields and then click Download
+
+### Create New VM
+
 In Proxmox web UI: **Create VM**
 
 | Setting | Value |
@@ -28,12 +38,6 @@ In Proxmox web UI: **Create VM**
 | Disk | `60GB` (on local-lvm) |
 | Network | `vmbr0` |
 
-### Download Ubuntu ISO
-
-In Proxmox web UI: **local storage → ISO Images → Download from URL**
-
-URL: `https://releases.ubuntu.com/24.04/ubuntu-24.04-live-server-amd64.iso`
-
 ### Add iGPU Passthrough to VM
 
 After creating the VM but **before starting it**, add the 780M iGPU as a PCI passthrough device:
@@ -46,6 +50,8 @@ In Proxmox web UI: **VM 101 → Hardware → Add → PCI Device**
 | All Functions | ✅ Checked |
 | ROM-Bar | ✅ Checked |
 | PCI-Express | ✅ Checked |
+
+> ROM-Bar and PCI-Express might be under Advanced
 
 Now start the VM and proceed with Ubuntu installation.
 

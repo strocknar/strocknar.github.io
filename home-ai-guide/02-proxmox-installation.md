@@ -118,9 +118,9 @@ update-grub
 ### Load VFIO Modules
 
 ```bash
-echo "vfio" >> /etc/modules
-echo "vfio_iommu_type1" >> /etc/modules
-echo "vfio_pci" >> /etc/modules
+echo "vfio" >> /etc/modules-load.d/vfio.conf
+echo "vfio_iommu_type1" >> /etc/modules-load.d/vfio.conf
+echo "vfio_pci" >> /etc/modules-load.d/vfio.conf
 ```
 
 ### Bind iGPU to VFIO (Phase 1)
@@ -131,7 +131,7 @@ This reserves the 780M iGPU exclusively for the Ollama VM via passthrough. First
 lspci -nn | grep -i amd
 ```
 
-Look for the entry with "Hawk Point" or "Radeon 780M" — note the IDs in brackets. Standard IDs are `1002:1900` (video) and `1002:1640` (audio), but confirm yours match.
+Look for the entry with "Hawk Point" or "Radeon 780M" or "VGA compatible controller" — note the IDs in brackets. Standard IDs are `1002:1900` (video) and `1002:1640` (audio), but confirm yours match.
 
 Create the targeted VFIO binding:
 
@@ -162,7 +162,7 @@ After reboot, in the Proxmox shell:
 dmesg | grep -e DMAR -e IOMMU
 ```
 
-Look for: `AMD-Vi: AMD IOMMUv2 loaded and initialized`
+Look for: `AMD-Vi: AMD IOMMUv2 loaded and initialized` or `AMD-Vi: IOMMU performance counters supported`
 
 Check IOMMU groups:
 
