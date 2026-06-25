@@ -175,11 +175,12 @@ sudo usermod -aG docker aiuser
 # Log out and back in
 
 # Run Open WebUI
+# Replace <ollama-vm-ip> with this VM's IP (run: hostname -I | awk '{print $1}')
 docker run -d \
   --name open-webui \
   --restart always \
   -p 3000:8080 \
-  -e OLLAMA_BASE_URL=http://localhost:11434 \
+  -e OLLAMA_BASE_URL=http://<ollama-vm-ip>:11434 \
   -v open-webui:/app/backend/data \
   ghcr.io/open-webui/open-webui:main
 ```
