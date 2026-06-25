@@ -76,6 +76,23 @@ SSH into the Ollama VM:
 ssh aiuser@<ollama-vm-ip>
 ```
 
+Add the universe repository first: 
+
+```bash
+sudo add-apt-repository universe
+sudo apt update
+```
+
+Make sure to have enough room. When installing, Ubuntu 26 by default adds storage to a LVM but only puts about half of the available space into it. 
+
+> For my initial install of Ubuntu + ROCm + Ollama, it took about 36GB before the models.
+> With 4 models + OpenWebUI container: ~92G
+
+```bash
+sudo lvdisplay
+sudo lvextend -r -l +100%FREE /dev/your_vol_group/your_log_vol # e.g. /dev/ubuntu-vg/ubuntu-lv
+```
+
 Install ROCm (AMD's GPU compute stack, required for Ollama to use AMD GPUs):
 
 ```bash
