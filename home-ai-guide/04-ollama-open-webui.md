@@ -252,6 +252,48 @@ This enables Ollama as the conversation agent for voice commands and automations
 
 ---
 
+## 4.8 Customize the Model's Personality (System Prompt)
+
+Open WebUI lets you set a persistent system prompt that applies to every conversation — the equivalent of a `~/.claude/CLAUDE.md` for your local models.
+
+### Per-account default (recommended)
+
+In Open WebUI: **Settings → General → System Prompt**
+
+Paste your prompt here. It applies to all models for your account unless overridden at a lower level.
+
+### Priority order (highest wins)
+
+| Level | Where | Who can set |
+|---|---|---|
+| Per-model | Workspace → Models → System Prompt | Admin only |
+| Per-account | Settings → General → System Prompt | Any user |
+| Per-chat | Chat Controls sidebar | Any user |
+
+> **Admin note:** If you set a system prompt on a model in Workspace → Models, it locks out the per-account override — users cannot change it for that model. Leave it blank in Workspace if you want users to control their own defaults.
+
+### Alternative: Ollama Modelfile
+
+If you want the system prompt baked into the model itself (CLI, API, and WebUI all inherit it):
+
+```bash
+# Create a Modelfile
+cat > ~/Modelfile <<'EOF'
+FROM qwen3:14b-q4_K_M
+
+SYSTEM """
+Your system prompt here.
+"""
+EOF
+
+# Register as a named model
+ollama create qwen3-14b-custom -f ~/Modelfile
+```
+
+The custom model then appears in Open WebUI's model dropdown like any other model.
+
+---
+
 ## Useful Ollama Commands
 
 ```bash
