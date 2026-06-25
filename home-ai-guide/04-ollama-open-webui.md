@@ -101,9 +101,10 @@ wget https://repo.radeon.com/amdgpu-install/<version>/ubuntu/noble/amdgpu-instal
 sudo apt install ./amdgpu-install_<version>-1_all.deb
 sudo amdgpu-install --usecase=rocm --no-dkms
 sudo usermod -a -G render,video aiuser
+sudo usermod -a -G render,video ollama
 ```
 
-Log out and back in for group changes to take effect.
+Log out and back in for group changes to take effect on your interactive session. The `ollama` service user change takes effect on the next service restart.
 
 Verify ROCm sees a GPU:
 
@@ -111,7 +112,9 @@ Verify ROCm sees a GPU:
 rocm-smi
 ```
 
-> **Phase 1 (iGPU passthrough):** The 780M (gfx1103) is RDNA 3 mobile. ROCm support is functional but not tier-1. If `rocm-smi` shows no GPU or GFX version errors, set `HSA_OVERRIDE_GFX_VERSION=11.0.0` by running `sudo systemctl edit ollama` and adding `Environment="HSA_OVERRIDE_GFX_VERSION=11.0.0"` to the `[Service]` block, then `sudo systemctl daemon-reload && sudo systemctl restart ollama`. Check `https://rocm.docs.amd.com` for gfx1103 support status.
+> **Phase 1 (iGPU passthrough):** The 780M (gfx1103) is RDNA 3 mobile. ROCm support is functional but not tier-1. `HSA_OVERRIDE_GFX_VERSION=11.0.0` and `OLLAMA_IGPU_ENABLE=1` are required — both are included in the service config block above. Check `https://rocm.docs.amd.com` for gfx1103 support status.
+
+> **UMA VRAM constraint:** With UMA Frame Buffer Size set to 8G (required — 16G freezes the host), only `qwen3:8b` (5.2GB) fits in GPU memory. `qwen3:14b` will fall back to CPU. This is expected for Phase 1 — pull the 14B anyway for CPU inference, but do not expect GPU utilization from it.
 
 ---
 
@@ -140,6 +143,8 @@ Add:
 ```ini
 [Service]
 Environment="OLLAMA_HOST=0.0.0.0:11434"
+Environment="HSA_OVERRIDE_GFX_VERSION=11.0.0"
+Environment="OLLAMA_IGPU_ENABLE=1"
 ```
 
 Save and restart:

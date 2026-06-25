@@ -83,10 +83,27 @@ On BIOS version 02.22.0058 (and likely all current UM890 Pro firmware), this set
 
 > **Fast Boot** and **Above 4G Decoding** are not exposed in the UM890 Pro BIOS UI. Both are enabled at the firmware level by default — no action needed.
 
+### UMA Frame Buffer Size (iGPU VRAM)
+
+The 780M uses system RAM as VRAM. The BIOS controls how much is reserved:
+
+```
+Advanced → AMD CBS → NBIO Common Options → UMA Frame Buffer Size → 8G
+```
+
+**Set this to 8G.** The reasoning:
+
+- The Ollama VM is allocated 14GB RAM. With 32GB total:
+  - 8G UMA → 24GB remaining → Proxmox + VM fit comfortably
+  - 16G UMA → 16GB remaining → VM startup freezes the host under memory pressure
+- 8GB VRAM fits `qwen3:8b` (5.2GB) fully on GPU. The 14B model (9.3GB) won't fit and falls back to CPU — acceptable for Phase 1.
+- Phase 2 (RTX 3090) has 24GB GDDR6X and renders this setting irrelevant.
+
 ### Recommended Settings
 
 | Setting | Value | Why |
 |---|---|---|
+| UMA Frame Buffer Size | **8G** | iGPU VRAM — 16G freezes host at VM startup |
 | Fan curve | Silent/Balanced | 24/7 home environment |
 | Wake on LAN | Enabled | Useful for remote homelab management |
 | Auto Power On | Enabled | Restores power after outage |
