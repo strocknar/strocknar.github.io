@@ -88,22 +88,27 @@ On BIOS version 02.22.0058 (and likely all current UM890 Pro firmware), this set
 The 780M uses system RAM as VRAM. The BIOS controls how much is reserved:
 
 ```
-Advanced → AMD CBS → NBIO Common Options → UMA Frame Buffer Size → 8G
+Advanced → AMD CBS → NBIO Common Options → UMA Frame Buffer Size
 ```
 
-**Set this to 8G.** The reasoning:
+The right value depends on what you want to run on GPU and how much RAM your VMs need. With 32GB system RAM, the constraint is:
 
-- The Ollama VM is allocated 14GB RAM. With 32GB total:
-  - 8G UMA → 24GB remaining → Proxmox + VM fit comfortably
-  - 16G UMA → 16GB remaining → VM startup freezes the host under memory pressure
-- 8GB VRAM fits `qwen3:8b` (5.2GB) fully on GPU. The 14B model (9.3GB) won't fit and falls back to CPU — acceptable for Phase 1.
-- Phase 2 (RTX 3090) has 24GB GDDR6X and renders this setting irrelevant.
+**UMA + Ollama VM RAM + Proxmox overhead (~2-3GB) ≤ 32GB**
+
+| UMA | Remaining RAM | Ollama VM max | GPU fits |
+|---|---|---|---|
+| 8G | 24GB | 14GB | qwen3:8b (5.2GB) |
+| 16G | 16GB | ~12GB | qwen3:14b (9.3GB) |
+
+> **The freeze:** Setting 16G UMA with the Ollama VM at 14GB leaves only ~16GB for system — tight enough that VM startup triggers memory pressure and hard-freezes the host. The fix is to reduce the VM's RAM allocation to match: 16G UMA → set VM RAM to 10-12GB.
+
+> **Phase 2:** The RTX 3090 has 24GB GDDR6X — UMA size becomes irrelevant once you rebuild the VM with NVIDIA drivers.
 
 ### Recommended Settings
 
 | Setting | Value | Why |
 |---|---|---|
-| UMA Frame Buffer Size | **8G** | iGPU VRAM — 16G freezes host at VM startup |
+| UMA Frame Buffer Size | **16G** (VM at 12GB) or **8G** (VM at 14GB) | See table above — must balance with VM RAM |
 | Fan curve | Silent/Balanced | 24/7 home environment |
 | Wake on LAN | Enabled | Useful for remote homelab management |
 | Auto Power On | Enabled | Restores power after outage |
