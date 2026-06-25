@@ -93,6 +93,8 @@ reboot
 
 This enables PCIe device passthrough to VMs — required for GPU passthrough to the Ollama VM.
 
+> **Prerequisite:** IOMMU must be enabled in the BIOS before these steps have any effect. This was covered in [Hardware Assembly §Phase 2](01-hardware-assembly.md#phase-2-bios-configuration). If you skipped that section, go back and enable it now — the VM will hard-freeze on passthrough device start without it.
+
 ### Edit GRUB
 
 ```bash

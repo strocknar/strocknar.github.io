@@ -58,13 +58,32 @@ Before installing the eGPU, verify the base unit works:
 
 ## Phase 2: BIOS Configuration
 
-Before installing Proxmox, configure these BIOS settings:
+Before installing Proxmox, configure these BIOS settings. **IOMMU must be enabled here — software-side GRUB parameters are inert without it, and the VM will hard-freeze when a PCI passthrough device is started.**
+
+### Enable IOMMU and SVM
+
+Navigate to:
+
+```
+Advanced → AMD CBS → NBIO Common Options → IOMMU → Enabled
+```
+
+Also confirm:
+
+```
+Advanced → CPU Configuration → SVM Mode → Enabled
+```
+
+SVM is AMD's hardware virtualization extension required for KVM. It is usually enabled by default, but verify.
+
+> **If you don't see AMD CBS:** Look for any setting labeled "IOMMU", "AMD-Vi", or "Virtualization" under the Advanced tab. On some UM890 Pro firmware revisions the path is `Advanced → North Bridge Configuration → IOMMU`.
 
 ### Required Settings
 
 | Setting | Value | Why |
 |---|---|---|
 | AMD-Vi / IOMMU | **Enabled** | Required for GPU passthrough in Proxmox |
+| SVM Mode | **Enabled** | AMD hardware virtualization for KVM |
 | Secure Boot | **Disabled** | Proxmox installer may conflict |
 | Fast Boot | **Disabled** | Ensures clean POST every boot |
 | Above 4G Decoding | **Enabled** | Required for GPU passthrough |
@@ -77,7 +96,7 @@ Before installing Proxmox, configure these BIOS settings:
 | Wake on LAN | Enabled | Useful for remote homelab management |
 | Auto Power On | Enabled | Restores power after outage |
 
-Save and exit BIOS.
+Save and exit BIOS (`F10`).
 
 ---
 
