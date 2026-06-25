@@ -60,7 +60,7 @@ Before installing the eGPU, verify the base unit works:
 
 Before installing Proxmox, configure these BIOS settings. **IOMMU must be enabled here — software-side GRUB parameters are inert without it, and the VM will hard-freeze when a PCI passthrough device is started.**
 
-### Enable IOMMU and SVM
+### Enable IOMMU
 
 Navigate to:
 
@@ -68,25 +68,20 @@ Navigate to:
 Advanced → AMD CBS → NBIO Common Options → IOMMU → Enabled
 ```
 
-Also confirm:
+On BIOS version 02.22.0058 (and likely all current UM890 Pro firmware), this setting appears **greyed out and already set to Enabled** — this is the correct and expected state. The firmware locks it on. No action needed.
 
-```
-Advanced → CPU Configuration → SVM Mode → Enabled
-```
+> **If IOMMU is not already enabled:** It should be under the path above. If you don't see AMD CBS, look for any setting labeled "IOMMU" or "AMD-Vi" under the Advanced tab.
 
-SVM is AMD's hardware virtualization extension required for KVM. It is usually enabled by default, but verify.
-
-> **If you don't see AMD CBS:** Look for any setting labeled "IOMMU", "AMD-Vi", or "Virtualization" under the Advanced tab. On some UM890 Pro firmware revisions the path is `Advanced → North Bridge Configuration → IOMMU`.
+**SVM Mode (AMD hardware virtualization):** Not separately configurable on this BIOS. It is enabled by default alongside IOMMU and does not appear under CPU Configuration. If IOMMU is enabled and Proxmox boots, SVM is active.
 
 ### Required Settings
 
-| Setting | Value | Why |
+| Setting | Value | Notes |
 |---|---|---|
-| AMD-Vi / IOMMU | **Enabled** | Required for GPU passthrough in Proxmox |
-| SVM Mode | **Enabled** | AMD hardware virtualization for KVM |
+| AMD-Vi / IOMMU | **Enabled** | Greyed out on 02.22.0058 — locked to enabled, correct |
 | Secure Boot | **Disabled** | Proxmox installer may conflict |
-| Fast Boot | **Disabled** | Ensures clean POST every boot |
-| Above 4G Decoding | **Enabled** | Required for GPU passthrough |
+
+> **Fast Boot** and **Above 4G Decoding** are not exposed in the UM890 Pro BIOS UI. Both are enabled at the firmware level by default — no action needed.
 
 ### Recommended Settings
 

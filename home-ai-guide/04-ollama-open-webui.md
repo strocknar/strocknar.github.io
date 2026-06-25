@@ -47,11 +47,13 @@ In Proxmox web UI: **VM 101 → Hardware → Add → PCI Device**
 | Setting | Value |
 |---|---|
 | Raw device | Select the 780M iGPU (identified by `1002:1900`) |
-| All Functions | ✅ Checked |
+| All Functions | ❌ Unchecked |
 | ROM-Bar | ✅ Checked |
 | PCI-Express | ✅ Checked |
 
-> ROM-Bar and PCI-Express might be under Advanced
+> **All Functions must be unchecked.** On the UM890 Pro, the iGPU video (`1002:1900`) and audio (`1002:1640`) land in separate IOMMU groups. Checking All Functions tells Proxmox to pass through both groups simultaneously, which violates IOMMU isolation and panics the host. The audio function is not needed for GPU compute.
+
+> ROM-Bar and PCI-Express may be under Advanced.
 
 Now start the VM and proceed with Ubuntu installation.
 

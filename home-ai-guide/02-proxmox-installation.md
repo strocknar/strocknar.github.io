@@ -164,7 +164,12 @@ After reboot, in the Proxmox shell:
 dmesg | grep -e DMAR -e IOMMU
 ```
 
-Look for: `AMD-Vi: AMD IOMMUv2 loaded and initialized` or `AMD-Vi: IOMMU performance counters supported`
+Look for any of these — any one is sufficient:
+- `AMD-Vi: IOMMU performance counters supported`
+- `Detected AMD IOMMU #0`
+- `AMD-Vi: AMD IOMMUv2 loaded and initialized`
+
+The exact message varies by kernel version. On recent kernels with UM890 Pro firmware 02.22.0058 you will see the first two, not the third. All confirm IOMMU is active.
 
 Check IOMMU groups:
 
