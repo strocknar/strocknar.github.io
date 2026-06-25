@@ -114,7 +114,7 @@ rocm-smi
 
 > **Phase 1 (iGPU passthrough):** The 780M (gfx1103) is RDNA 3 mobile. ROCm support is functional but not tier-1. `HSA_OVERRIDE_GFX_VERSION=11.0.0` and `OLLAMA_IGPU_ENABLE=1` are required — both are included in the service config block above. Check `https://rocm.docs.amd.com` for gfx1103 support status.
 
-> **UMA VRAM constraint:** With UMA Frame Buffer Size set to 8G (required — 16G freezes the host), only `qwen3:8b` (5.2GB) fits in GPU memory. `qwen3:14b` will fall back to CPU. This is expected for Phase 1 — pull the 14B anyway for CPU inference, but do not expect GPU utilization from it.
+> **UMA VRAM constraint:** UMA size and VM RAM must be balanced — see the BIOS configuration section in [Hardware Assembly](01-hardware-assembly.md). With 16G UMA and the VM reduced to ~12GB RAM, `qwen3:14b` (9.3GB) fits fully on GPU. With 8G UMA and 14GB VM RAM, only `qwen3:8b` fits on GPU and the 14B falls back to CPU.
 
 ---
 
@@ -145,7 +145,10 @@ Add:
 Environment="OLLAMA_HOST=0.0.0.0:11434"
 Environment="HSA_OVERRIDE_GFX_VERSION=11.0.0"
 Environment="OLLAMA_IGPU_ENABLE=1"
+Environment="OLLAMA_KEEP_ALIVE=-1"
 ```
+
+> `OLLAMA_KEEP_ALIVE=-1` keeps the loaded model in memory indefinitely instead of unloading after 5 minutes. On Phase 1 hardware, cold-start load times are 90 seconds to 5+ minutes depending on model size — unloading between requests makes the system feel broken. Set this from the start.
 
 Save and restart:
 
