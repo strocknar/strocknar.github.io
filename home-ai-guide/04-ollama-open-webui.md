@@ -8,8 +8,24 @@
 
 Ollama (model backend) and Open WebUI (chat interface) run in a dedicated Proxmox VM. The 780M iGPU is passed through via VFIO for Phase 1, then the VM is destroyed and rebuilt with NVIDIA drivers for Phase 2.
 
-**Phase 1 (iGPU):** The 780M iGPU is passed through to this VM from Proxmox. Ollama uses it via ROCm. Functional for 7B–14B models at ~15–18 tok/s on 7B.  
-**Phase 2 (RTX 3090):** Destroy and rebuild this VM (see [eGPU Setup](07-egpu-setup.md)). NVIDIA drivers replace ROCm. Full 32B capability at ~40–50 tok/s.
+**Phase 1 (iGPU):** The 780M iGPU is passed through to this VM from Proxmox. Ollama uses it via ROCm. With 8GB UMA, `qwen3:8b` fits fully on GPU. Generation speed is functional for Home Assistant voice responses, but too slow (~1–2 tok/s on larger models, ~5–8 tok/s on 8B) to use Open WebUI as a day-to-day ChatGPT replacement — that experience requires the eGPU.
+
+**Phase 2 (RTX 3090):** Destroy and rebuild this VM (see [eGPU Setup](07-egpu-setup.md)). NVIDIA drivers replace ROCm. Full 32B capability at ~40–50 tok/s. Open WebUI becomes genuinely usable as a local alternative to cloud LLMs.
+
+### Phase 1 Resource Reality
+
+The iGPU shares system RAM as VRAM. With 32GB total:
+
+| UMA VRAM | Ollama VM RAM | Free for HA + LXCs | GPU fits |
+|---|---|---|---|
+| 8GB | 8GB | ~14GB | qwen3:8b (5.2GB) — HA voice |
+| 16GB | 12GB | ~2GB | qwen3:14b (9.3GB) — barely anything left |
+
+**Phase 1 recommendation: 8GB UMA, 8GB Ollama VM RAM.** This frees ~14GB for Home Assistant, LXC services (NPM, Tailscale, etc.), and future experimentation. The tradeoff is giving up the 14B model — but on Phase 1 hardware, the 14B at interactive speed isn't meaningfully better than the 8B for HA voice tasks, and Open WebUI is too slow to be useful for either anyway.
+
+> **Why not 14B on Phase 1?** Real-world testing: qwen3:14b-q4_K_M is tolerable but slow for HA voice. devstral (14GB) hits 1–2 tok/s with 37% CPU / 63% GPU — not enough VRAM to go fully GPU-resident. qwen3:8b hallucinates more than 14B but is fast enough for short HA commands. The 14B sweet spot is Phase 2, where it becomes genuinely fast.
+
+> **Ollama loads through RAM:** During model load, Ollama spikes to ~model-size in system RAM before transferring weights to VRAM. 8GB VM RAM is tight for the 5.2GB 8B model but workable — especially with `OLLAMA_KEEP_ALIVE=-1` set, which means load only happens on VM reboot.
 
 ---
 
@@ -34,7 +50,7 @@ In Proxmox web UI: **Create VM**
 | OS | Ubuntu 24.04 Server (download ISO first — see below) |
 | Machine | `q35` |
 | CPU | 4 cores |
-| RAM | `14336` MB (14GB) |
+| RAM | `8192` MB (8GB) — see Phase 1 Resource Reality above |
 | Disk | `60GB` (on local-lvm) |
 | Network | `vmbr0` |
 
@@ -51,7 +67,7 @@ In Proxmox web UI: **VM 101 → Hardware → Add → PCI Device**
 | ROM-Bar | ✅ Checked |
 | PCI-Express | ✅ Checked |
 
-> **All Functions must be unchecked.** On the UM890 Pro, the iGPU video (`1002:1900`) and audio (`1002:1640`) land in separate IOMMU groups. Checking All Functions tells Proxmox to pass through both groups simultaneously, which violates IOMMU isolation and panics the host. The audio function is not needed for GPU compute.
+> **"All Functions" must be unchecked.** On the UM890 Pro, the iGPU video (`1002:1900`) and audio (`1002:1640`) land in separate IOMMU groups. Checking All Functions tells Proxmox to pass through both groups simultaneously, which violates IOMMU isolation and panics the host. The audio function is not needed for GPU compute.
 
 > ROM-Bar and PCI-Express may be under Advanced.
 
@@ -83,7 +99,7 @@ sudo add-apt-repository universe
 sudo apt update
 ```
 
-Make sure to have enough room. When installing, Ubuntu 26 by default adds storage to a LVM but only puts about half of the available space into it. 
+Make sure to have disk space available. When installing, Ubuntu 26 by default adds storage to a LVM but only puts about half of the available space into it. 
 
 > For my initial install of Ubuntu + ROCm + Ollama, it took about 36GB before the models.
 > With 4 models + OpenWebUI container: ~92G
@@ -161,31 +177,29 @@ sudo systemctl restart ollama
 
 ## 4.4 Pull Your First Models
 
-These are current as of mid-2026. All three are Q4_K_M quantizations — the standard Ollama default for the best quality/size tradeoff.
+All are Q4_K_M quantizations — the standard Ollama default for best quality/size tradeoff.
 
 ```bash
-# 8B — fast, low-latency for HA assistant + quick queries (Phase 1)
+# Phase 1: 8B is the only model that fits fully on GPU with 8GB UMA
 ollama pull qwen3:8b-q4_K_M
 
-# 14B — daily coding driver, fits iGPU VRAM (Phase 1)
+# Phase 2: pull these after the RTX 3090 rebuild
 ollama pull qwen3:14b-q4_K_M
-
-# 30B MoE — primary coding assistant (Phase 2, RTX 3090 required)
 ollama pull qwen3-coder:30b-a3b-q4_K_M
 ```
 
 > Models are stored in `~/.ollama/models` by default. On a 1TB drive, you have room for several models. Use `ollama rm <model>` to remove ones you're not using.
 
-> **Qwen3 thinking mode:** Qwen3 models support an optional reasoning/chain-of-thought mode. For Home Assistant voice and quick queries, suppress it by prefixing your prompt with `/no_think` or setting `keep_alive` low. Full thinking mode is useful for complex coding tasks but adds latency.
+> **Qwen3 thinking mode:** Qwen3 models support an optional reasoning/chain-of-thought mode. For Home Assistant voice and quick queries, suppress it by prefixing your prompt with `/no_think`. Full thinking mode is useful for complex coding tasks but adds significant latency — on Phase 1 hardware, don't use it.
 
-### Useful Models Reference
+### Model Reference
 
-| Model | Size | Best for |
-|---|---|---|
-| `qwen3:8b-q4_K_M` | ~5.2GB | HA LLM agent, quick queries |
-| `qwen3:14b-q4_K_M` | ~9.3GB | Daily coding, Phase 1 |
-| `qwen3-coder:30b-a3b-q4_K_M` | ~19GB | Primary coding assistant, Phase 2 |
-| `devstral:24b-small-2505-q4_K_M` | ~14GB | Alternative Phase 2: pure coding agent, top SWE-Bench scores |
+| Model | Size | Phase | Notes |
+|---|---|---|---|
+| `qwen3:8b-q4_K_M` | ~5.2GB | 1 + 2 | HA LLM agent; hallucinates more than 14B but fast enough for short commands |
+| `qwen3:14b-q4_K_M` | ~9.3GB | 2 | Sweet spot for daily use; Phase 1 speed is tolerable but not enjoyable |
+| `qwen3-coder:30b-a3b-q4_K_M` | ~19GB | 2 | Primary coding assistant |
+| `devstral:24b-small-2505-q4_K_M` | ~14GB | 2 | Pure coding agent; 1–2 tok/s on Phase 1 iGPU — unusable until RTX 3090 |
 
 ---
 

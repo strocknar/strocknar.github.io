@@ -95,20 +95,22 @@ The right value depends on what you want to run on GPU and how much RAM your VMs
 
 **UMA + Ollama VM RAM + Proxmox overhead (~2-3GB) ≤ 32GB**
 
-| UMA | Remaining RAM | Ollama VM max | GPU fits |
+| UMA | Ollama VM RAM | Free for HA + LXCs | GPU fits |
 |---|---|---|---|
-| 8G | 24GB | 14GB | qwen3:8b (5.2GB) |
-| 16G | 16GB | ~12GB | qwen3:14b (9.3GB) |
+| **8G** ✅ Phase 1 | **8GB** | ~14GB | qwen3:8b (5.2GB) |
+| 16G | 12GB | ~2GB | qwen3:14b (9.3GB) |
 
-> **The freeze:** Setting 16G UMA with the Ollama VM at 14GB leaves only ~16GB for system — tight enough that VM startup triggers memory pressure and hard-freezes the host. The fix is to reduce the VM's RAM allocation to match: 16G UMA → set VM RAM to 10-12GB.
+**Phase 1 recommendation: 8G UMA.** The 14B model is faster on Phase 1 than the 8B, but Open WebUI is too slow to be useful as a ChatGPT replacement at either speed — generation feels broken until the RTX 3090. For Phase 1, the goal is HA voice, not interactive chat. The 8B fits on GPU, serves HA well, and freeing 14GB for HA + LXCs is worth more than marginal 14B quality gains.
 
-> **Phase 2:** The RTX 3090 has 24GB GDDR6X — UMA size becomes irrelevant once you rebuild the VM with NVIDIA drivers.
+> **The freeze:** Setting 16G UMA with the Ollama VM at 14GB leaves only ~2GB for system — tight enough that VM startup triggers memory pressure and hard-freezes the host. If you run 16G UMA, set VM RAM to 10-12GB max.
+
+> **Phase 2:** The RTX 3090 has 24GB GDDR6X — UMA size becomes irrelevant once you rebuild the VM with NVIDIA drivers. At that point you can reclaim the 8GB UMA reservation and give it back to VMs.
 
 ### Recommended Settings
 
 | Setting | Value | Why |
 |---|---|---|
-| UMA Frame Buffer Size | **16G** (VM at 12GB) or **8G** (VM at 14GB) | See table above — must balance with VM RAM |
+| UMA Frame Buffer Size | **8G** (Phase 1) | Fits qwen3:8b; frees RAM for HA + LXCs |
 | Fan curve | Silent/Balanced | 24/7 home environment |
 | Wake on LAN | Enabled | Useful for remote homelab management |
 | Auto Power On | Enabled | Restores power after outage |
