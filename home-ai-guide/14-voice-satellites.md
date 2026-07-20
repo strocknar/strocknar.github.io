@@ -398,4 +398,64 @@ Test: say **"computer, what time is it?"**
 
 The Pi's ReSpeaker LED ring lights up on wake word detection, and you hear Piper's TTS response through the Pebble V3.
 
+### 14.4.5 Install Snapcast Client
+
+```bash
+sudo apt install -y snapclient
+```
+
+Configure it to point at the Snapcast server:
+
+```bash
+sudo nano /etc/default/snapclient
+```
+
+```bash
+SNAPCLIENT_OPTS="--host <docker-lxc-ip> --port 1704 --soundcard plughw:1,0"
+```
+
+> Replace `<docker-lxc-ip>` with the IP address of your Docker LXC. Port `1704` is the Snapcast default binary protocol port.
+
+Enable and start:
+
+```bash
+sudo systemctl enable snapclient
+sudo systemctl start snapclient
+sudo systemctl status snapclient
+```
+
+Expected: `Active: active (running)`
+
+### 14.4.6 Verify Music Assistant Player
+
+In Music Assistant web UI (`http://<docker-lxc-ip>:8095`):
+
+Go to **Players**. Within ~30 seconds of starting snapclient, a new player appears named `bedroom-satellite` (matching your snapclient hostname).
+
+In HA: **Developer Tools → States** — search for `media_player`. A new entity for the bedroom satellite appears.
+
+### 14.4.7 Test Music Playback
+
+1. In Music Assistant, browse to any YouTube Music track
+2. Click the player selector → choose `bedroom-satellite`
+3. Play — audio should come through the Pebble V3
+
+Test voice-triggered playback:
+
+Say: **"computer, play children's music"**
+
+HA passes the request to Music Assistant via the Ollama conversation agent, MA starts playback on the active player entity.
+
+### Multi-room Grouping
+
+To play synchronized audio across multiple Pi satellites:
+
+In Music Assistant: click the **Group** icon on any player → select which bedroom players to include → play music.
+
+All grouped players receive the same Snapcast stream and play in sync within ~30ms.
+
+In HA voice: **"computer, play lullabies everywhere"** — MA groups all bedroom players and starts playback.
+
+> Grouping via voice requires the Ollama conversation agent to understand and map "everywhere" or room names to MA player entities. This works out of the box when player entities in HA have clear location-based names (e.g., `media_player.bedroom_1_satellite`). Name your satellites clearly when adding them.
+
 ---
