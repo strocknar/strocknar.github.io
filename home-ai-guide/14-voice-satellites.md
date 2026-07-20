@@ -221,7 +221,7 @@ docker restart snapcast-server
 Create the named pipe that Music Assistant writes audio to:
 
 ```bash
-mkfifo /tmp/snapcast/snapcast.fifo
+[ -p /tmp/snapcast/snapcast.fifo ] || mkfifo /tmp/snapcast/snapcast.fifo
 ```
 
 > This FIFO is recreated at boot — add `mkfifo /tmp/snapcast/snapcast.fifo` to `/etc/rc.local` or a systemd service to ensure it exists after reboots.
@@ -376,6 +376,7 @@ WantedBy=multi-user.target
 Enable and start:
 
 ```bash
+sudo systemctl daemon-reload
 sudo systemctl enable wyoming-satellite
 sudo systemctl start wyoming-satellite
 sudo systemctl status wyoming-satellite
