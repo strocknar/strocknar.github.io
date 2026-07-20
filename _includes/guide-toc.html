@@ -1,13 +1,13 @@
 <details>
 <summary>Table of Contents</summary>
-
+<ol>
 {% for entry in site.data.guide-toc %}
 {% assign entry_num = forloop.index %}
 {% if page.path == entry.file %}
-{{ entry_num }}. **{{ entry.title }}** ← you are here
+  <li><strong>{{ entry.title }}</strong> &larr; you are here</li>
 {% else %}
-{{ entry_num }}. [{{ entry.title }}]({{ entry.file | split: "/" | last }})
+  <li><a href="{{ entry.file | split: "/" | last }}">{{ entry.title }}</a></li>
 {% endif %}
 {% endfor %}
-
+</ol>
 </details>
