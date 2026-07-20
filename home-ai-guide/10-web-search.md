@@ -1,8 +1,12 @@
+---
+---
 # 10 — Web Search Integration (SearXNG + Open WebUI)
 
 [← External Storage](09-external-storage.md) | [Next: Upgrading →](11-upgrading.md)
 
 ---
+
+{% include guide-toc.html %}
 
 ## Architecture
 

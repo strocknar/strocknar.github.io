@@ -1,8 +1,12 @@
+---
+---
 # 06 — Docker & Homelab Services
 
 [← Voice Stack](05-voice-stack.md) | [Next: eGPU Setup →](07-egpu-setup.md)
 
 ---
+
+{% include guide-toc.html %}
 
 ## Architecture
 

@@ -1,0 +1,28 @@
+- title: Hardware Assembly
+  file: home-ai-guide/01-hardware-assembly.md
+- title: Proxmox Installation
+  file: home-ai-guide/02-proxmox-installation.md
+- title: Home Assistant VM
+  file: home-ai-guide/03-home-assistant-vm.md
+- title: Ollama + Open WebUI
+  file: home-ai-guide/04-ollama-open-webui.md
+- title: Home Assistant Voice Stack
+  file: home-ai-guide/05-voice-stack.md
+- title: Docker & Homelab Services
+  file: home-ai-guide/06-docker-homelab.md
+- title: eGPU Setup
+  file: home-ai-guide/07-egpu-setup.md
+- title: Remote Access with Tailscale
+  file: home-ai-guide/08-tailscale-remote-access.md
+- title: Storage: External SSDs
+  file: home-ai-guide/09-external-storage.md
+- title: Web Search Integration
+  file: home-ai-guide/10-web-search.md
+- title: Upgrading & Future Expansion
+  file: home-ai-guide/11-upgrading.md
+- title: Local Image Generation (ComfyUI + FLUX)
+  file: home-ai-guide/12-image-generation.md
+- title: Devices & Home Assistant Compatibility
+  file: home-ai-guide/13-devices.md
+- title: Voice Satellites
+  file: home-ai-guide/14-voice-satellites.md

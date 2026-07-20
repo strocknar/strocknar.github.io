@@ -1,8 +1,12 @@
+---
+---
 # 03 — Home Assistant VM
 
 [← Proxmox Installation](02-proxmox-installation.md) | [Next: Ollama + Open WebUI →](04-ollama-open-webui.md)
 
 ---
+
+{% include guide-toc.html %}
 
 ## Why HA OS in a VM (Not Supervised)
 

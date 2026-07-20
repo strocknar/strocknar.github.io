@@ -1,8 +1,12 @@
+---
+---
 # 04 — Ollama + Open WebUI
 
 [← Home Assistant VM](03-home-assistant-vm.md) | [Next: Voice Stack →](05-voice-stack.md)
 
 ---
+
+{% include guide-toc.html %}
 
 ## Architecture
 

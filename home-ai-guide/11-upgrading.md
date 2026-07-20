@@ -1,8 +1,12 @@
+---
+---
 # 11 — Upgrading & Future Expansion
 
 [← Web Search](10-web-search.md) | [← Overview](README.md)
 
 ---
+
+{% include guide-toc.html %}
 
 ## Upgrade Ladder
 

@@ -1,8 +1,12 @@
+---
+---
 # 14 — Voice Satellites
 
 [← Devices & HA Compatibility](13-devices.md)
 
 ---
+
+{% include guide-toc.html %}
 
 This section covers building satellite voice devices to replace Amazon Echo units. Satellites connect to the voice pipeline you configured in [section 05](05-voice-stack.md) — all STT, TTS, and wake word detection continue to run on the HA server. The satellite is a dumb audio pipe.
 

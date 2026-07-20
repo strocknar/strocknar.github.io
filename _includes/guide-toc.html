@@ -1,0 +1,13 @@
+<details>
+<summary>Table of Contents</summary>
+
+{% for entry in site.data.guide-toc %}
+{% assign entry_num = forloop.index %}
+{% if page.path == entry.file %}
+{{ entry_num }}. **{{ entry.title }}** ← you are here
+{% else %}
+{{ entry_num }}. [{{ entry.title }}]({{ entry.file | split: "/" | last }})
+{% endif %}
+{% endfor %}
+
+</details>

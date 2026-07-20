@@ -1,8 +1,12 @@
+---
+---
 # 08 — Remote Access with Tailscale
 
 [← eGPU Setup](07-egpu-setup.md) | [Next: External Storage →](09-external-storage.md)
 
 ---
+
+{% include guide-toc.html %}
 
 ## How Tailscale Works
 

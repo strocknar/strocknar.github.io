@@ -1,8 +1,12 @@
+---
+---
 # 02 — Proxmox Installation
 
 [← Hardware Assembly](01-hardware-assembly.md) | [Next: Home Assistant VM →](03-home-assistant-vm.md)
 
 ---
+
+{% include guide-toc.html %}
 
 ## Why Proxmox
 

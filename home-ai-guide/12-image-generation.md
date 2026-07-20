@@ -1,8 +1,12 @@
+---
+---
 # 12 — Local Image Generation (ComfyUI + FLUX)
 
 [← Upgrading](11-upgrading.md) | [← Overview](README.md)
 
 ---
+
+{% include guide-toc.html %}
 
 ## Architecture
 

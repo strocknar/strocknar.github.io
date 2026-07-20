@@ -1,8 +1,12 @@
+---
+---
 # 07 — eGPU Setup (RTX 3090 via OCuLink)
 
 [← Docker & Homelab](06-docker-homelab.md) | [Next: Tailscale →](08-tailscale-remote-access.md)
 
 ---
+
+{% include guide-toc.html %}
 
 ## Overview
 

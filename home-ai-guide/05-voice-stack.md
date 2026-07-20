@@ -1,8 +1,12 @@
+---
+---
 # 05 — Home Assistant Voice Stack
 
 [← Ollama + Open WebUI](04-ollama-open-webui.md) | [Next: Docker & Homelab →](06-docker-homelab.md)
 
 ---
+
+{% include guide-toc.html %}
 
 ## Architecture
 

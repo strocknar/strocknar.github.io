@@ -1,8 +1,12 @@
+---
+---
 # 13 — Devices & Home Assistant Compatibility
 
 [← Overview](README.md)
 
 ---
+
+{% include guide-toc.html %}
 
 ## Required Hardware Purchase
 

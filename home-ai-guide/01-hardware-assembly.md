@@ -1,8 +1,12 @@
+---
+---
 # 01 — Hardware Assembly
 
 [← Overview](README.md) | [Next: Proxmox Installation →](02-proxmox-installation.md)
 
 ---
+
+{% include guide-toc.html %}
 
 ## What You'll Need
 

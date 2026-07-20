@@ -1,8 +1,12 @@
+---
+---
 # 09 — External Storage (USB SSDs)
 
 [← Tailscale](08-tailscale-remote-access.md) | [Next: Web Search →](10-web-search.md)
 
 ---
+
+{% include guide-toc.html %}
 
 ## Use Cases
 
