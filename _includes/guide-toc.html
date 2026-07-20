@@ -6,7 +6,7 @@
 {% if page.path == entry.file %}
   <li><strong>{{ entry.title }}</strong> &larr; you are here</li>
 {% else %}
-  <li><a href="{{ entry.file | split: "/" | last }}">{{ entry.title }}</a></li>
+  <li><a href="{{ entry.file | split: "/" | last | replace: '.md', '' }}">{{ entry.title }}</a></li>
 {% endif %}
 {% endfor %}
 </ol>
