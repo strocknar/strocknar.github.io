@@ -37,3 +37,49 @@ Two device types are covered. Build one of each as a prototype before committing
 ```
 
 ---
+
+## 14.1 Add the "computer" Wake Word
+
+The default wake word `ok_nabu` is replaced with `computer`, using a pre-trained community model. This applies to all satellites — do this once on the server before setting up any satellite hardware.
+
+### Download the model
+
+In the HA OS VM shell (or SSH into the HA host):
+
+```bash
+# Create a directory for custom wake word models
+mkdir -p /config/openWakeWord
+
+# Download the community-trained "computer" model
+curl -L \
+  https://github.com/fwartner/home-assistant-wakewords-collection/raw/main/en/computer/computer.tflite \
+  -o /config/openWakeWord/computer.tflite
+```
+
+### Update OpenWakeWord add-on configuration
+
+In HA web UI: **Settings → Add-ons → openWakeWord → Configuration**
+
+```yaml
+preloaded_models: []
+custom_model_dir: /config/openWakeWord
+threshold: 0.5
+```
+
+> `custom_model_dir` tells OpenWakeWord to load all `.tflite` files from that directory. The `computer.tflite` file you downloaded will be automatically detected.
+
+Restart the add-on: **openWakeWord → Restart**
+
+### Update the voice pipeline
+
+In HA web UI: **Settings → Voice Assistants → Local Assistant → Edit**
+
+| Setting | Value |
+|---|---|
+| Wake word | `computer` |
+
+Save.
+
+> If `computer` does not appear in the wake word dropdown, wait 30 seconds after restarting OpenWakeWord and refresh the page.
+
+---
