@@ -337,4 +337,65 @@ aplay test.wav
 
 You should hear your own voice played back. If the playback is silent, check that the HAT is fully seated on the GPIO header.
 
+### 14.4.3 Install wyoming-satellite
+
+```bash
+sudo apt install -y python3-pip python3-venv
+python3 -m venv /home/pi/wyoming-satellite
+/home/pi/wyoming-satellite/bin/pip install wyoming-satellite
+```
+
+Create the systemd service:
+
+```bash
+sudo nano /etc/systemd/system/wyoming-satellite.service
+```
+
+```ini
+[Unit]
+Description=Wyoming Satellite
+After=network.target
+
+[Service]
+Type=simple
+User=pi
+ExecStart=/home/pi/wyoming-satellite/bin/wyoming-satellite \
+  --name "bedroom-satellite" \
+  --uri tcp://0.0.0.0:10700 \
+  --mic-command "arecord -D plughw:1,0 -r 16000 -c 1 -f S16_LE -t raw" \
+  --snd-command "aplay -D plughw:1,0 -r 22050 -c 1 -f S16_LE -t raw"
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+```
+
+> Change `--name` to match the room (e.g., `bedroom-1-satellite`). This name appears in HA when you add the device.
+
+Enable and start:
+
+```bash
+sudo systemctl enable wyoming-satellite
+sudo systemctl start wyoming-satellite
+sudo systemctl status wyoming-satellite
+```
+
+Expected: `Active: active (running)`
+
+### 14.4.4 Add to Home Assistant
+
+In HA web UI: **Settings → Devices & Services → Add Integration → Wyoming Protocol**
+
+| Setting | Value |
+|---|---|
+| Host | `<pi-ip-address>` |
+| Port | `10700` |
+
+After adding, go to **Settings → Voice Assistants → Local Assistant** and assign the new satellite to the **Local Assistant** pipeline.
+
+Test: say **"computer, what time is it?"**
+
+The Pi's ReSpeaker LED ring lights up on wake word detection, and you hear Piper's TTS response through the Pebble V3.
+
 ---
