@@ -14,7 +14,7 @@
   file: home-ai-guide/07-egpu-setup.md
 - title: Remote Access with Tailscale
   file: home-ai-guide/08-tailscale-remote-access.md
-- title: Storage: External SSDs
+- title: "Storage: External SSDs"
   file: home-ai-guide/09-external-storage.md
 - title: Web Search Integration
   file: home-ai-guide/10-web-search.md
