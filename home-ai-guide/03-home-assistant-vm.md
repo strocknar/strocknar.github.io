@@ -81,7 +81,7 @@ Select **Use USB Vendor/Device ID** and choose your dongle from the list. This e
 
 ## 3.5 Install Essential Add-ons
 
-In HA web UI: **Settings → Add-ons → Add-on Store**
+In HA web UI: **Settings → Apps → Install App**
 
 Install and start these add-ons:
 

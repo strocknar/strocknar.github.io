@@ -22,7 +22,7 @@ All components run as HA add-ons within the HA OS VM. A Wyoming satellite handle
 
 ## 5.1 Install Voice Add-ons
 
-In HA web UI: **Settings → Add-ons → Add-on Store**
+In HA web UI: **Settings → Apps → Install App**
 
 Install each of the following:
 
@@ -55,8 +55,10 @@ Install each of the following:
 2. Install **openWakeWord**
 3. Configuration:
    ```yaml
+
    preloaded_models:
      - ok_nabu
+     
    ```
    > `ok_nabu` is the default HA wake word. Additional custom wake words can be trained via the HA wake word training tool.
 4. Start and enable Start on boot
