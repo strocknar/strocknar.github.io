@@ -459,3 +459,69 @@ In HA voice: **"computer, play lullabies everywhere"** — MA groups all bedroom
 > Grouping via voice requires the Ollama conversation agent to understand and map "everywhere" or room names to MA player entities. This works out of the box when player entities in HA have clear location-based names (e.g., `media_player.bedroom_1_satellite`). Name your satellites clearly when adding them.
 
 ---
+
+## 14.5 Latency Reference
+
+Voice pipeline latency is the same for both satellite types — all processing happens on the server.
+
+| Phase | Wake word | STT | LLM | TTS | Total |
+|---|---|---|---|---|---|
+| Phase 1 (iGPU) | ~0.3s | ~2–3s | ~3–5s | ~0.5s | ~6–9s |
+| Phase 2 (eGPU) | ~0.3s | ~1–2s | ~1–2s | ~0.5s | ~3–5s |
+
+Music playback start time (voice command to first audio): ~2–3 seconds on a stable LAN.
+
+---
+
+## 14.6 Fallback Behavior
+
+| Scenario | Result |
+|---|---|
+| Internet down | Voice + local device control work normally. YouTube Music fails; Plex plays from local library. |
+| YouTube Music unavailable | Music Assistant automatically falls back to Plex provider. |
+| HA server unreachable | Satellites go silent — no local processing on the satellite itself. |
+| Snapcast server down | Voice still works. Music requests fail with a spoken error from Piper. |
+
+---
+
+## 14.7 Troubleshooting
+
+**Wake word not triggering**
+
+- Verify OpenWakeWord add-on is running and `computer.tflite` is present in `/config/openWakeWord/`
+- Check OpenWakeWord add-on log for model loading errors
+- Lower threshold: `threshold: 0.4` in the add-on config, restart
+
+**Pi satellite not appearing in HA**
+
+- Confirm wyoming-satellite is running: `systemctl status wyoming-satellite`
+- Confirm port 10700 is reachable from the HA server: `nc -zv <pi-ip> 10700`
+- Check that HA and the Pi are on the same subnet (or that mDNS/TCP can route between them)
+
+**ReSpeaker mic not detected**
+
+- Confirm driver installed: `aplay -l` should show `seeed-2mic-voicecard`
+- If missing: re-run `sudo ./install.sh` from the `seeed-voicecard` directory and reboot
+- Confirm you used the `HinTak/seeed-voicecard` fork, not the original Seeed repo
+
+**No audio output from Pebble V3**
+
+- Confirm Pebble V3 aux-in cable is connected to the ReSpeaker HAT's 3.5mm jack (not the Pi's)
+- Test: `aplay -D plughw:1,0 /usr/share/sounds/alsa/Front_Center.wav`
+- Adjust HAT output volume: `alsamixer` → select ReSpeaker card → raise PCM/Speaker level
+
+**snapclient not connecting**
+
+- Verify Snapcast server is running: `docker ps | grep snapcast`
+- Verify the FIFO exists: `ls -la /tmp/snapcast/snapcast.fifo`
+- If FIFO missing after reboot, recreate: `mkfifo /tmp/snapcast/snapcast.fifo` then `docker restart snapcast-server`
+
+**Music Assistant player not appearing**
+
+- Confirm snapclient is running and connected: `systemctl status snapclient`
+- In MA web UI → Settings → Player Providers → Snapcast → check connection status
+- Restart MA container: `docker restart music-assistant`
+
+---
+
+[← Devices & HA Compatibility](13-devices.md)
