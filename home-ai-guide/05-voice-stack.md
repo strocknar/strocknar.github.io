@@ -1,7 +1,5 @@
 # 05 — Home Assistant Voice Stack
 
-> **Building satellite hardware?** See [14 — Voice Satellites](14-voice-satellites.md) for step-by-step setup of the HA Voice Preview Edition and Pi 3 A+ satellite builds.
-
 [← Ollama + Open WebUI](04-ollama-open-webui.md) | [Next: Docker & Homelab →](06-docker-homelab.md)
 
 ---
