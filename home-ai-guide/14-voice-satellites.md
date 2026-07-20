@@ -259,3 +259,82 @@ In HA web UI: **Settings → Devices & Services → Add Integration → Music As
 HA now exposes each MA player as a media player entity, enabling voice commands like "computer, play children's music in the bedroom."
 
 ---
+
+## 14.4 Option B — Pi 3 A+ Satellite
+
+### Hardware
+
+| Component | Price | Notes |
+|---|---|---|
+| Raspberry Pi 3 A+ | ~$25 | No per-unit purchase limits |
+| ReSpeaker 2-Mics Pi HAT | $13.99 | Seeed Studio |
+| Creative Pebble V3 | ~$38 | Amazon |
+| 32GB microSD (Class 10) | ~$8 | |
+| USB-C 5V/3A charger | ~$10 | |
+
+**Audio routing:**
+
+```
+ReSpeaker HAT (GPIO) ──── Pi 3 A+
+ReSpeaker HAT 3.5mm ──── Pebble V3 aux-in   ← audio (WM8960 codec)
+Pi USB-A             ──── Pebble V3 USB-C    ← power only
+Wall outlet          ──── USB-C charger ──── Pi USB-C
+```
+
+> Use the ReSpeaker HAT's 3.5mm output, not the Pi's built-in audio jack. The Pi's jack is PWM-based and produces audible noise. The ReSpeaker's WM8960 codec is significantly cleaner.
+
+### 14.4.1 Flash the OS
+
+1. Download [Raspberry Pi Imager](https://www.raspberrypi.com/software/)
+
+2. Select **Raspberry Pi OS Lite (64-bit)** — no desktop required
+
+3. Before writing, click the **gear icon** to preconfigure:
+   - Hostname: `satellite-bedroom-1` (or your preferred name)
+   - Enable SSH: yes, use password authentication
+   - Configure WiFi: your SSID and password
+   - Set username/password: `pi` / your chosen password
+
+4. Write to the microSD card, insert into the Pi, power on
+
+5. SSH in:
+
+```bash
+ssh pi@satellite-bedroom-1.local
+```
+
+### 14.4.2 Install ReSpeaker HAT Driver
+
+```bash
+sudo apt update && sudo apt upgrade -y
+sudo apt install -y git
+
+git clone https://github.com/HinTak/seeed-voicecard
+cd seeed-voicecard
+sudo ./install.sh
+sudo reboot
+```
+
+> Use the `HinTak/seeed-voicecard` fork — it is actively maintained for current Raspberry Pi OS kernels. The original `respeaker/seeed-voicecard` repo is no longer updated and will fail on recent kernels.
+
+After reboot, verify the driver loaded:
+
+```bash
+aplay -l
+```
+
+Expected output includes:
+```
+card 1: seeed2micvoicec [seeed-2mic-voicecard], device 0: ...
+```
+
+Test microphone capture:
+
+```bash
+arecord -D plughw:1,0 -r 16000 -c 1 -f S16_LE -d 5 test.wav
+aplay test.wav
+```
+
+You should hear your own voice played back. If the playback is silent, check that the HAT is fully seated on the GPIO header.
+
+---
