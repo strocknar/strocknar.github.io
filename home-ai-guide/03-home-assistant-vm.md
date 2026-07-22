@@ -42,6 +42,13 @@ Follow the prompts:
 
 The script downloads the HA OS image, creates the VM, and starts it.
 
+> **Set CPU type to `host` after creation.** The default Proxmox CPU type (`kvm64`) omits modern instruction sets (SSE4.2, AVX2) that voice add-ons like Piper and Whisper depend on. Before starting the VM for the first time:
+> 1. HA VM → **Hardware** → **Processors**
+> 2. Set **Type** to **`host`** (or `x86-64-v2-AES` if you need live migration)
+> 3. Then proceed with first boot
+>
+> Without this, Piper will crash on startup with a NumPy `RuntimeError: X86_V2 not supported` error.
+
 ---
 
 ## 3.2 First Boot
