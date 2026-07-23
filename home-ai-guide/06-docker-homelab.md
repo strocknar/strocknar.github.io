@@ -23,7 +23,103 @@ Proxmox LXC (Docker host)
 
 ---
 
-## 6.1 Create the Docker LXC
+## 6.1 AdGuard Home — Split-Horizon DNS
+
+AdGuard Home runs in its own LXC to provide two things: network-wide ad blocking, and local DNS rewrites that make `*.yourdomain.com` resolve to Nginx Proxy Manager on your LAN (and over Tailscale — see [section 8](08-tailscale-remote-access.md)).
+
+**Why AdGuard gets its own LXC:** DNS is infrastructure. You don't want a Docker stack restart to take down name resolution for every device on your LAN.
+
+### Create AdGuard LXC (CT 202)
+
+In Proxmox web UI: **Create CT**
+
+| Setting | Value |
+|---|---|
+| CT ID | `202` |
+| Hostname | `adguard` |
+| Unprivileged container | ✅ Yes (default) |
+| Template | Debian 12 |
+| Disk | `8GB` |
+| CPU | `1 core` |
+| RAM | `512` MB |
+| Network — Bridge | `vmbr0` |
+| Network — IPv4 | Static, `<adguard-lxc-ip>/24` — choose a free IP on your LAN and note it |
+| Network — Gateway | Your router IP |
+| DNS tab — DNS server | `1.1.1.1` (temporary — you'll switch this to AdGuard itself once it's running) |
+
+Start the LXC.
+
+### Install AdGuard Home
+
+In the AdGuard LXC console:
+
+```bash
+apt update && apt install -y curl
+curl -s -S -L https://raw.githubusercontent.com/AdguardTeam/AdGuardHome/master/scripts/install.sh | sh -s -- -v
+```
+
+The installer registers AdGuard Home as a systemd service and starts it automatically.
+
+Access the setup wizard at `http://<adguard-lxc-ip>:3000` from any browser on your LAN.
+
+In the wizard:
+1. Accept the default listen interfaces
+2. Set an admin username and password
+3. Set upstream DNS servers: `1.1.1.1` and `8.8.8.8`
+4. Complete setup
+
+After setup, the web UI moves to port 80: `http://<adguard-lxc-ip>`
+
+### Enable Default Blocklists
+
+In the AdGuard web UI: **Filters → DNS Blocklists → Add blocklist**
+
+Select the pre-populated **AdGuard DNS filter** entry and enable it. Click **Apply**.
+
+### Add DNS Rewrites
+
+This is how `*.yourdomain.com` resolves to NPM on your LAN instead of the public internet.
+
+In the AdGuard web UI: **Filters → DNS Rewrites → Add DNS rewrite**
+
+Add one entry per service. All entries point to `<npm-lxc-ip>` — the static IP you will assign to the Docker LXC in section 6.2:
+
+| Domain | Answer |
+|---|---|
+| `ha.yourdomain.com` | `<npm-lxc-ip>` |
+| `ollama.yourdomain.com` | `<npm-lxc-ip>` |
+| `portainer.yourdomain.com` | `<npm-lxc-ip>` |
+| `grafana.yourdomain.com` | `<npm-lxc-ip>` |
+
+> All subdomains point to NPM's IP. NPM routes to the correct backend based on the hostname in the request.
+
+Add more entries here as you add services.
+
+### Configure ASUS ZenWiFi XD6
+
+Log into the router admin UI → **Advanced Settings → LAN → DHCP Server** tab
+
+Set:
+- **DNS Server 1:** `<adguard-lxc-ip>`
+- **DNS Server 2:** `1.1.1.1` (fallback if AdGuard is unreachable)
+
+Click **Apply**. Your router will restart its DHCP service. Reconnect your devices or wait for DHCP lease renewal (usually within a few minutes).
+
+### Verify
+
+From any device on your LAN:
+
+```bash
+nslookup ha.yourdomain.com <adguard-lxc-ip>
+# Expected: returns <npm-lxc-ip>
+
+nslookup google.com <adguard-lxc-ip>
+# Expected: returns a public IP (upstream resolution is working)
+```
+
+---
+
+## 6.2 Create the Docker LXC
 
 **First, download the Debian 12 template** (one-time setup):
 
@@ -42,9 +138,9 @@ In Proxmox web UI: **Create CT** (Create Container)
 | CPU | `2 cores` |
 | RAM | `6144` MB (6GB) |
 | Network — Bridge | `vmbr0` |
-| Network — IPv4 | Static, `192.168.50.x/24` — use `/24`, not `/32` (match your subnet) |
+| Network — IPv4 | Static, `<docker-lxc-ip>/24` — use `/24`, not `/32` (match your subnet). This IP is what you entered as `<npm-lxc-ip>` in section 6.1. |
 | Network — Gateway | Your router IP (e.g. `192.168.50.1`) |
-| **DNS tab — DNS server** | `1.1.1.1` — set this explicitly or `apt` will fail to resolve hostnames |
+| **DNS tab — DNS server** | `<adguard-lxc-ip>` — set this so the LXC resolves hostnames through AdGuard |
 
 After creation, before starting — edit the LXC config for Docker compatibility:
 
@@ -65,7 +161,7 @@ Start the LXC.
 
 ---
 
-## 6.2 Install Docker
+## 6.3 Install Docker
 
 In the Docker LXC shell (Proxmox web UI: **LXC 200 → Console**):
 
@@ -85,7 +181,7 @@ docker run hello-world
 
 ---
 
-## 6.3 Create Docker Compose Directory
+## 6.4 Create Docker Compose Directory
 
 ```bash
 mkdir -p /opt/homelab
@@ -94,7 +190,7 @@ cd /opt/homelab
 
 ---
 
-## 6.4 Deploy the Stack
+## 6.5 Deploy the Stack
 
 Create the compose file:
 
@@ -202,7 +298,7 @@ docker compose up -d
 
 ---
 
-## 6.5 Access the Services
+## 6.6 Access the Services
 
 | Service | URL | Default login |
 |---|---|---|
@@ -218,7 +314,7 @@ Change all default passwords immediately.
 
 ---
 
-## 6.6 Install Plex Media Server
+## 6.7 Install Plex Media Server
 
 Plex runs in its own LXC to keep it isolated and to allow iGPU passthrough for hardware transcoding.
 
@@ -274,17 +370,18 @@ Access: `http://<plex-lxc-ip>:32400/web`
 
 ---
 
-## 6.7 Nginx Proxy Manager — HTTPS Setup
+## 6.8 Nginx Proxy Manager — HTTPS Setup
 
 The goal: reach services by a friendly name (`ha.yourdomain.com`) on your internal network only, with valid browser-trusted HTTPS through NPM — no port forwarding, no public exposure.
 
-This uses **DNS-01 challenge** (Let's Encrypt proves domain ownership via a DNS TXT record instead of port 80) combined with **split-horizon DNS** (your router resolves the domain to a local IP).
+This uses **DNS-01 challenge** (Let's Encrypt proves domain ownership via a DNS TXT record instead of port 80) combined with **split-horizon DNS** (AdGuard Home resolves the domain to a local IP — configured in section 6.1).
 
 ### Prerequisites
 
 - A domain hosted in **AWS Route 53**
-- An AWS IAM user with permissions to modify Route 53 records (created in Step 1)
-- NPM running (from section 6.4)
+- An AWS IAM user with permissions to modify Route 53 records (created in Step 1 below)
+- NPM running (from section 6.5)
+- AdGuard Home running with DNS rewrites configured (from section 6.1)
 
 ---
 
@@ -347,28 +444,9 @@ NPM will create a DNS TXT record in Route 53 via the AWS API to prove ownership,
 
 ---
 
-### Step 3 — Add Local DNS Overrides
+### Step 3 — Create Proxy Hosts in NPM
 
-Your router or Pi-hole needs to resolve `*.yourdomain.com` subdomains to your NPM LXC IP instead of the public internet.
-
-**If your router supports custom DNS records** (most Unifi, OPNsense, pfSense do):
-
-Add an A record for each service pointing to your NPM LXC IP (e.g. `192.168.50.8`):
-
-| Hostname | IP |
-|---|---|
-| `ha.yourdomain.com` | `192.168.50.8` |
-| `ollama.yourdomain.com` | `192.168.50.8` |
-| `portainer.yourdomain.com` | `192.168.50.8` |
-| `grafana.yourdomain.com` | `192.168.50.8` |
-
-All subdomains point to NPM — NPM routes to the correct backend based on hostname.
-
-**If your router doesn't support custom DNS**, set up Pi-hole (runs as a Docker container in the homelab stack) and use it as your LAN's DNS server. Add local DNS records there.
-
----
-
-### Step 4 — Create Proxy Hosts in NPM
+> Local DNS rewrites are already handled by AdGuard Home (section 6.1). No additional DNS configuration is needed here.
 
 In NPM admin UI: **Hosts → Proxy Hosts → Add Proxy Host**
 
@@ -398,24 +476,10 @@ Repeat for each service. Example entries:
 ### Result
 
 Typing `ha.yourdomain.com` in any browser on your LAN:
-- Resolves to NPM via your local DNS override
+- Resolves to NPM via AdGuard DNS rewrite
 - NPM proxies to HA and serves valid HTTPS with the wildcard cert
 - Never leaves your network
-- Full browser mic access works
-
----
-
-### If using Tailscale hostnames (`.ts.net`) — Let's Encrypt will fail
-
-Let's Encrypt can't issue certs for `.ts.net` domains (they're not publicly delegatable). Use **Tailscale's built-in HTTPS certificates** instead:
-
-1. [Tailscale admin console](https://login.tailscale.com/admin/dns) → **DNS** → enable **HTTPS Certificates**
-2. On each machine:
-   ```bash
-   tailscale cert <hostname>.ts.net
-   ```
-   Cert and key are placed in `/var/lib/tailscale/certs/`
-3. In NPM: **SSL Certificates → Add Certificate → Custom** and provide the cert/key paths
+- Full browser mic access works (HTTPS required for microphone in mobile browsers)
 
 ---
 
