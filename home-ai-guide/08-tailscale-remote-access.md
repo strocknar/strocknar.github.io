@@ -165,7 +165,7 @@ All services use the same URL whether you're on your home LAN, home WiFi, or con
 | Open WebUI | `https://ollama.yourdomain.com` |
 | Portainer | `https://portainer.yourdomain.com` |
 | Grafana | `https://grafana.yourdomain.com` |
-| Proxmox web UI | `https://<proxmox-host-ip>:8006` (LAN) or `http://100.x.x.x:8006` (Tailscale IP) |
+| Proxmox web UI | `https://100.x.x.x:8006` (Tailscale IP, or LAN IP on port 8006) |
 | NPM admin | `http://<npm-lxc-ip>:81` (LAN only) |
 | AdGuard admin | `http://<adguard-lxc-ip>` (LAN only) |
 
