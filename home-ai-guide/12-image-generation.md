@@ -133,7 +133,7 @@ GPU memory should climb to 16–20 GB during FLUX inference.
 ### Run as a Systemd Service
 
 ```bash
-sudo nano /etc/systemd/system/comfyui.service
+sudo vim /etc/systemd/system/comfyui.service
 ```
 
 ```ini

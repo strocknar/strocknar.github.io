@@ -102,7 +102,7 @@ This enables PCIe device passthrough to VMs — required for GPU passthrough to 
 ### Edit GRUB
 
 ```bash
-nano /etc/default/grub
+vim /etc/default/grub
 ```
 
 Find the line:
@@ -142,7 +142,7 @@ Look for the entry with "Hawk Point" or "Radeon 780M" or "VGA compatible control
 Create the targeted VFIO binding:
 
 ```bash
-nano /etc/modprobe.d/vfio.conf
+vim /etc/modprobe.d/vfio.conf
 ```
 
 ```

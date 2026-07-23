@@ -25,24 +25,32 @@ Proxmox LXC (Docker host)
 
 ## 6.1 Create the Docker LXC
 
+**First, download the Debian 12 template** (one-time setup):
+
+In the Proxmox left panel: **node → local → CT Templates → Templates button** → search `debian` → select **Debian 13** → **Download**. Wait for it to complete before creating the container.
+
 In Proxmox web UI: **Create CT** (Create Container)
 
 | Setting | Value |
 |---|---|
 | CT ID | `200` |
 | Hostname | `docker` |
-| Template | Debian 12 (download from Proxmox template list) |
+| **Unprivileged container** | **Uncheck this box** — required for Docker and device passthrough |
+| Password/Confirm Password | Make sure to remember this |
+| Template | Debian 12 |
 | Disk | `40GB` |
 | CPU | `2 cores` |
 | RAM | `6144` MB (6GB) |
-| Network | `vmbr0`, static IP (e.g., `192.168.1.20`) |
-| **Privileged** | ✅ **Check this box** — required for Docker and device passthrough |
+| Network — Bridge | `vmbr0` |
+| Network — IPv4 | Static, `192.168.50.x/24` — use `/24`, not `/32` (match your subnet) |
+| Network — Gateway | Your router IP (e.g. `192.168.50.1`) |
+| **DNS tab — DNS server** | `1.1.1.1` — set this explicitly or `apt` will fail to resolve hostnames |
 
 After creation, before starting — edit the LXC config for Docker compatibility:
 
 ```bash
 # On Proxmox host shell
-nano /etc/pve/lxc/200.conf
+vim /etc/pve/lxc/200.conf
 ```
 
 Add these lines:
@@ -60,6 +68,9 @@ Start the LXC.
 ## 6.2 Install Docker
 
 In the Docker LXC shell (Proxmox web UI: **LXC 200 → Console**):
+
+Username: root
+Password: <entered in previous step>
 
 ```bash
 apt update && apt install -y curl
@@ -88,7 +99,7 @@ cd /opt/homelab
 Create the compose file:
 
 ```bash
-nano /opt/homelab/docker-compose.yml
+vim /opt/homelab/docker-compose.yml
 ```
 
 ```yaml
@@ -165,7 +176,7 @@ services:
 Create minimal Prometheus config:
 
 ```bash
-nano /opt/homelab/prometheus.yml
+vim /opt/homelab/prometheus.yml
 ```
 
 ```yaml
@@ -196,11 +207,14 @@ docker compose up -d
 | Service | URL | Default login |
 |---|---|---|
 | Portainer | `http://<docker-lxc-ip>:9000` | Create on first visit |
-| NPM Admin | `http://<docker-lxc-ip>:81` | `admin@example.com` / `changeme` |
+| NPM Admin | `http://<docker-lxc-ip>:81` | `admin@example.com` / `changeme` (or should create automatically on first access) |
 | Grafana | `http://<docker-lxc-ip>:3001` | `admin` / `changeme` |
 | Prometheus | `http://<docker-lxc-ip>:9090` | None |
 
 Change all default passwords immediately.
+
+> For Portainer, you will need a setup token to create the admin user. On the docker LXC, run `docker logs portainer` and look for `setup_token=`
+> If you attempt to create the admin user and clicking "Create User" just sorta flashes, then the portainer install probably timed out (5 minutes). Run `docker restart portainer && docker logs portainer` to restart and get the new setup token.
 
 ---
 
@@ -234,7 +248,7 @@ ls /dev/dri/
 Edit the Plex LXC config:
 
 ```bash
-nano /etc/pve/lxc/201.conf
+vim /etc/pve/lxc/201.conf
 ```
 
 Add:
@@ -262,16 +276,146 @@ Access: `http://<plex-lxc-ip>:32400/web`
 
 ## 6.7 Nginx Proxy Manager — HTTPS Setup
 
-NPM provides HTTPS (Let's Encrypt) for your services. This is required for Open WebUI microphone access from a browser (browsers block mic access on non-HTTPS origins).
+The goal: reach services by a friendly name (`ha.yourdomain.com`) on your internal network only, with valid browser-trusted HTTPS through NPM — no port forwarding, no public exposure.
 
-After setup:
+This uses **DNS-01 challenge** (Let's Encrypt proves domain ownership via a DNS TXT record instead of port 80) combined with **split-horizon DNS** (your router resolves the domain to a local IP).
 
-1. Point a domain or subdomain at your home IP (or use Tailscale's MagicDNS)
-2. In NPM admin UI: **Hosts → Proxy Hosts → Add**
-3. Create entries for each service:
-   - `openwebui.yourdomain.com` → `<ollama-vm-ip>:3000`
-   - `ha.yourdomain.com` → `<haos-vm-ip>:8123`
-4. Enable **SSL → Let's Encrypt** on each
+### Prerequisites
+
+- A domain hosted in **AWS Route 53**
+- An AWS IAM user with permissions to modify Route 53 records (created in Step 1)
+- NPM running (from section 6.4)
+
+---
+
+### Step 1 — Create an IAM User for DNS-01
+
+NPM needs AWS credentials that can create/delete Route 53 TXT records for the Let's Encrypt challenge.
+
+1. In the [AWS IAM console](https://console.aws.amazon.com/iam) → **Users → Create user**
+2. Name it `certbot-dns` (no console access needed)
+3. After creation, go to the user → **Security credentials → Create access key** → select **Other** → create
+4. Save the **Access Key ID** and **Secret Access Key** — shown once
+
+Attach this inline policy to the user (replace `<HOSTED_ZONE_ID>` with your Route 53 hosted zone ID, found in Route 53 → Hosted zones):
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "route53:ListHostedZones",
+        "route53:GetChange"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": "route53:ChangeResourceRecordSets",
+      "Resource": "arn:aws:route53:::hostedzone/<HOSTED_ZONE_ID>"
+    }
+  ]
+}
+```
+
+---
+
+### Step 2 — Request a Wildcard Certificate in NPM
+
+1. In NPM admin UI: **SSL Certificates → Add SSL Certificate → Let's Encrypt**
+2. Fill in:
+
+   | Field | Value |
+   |---|---|
+   | Domain Names | `*.yourdomain.com` and `yourdomain.com` |
+   | Email | your email |
+   | Use a DNS Challenge | ✅ Enable |
+   | DNS Provider | `Route53` |
+   | Credentials File Content | see below |
+
+   Credentials content:
+   ```
+   dns_route53_access_key_id = AKIAIOSFODNN7EXAMPLE
+   dns_route53_secret_access_key = wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+   ```
+
+3. Agree to Let's Encrypt ToS → **Save**
+
+NPM will create a DNS TXT record in Route 53 via the AWS API to prove ownership, then issue a wildcard cert. This takes ~30 seconds.
+
+---
+
+### Step 3 — Add Local DNS Overrides
+
+Your router or Pi-hole needs to resolve `*.yourdomain.com` subdomains to your NPM LXC IP instead of the public internet.
+
+**If your router supports custom DNS records** (most Unifi, OPNsense, pfSense do):
+
+Add an A record for each service pointing to your NPM LXC IP (e.g. `192.168.50.8`):
+
+| Hostname | IP |
+|---|---|
+| `ha.yourdomain.com` | `192.168.50.8` |
+| `ollama.yourdomain.com` | `192.168.50.8` |
+| `portainer.yourdomain.com` | `192.168.50.8` |
+| `grafana.yourdomain.com` | `192.168.50.8` |
+
+All subdomains point to NPM — NPM routes to the correct backend based on hostname.
+
+**If your router doesn't support custom DNS**, set up Pi-hole (runs as a Docker container in the homelab stack) and use it as your LAN's DNS server. Add local DNS records there.
+
+---
+
+### Step 4 — Create Proxy Hosts in NPM
+
+In NPM admin UI: **Hosts → Proxy Hosts → Add Proxy Host**
+
+For each service:
+
+| Field | Value |
+|---|---|
+| Domain Names | `ha.yourdomain.com` |
+| Scheme | `http` |
+| Forward Hostname / IP | LAN IP of the service (e.g. `192.168.50.7`) |
+| Forward Port | Service port (e.g. `8123` for HA) |
+| **SSL Certificate** | Select the `*.yourdomain.com` wildcard cert |
+| Force SSL | ✅ Enable |
+| HTTP/2 Support | ✅ Enable |
+
+Repeat for each service. Example entries:
+
+| Subdomain | Backend IP | Port |
+|---|---|---|
+| `ha.yourdomain.com` | HA VM LAN IP | `8123` |
+| `ollama.yourdomain.com` | Ollama VM LAN IP | `3000` |
+| `portainer.yourdomain.com` | Docker LXC IP | `9000` |
+| `grafana.yourdomain.com` | Docker LXC IP | `3001` |
+
+---
+
+### Result
+
+Typing `ha.yourdomain.com` in any browser on your LAN:
+- Resolves to NPM via your local DNS override
+- NPM proxies to HA and serves valid HTTPS with the wildcard cert
+- Never leaves your network
+- Full browser mic access works
+
+---
+
+### If using Tailscale hostnames (`.ts.net`) — Let's Encrypt will fail
+
+Let's Encrypt can't issue certs for `.ts.net` domains (they're not publicly delegatable). Use **Tailscale's built-in HTTPS certificates** instead:
+
+1. [Tailscale admin console](https://login.tailscale.com/admin/dns) → **DNS** → enable **HTTPS Certificates**
+2. On each machine:
+   ```bash
+   tailscale cert <hostname>.ts.net
+   ```
+   Cert and key are placed in `/var/lib/tailscale/certs/`
+3. In NPM: **SSL Certificates → Add Certificate → Custom** and provide the cert/key paths
 
 ---
 

@@ -57,7 +57,7 @@ Note the UUID for each drive.
 ```bash
 mkdir -p /mnt/models /mnt/media
 
-nano /etc/fstab
+vim /etc/fstab
 ```
 
 Add:
@@ -93,7 +93,7 @@ Or use bind mount via config file (more reliable):
 
 ```bash
 # On Proxmox host
-nano /etc/pve/qemu-server/101.conf
+vim /etc/pve/qemu-server/101.conf
 ```
 
 Add a VirtIO disk pointing to the external drive:
@@ -141,7 +141,7 @@ sudo systemctl restart ollama
 In Proxmox host shell:
 
 ```bash
-nano /etc/pve/lxc/201.conf
+vim /etc/pve/lxc/201.conf
 ```
 
 Add:

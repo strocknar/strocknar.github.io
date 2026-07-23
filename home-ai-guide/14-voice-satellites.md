@@ -135,7 +135,7 @@ Complete this before setting up the Pi satellite. The Pi's `snapclient` needs a 
 In the Docker LXC shell:
 
 ```bash
-nano /opt/homelab/docker-compose.yml
+vim /opt/homelab/docker-compose.yml
 ```
 
 Add the following services inside the `services:` block (alongside your existing Portainer, Grafana, etc.):
@@ -201,7 +201,7 @@ Expected: both containers show `Up`.
 Create the Snapcast server config:
 
 ```bash
-nano /opt/homelab/snapcast/snapserver.conf
+vim /opt/homelab/snapcast/snapserver.conf
 ```
 
 ```ini
@@ -352,7 +352,7 @@ python3 -m venv /home/pi/wyoming-satellite
 Create the systemd service:
 
 ```bash
-sudo nano /etc/systemd/system/wyoming-satellite.service
+sudo vim /etc/systemd/system/wyoming-satellite.service
 ```
 
 ```ini
@@ -412,7 +412,7 @@ sudo apt install -y snapclient
 Configure it to point at the Snapcast server:
 
 ```bash
-sudo nano /etc/default/snapclient
+sudo vim /etc/default/snapclient
 ```
 
 ```bash

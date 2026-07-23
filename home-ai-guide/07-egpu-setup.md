@@ -54,7 +54,7 @@ Standard RTX 3090 IDs are `10de:2204` and `10de:1aef` — confirm yours match.
 Edit `/etc/modprobe.d/vfio.conf` (created in [Proxmox Installation §2.5](02-proxmox-installation.md)):
 
 ```bash
-nano /etc/modprobe.d/vfio.conf
+vim /etc/modprobe.d/vfio.conf
 ```
 
 Replace the iGPU IDs with the RTX 3090 IDs:

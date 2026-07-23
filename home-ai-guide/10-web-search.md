@@ -54,7 +54,7 @@ mkdir -p /opt/homelab/searxng
 Create the settings file:
 
 ```bash
-nano /opt/homelab/searxng/settings.yml
+vim /opt/homelab/searxng/settings.yml
 ```
 
 ```yaml
