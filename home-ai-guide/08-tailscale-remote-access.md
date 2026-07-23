@@ -70,50 +70,35 @@ From your phone browser, use the Tailscale IP of the Proxmox host:
 
 **Why bother with NPM?** Raw IP:port access works, but NPM adds: HTTPS with automatic Let's Encrypt certs (required for Open WebUI microphone access in mobile browsers), clean hostnames via MagicDNS, and WebSocket support for streaming LLM responses and Home Assistant's real-time updates.
 
-**Prerequisites:** The Docker LXC from [Section 6](06-docker-homelab.md) must be running with NPM deployed. Confirm NPM admin is accessible on your local network at `http://192.168.1.20:81` before continuing.
+**Prerequisites:** The Docker LXC from [Section 6](06-docker-homelab.md) must be running with NPM deployed. Confirm NPM admin is accessible on your local network at `http://<npm_lxc_ip>:81` before continuing.
 
 #### The network problem to solve
 
-When Tailscale is installed only on the Proxmox host, the `100.x.x.x` Tailscale IP belongs exclusively to that host. Your phone can reach `100.x.x.x`, but it cannot directly reach `192.168.1.20` (the Docker LXC where NPM lives) or any other VM/LXC on your LAN. You need one of the two approaches below to bridge that gap.
+When Tailscale is installed only on the Proxmox host, the `100.x.x.x` Tailscale IP belongs exclusively to that host. Your phone can reach `100.x.x.x`, but it cannot directly reach `<npm_lxc_ip>` (the Docker LXC where NPM lives) or any other VM/LXC on your LAN. You need one of the two approaches below to bridge that gap.
 
 ---
 
-#### Approach A — Tailscale Subnet Router (recommended)
+#### Tailscale Subnet Router
 
-Configure the Proxmox host to advertise your entire home LAN subnet over Tailscale. Your phone then reaches every device on `192.168.1.0/24` — including NPM in the Docker LXC — as if it were on your home network.
+Configure the Proxmox host to advertise your entire home LAN subnet over Tailscale. Your phone then reaches every device on `192.168.X.X/24` — including NPM in the Docker LXC — as if it were on your home network.
 
 **On the Proxmox host:**
 
 ```bash
-tailscale up --advertise-routes=192.168.1.0/24
+# Enable IP Forwarding
+sysctl -w net.ipv4.ip_forward=1
+# Make it permanent
+echo "net.ipv4.ip_forward=1" > /etc/sysctl.d/99-ip-forward.conf
+# Advertise internal subnet
+tailscale set --advertise-routes=192.168.X.X/24
 ```
 
 **In the Tailscale admin console** (`login.tailscale.com/admin`):
 
 1. Click your Proxmox host device
-2. **Edit route settings → approve `192.168.1.0/24`**
+2. **Edit route settings → approve `192.168.X.X/24`**
 
-**On your phone** in the Tailscale app:
-
-- iOS/Android: **Settings → your tailnet → subnet routes → enable your home subnet**
-
-Your phone can now reach `192.168.1.20:81` (NPM admin), `192.168.1.20:80/443` (NPM proxy), and every other LAN IP via Tailscale from anywhere.
-
----
-
-#### Approach B — Tailscale Inside the Docker LXC
-
-Install Tailscale directly inside the Docker LXC so NPM gets its own `100.x.x.x` Tailscale address. Traffic flows: phone → Docker LXC's Tailscale IP → NPM → target VM/LXC at its LAN IP. No subnet routing needed; only NPM-proxied services are reachable via Tailscale.
-
-In the Docker LXC console (Proxmox web UI: **LXC 200 → Console**):
-
-```bash
-curl -fsSL https://tailscale.com/install.sh | sh
-tailscale up
-systemctl enable tailscaled
-```
-
-Authenticate in your browser. The Docker LXC now appears as a second device in the Tailscale admin console with its own `100.x.x.x` address. Note this IP — it becomes your NPM entry point.
+Your phone can now reach `<npm_lxc_ip>:81` (NPM admin), `<npm_lxc_ip>:80/443` (NPM proxy), and every other LAN IP via Tailscale from anywhere.
 
 ---
 
@@ -121,8 +106,7 @@ Authenticate in your browser. The Docker LXC now appears as a second device in t
 
 Open NPM admin UI:
 
-- **Approach A:** `http://192.168.1.20:81`
-- **Approach B:** `http://<docker-lxc-tailscale-ip>:81`
+`http://<npm_lxc_ip>:81`
 
 Default credentials: `admin@example.com` / `changeme`. Change these on first login.
 
@@ -160,7 +144,7 @@ If you prefer port-based access without a domain, skip NPM's proxy host feature 
 |---|---|
 | Domain Names | `grafana.your-tailnet.ts.net` |
 | Scheme | `http` |
-| Forward Hostname / IP | `192.168.1.20` (same LXC) |
+| Forward Hostname / IP | `<npm_lxc_ip>` (same LXC) |
 | Forward Port | `3001` |
 | Websockets Support | ✅ Enable |
 
@@ -178,28 +162,13 @@ Enable **Force SSL** to redirect HTTP to HTTPS automatically.
 | Home Assistant | `https://ha.your-tailnet.ts.net` |
 | Grafana | `https://grafana.your-tailnet.ts.net` |
 | Proxmox web UI | `https://proxmox.your-tailnet.ts.net:8006` |
-| NPM admin | `http://192.168.1.20:81` (LAN only) or Approach B Tailscale IP |
+| NPM admin | `http://<npm_lxc_ip>:81` (LAN only) or Approach B Tailscale IP |
 
 This way you manage one Tailscale node (Proxmox host for Approach A, or Docker LXC for Approach B) and NPM routes all service traffic internally.
 
 ---
 
-## 8.5 Enable Subnet Routes (Optional)
-
-If you want your phone to access all devices on your home LAN (not just Proxmox) via Tailscale, enable subnet routing:
-
-```bash
-# On Proxmox host
-tailscale up --advertise-routes=192.168.1.0/24
-```
-
-In the Tailscale admin console: approve the subnet route for this device.
-
-Your phone can now reach any device on your home network at `192.168.1.x` while on Tailscale — useful for HA companion app, Proxmox web UI, NAS, etc.
-
----
-
-## 8.6 Open WebUI on Mobile
+## 8.5 Open WebUI on Mobile
 
 Open WebUI has a mobile-friendly interface. From your phone browser:
 
@@ -215,7 +184,7 @@ This creates a home screen icon that opens Open WebUI in fullscreen, indistingui
 
 ---
 
-## 8.7 Home Assistant Companion App
+## 8.6 Home Assistant Companion App
 
 The official HA Companion App (iOS/Android) works over Tailscale:
 
@@ -227,7 +196,7 @@ The official HA Companion App (iOS/Android) works over Tailscale:
 
 ---
 
-## 8.8 Tailscale Admin Console
+## 8.7 Tailscale Admin Console
 
 At `login.tailscale.com/admin`:
 
