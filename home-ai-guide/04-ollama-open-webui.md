@@ -14,7 +14,7 @@ Ollama (model backend) and Open WebUI (chat interface) run in a dedicated Proxmo
 
 **Phase 1 (iGPU):** The 780M iGPU is passed through to this VM from Proxmox. Ollama uses it via ROCm. With 8GB UMA, `qwen3:8b` fits fully on GPU. Generation speed is functional for Home Assistant voice responses, but too slow (~1–2 tok/s on larger models, ~5–8 tok/s on 8B) to use Open WebUI as a day-to-day ChatGPT replacement — that experience requires the eGPU.
 
-**Phase 2 (RTX 3090):** Destroy and rebuild this VM (see [eGPU Setup](07-egpu-setup.md)). NVIDIA drivers replace ROCm. Full 32B capability at ~40–50 tok/s. Open WebUI becomes genuinely usable as a local alternative to cloud LLMs.
+**Phase 2 (RTX 3090):** Destroy and rebuild this VM (see [eGPU Setup](07-egpu-setup.md)). NVIDIA drivers replace ROCm. Full 32B capability at ~25–35 tok/s. Open WebUI becomes genuinely usable as a local alternative to cloud LLMs.
 
 ### Phase 1 Resource Reality
 
@@ -116,13 +116,17 @@ sudo lvextend -r -l +100%FREE /dev/your_vol_group/your_log_vol # e.g. /dev/ubunt
 Install ROCm (AMD's GPU compute stack, required for Ollama to use AMD GPUs):
 
 ```bash
-# Check https://repo.radeon.com/amdgpu-install/ for the latest version directory, then:
-wget https://repo.radeon.com/amdgpu-install/<version>/ubuntu/noble/amdgpu-install_<version>-1_all.deb
-sudo apt install ./amdgpu-install_<version>-1_all.deb
-sudo amdgpu-install --usecase=rocm --no-dkms
+# Add AMD ROCm apt repository for Ubuntu 26.04 (Resolute Raccoon)
+wget https://repo.amd.com/rocm/rocm.gpg.key -O - | sudo gpg --dearmor -o /etc/apt/keyrings/amdrocm.gpg
+echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/amdrocm.gpg] https://repo.amd.com/rocm/packages-multi-arch/ubuntu2604 stable main" \
+  | sudo tee /etc/apt/sources.list.d/amdgpu-rocm.list
+sudo apt update
+sudo apt install -y rocm
 sudo usermod -a -G render,video aiuser
 sudo usermod -a -G render,video ollama
 ```
+
+> **Why apt instead of amdgpu-install?** As of ROCm 7.14.0, AMD's primary install method is the native apt package manager. The `amdgpu-install` .deb tool is now described as "legacy" in ROCm docs, and Ubuntu 26.04 is not in the amdgpu-install repo (only noble/jammy are). On Ryzen APUs with iGPU passthrough, the inbox kernel driver is used — no DKMS module is needed. ROCm userspace only is the correct install for this setup.
 
 Log out and back in for group changes to take effect on your interactive session. The `ollama` service user change takes effect on the next service restart.
 
@@ -132,7 +136,7 @@ Verify ROCm sees a GPU:
 rocm-smi
 ```
 
-> **Phase 1 (iGPU passthrough):** The 780M (gfx1103) is RDNA 3 mobile. ROCm support is functional but not tier-1. `HSA_OVERRIDE_GFX_VERSION=11.0.0` and `OLLAMA_IGPU_ENABLE=1` are required — both are included in the service config block above. Check `https://rocm.docs.amd.com` for gfx1103 support status.
+> **Phase 1 (iGPU passthrough):** The 780M (gfx1103) is RDNA 3 mobile. ROCm 7.14.0 lists gfx1103 in the compatibility matrix but without formal support guarantees — it is functional for this use case. `HSA_OVERRIDE_GFX_VERSION=11.0.0` and `OLLAMA_IGPU_ENABLE=1` are required — both are included in the service config block above. Check `https://rocm.docs.amd.com` for gfx1103 support status.
 
 > **UMA VRAM constraint:** UMA size and VM RAM must be balanced — see the BIOS configuration section in [Hardware Assembly](01-hardware-assembly.md). With 16G UMA and the VM reduced to ~12GB RAM, `qwen3:14b` (9.3GB) fits fully on GPU. With 8G UMA and 14GB VM RAM, only `qwen3:8b` fits on GPU and the 14B falls back to CPU.
 
@@ -189,7 +193,8 @@ ollama pull qwen3:8b-q4_K_M
 
 # Phase 2: pull these after the RTX 3090 rebuild
 ollama pull qwen3:14b-q4_K_M
-ollama pull qwen3-coder:30b-a3b-q4_K_M
+ollama pull qwen3:32b-q4_K_M          # primary coding assistant (~20GB, ~25-35 tok/s)
+ollama pull qwen3-coder:30b-a3b-q4_K_M  # alternative: MoE coding model (256K context)
 ```
 
 > Models are stored in `~/.ollama/models` by default. On a 1TB drive, you have room for several models. Use `ollama rm <model>` to remove ones you're not using.
@@ -202,7 +207,8 @@ ollama pull qwen3-coder:30b-a3b-q4_K_M
 |---|---|---|---|
 | `qwen3:8b-q4_K_M` | ~5.2GB | 1 + 2 | HA LLM agent; hallucinates more than 14B but fast enough for short commands |
 | `qwen3:14b-q4_K_M` | ~9.3GB | 2 | Sweet spot for daily use; Phase 1 speed is tolerable but not enjoyable |
-| `qwen3-coder:30b-a3b-q4_K_M` | ~19GB | 2 | Primary coding assistant |
+| `qwen3:32b-q4_K_M` | ~20GB | 2 | **Primary coding assistant**; dense model, ~25–35 tok/s on RTX 3090 |
+| `qwen3-coder:30b-a3b-q4_K_M` | ~19GB | 2 | Coding alternative (MoE, 256K context); 3B active params per token |
 | `devstral:24b-small-2505-q4_K_M` | ~14GB | 2 | Pure coding agent; 1–2 tok/s on Phase 1 iGPU — unusable until RTX 3090 |
 
 ---
