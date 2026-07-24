@@ -101,7 +101,7 @@ If free memory drops consistently below 4GB, reduce VM RAM allocations (HA rarel
 
 ---
 
-## Phase 6: GPU Swap
+## Phase 5: GPU Swap
 
 The DEG1 enclosure and RM850x PSU are reused for any future GPU. The swap process:
 
