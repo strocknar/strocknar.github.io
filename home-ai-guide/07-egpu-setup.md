@@ -217,11 +217,11 @@ docker run -d \
 ## 7.7 Pull and Test 32B Model
 
 ```bash
-ollama pull qwen3-coder:30b-a3b-q4_K_M
-ollama run qwen3-coder:30b-a3b-q4_K_M "explain the difference between a mutex and a semaphore"
+ollama pull qwen3:32b-q4_K_M
+ollama run qwen3:32b-q4_K_M "explain the difference between a mutex and a semaphore"
 ```
 
-Expected performance: **~40–50 tok/s** with the model fully loaded in 24GB VRAM.
+Expected performance: **~25–35 tok/s** with the model fully loaded in ~20GB VRAM.
 
 Monitor in real time:
 
@@ -239,7 +239,7 @@ GPU memory should show ~19–20GB allocated for the 32B model.
 |---|---|---|
 | 7B Q4_K_M | ~4.5 GB | ~75–90 |
 | 14B Q4_K_M | ~9 GB | ~55–65 |
-| 32B Q4_K_M | ~19 GB | ~40–50 |
+| 32B Q4_K_M | ~20 GB | ~25–35 |
 
 ---
 
