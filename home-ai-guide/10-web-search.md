@@ -169,16 +169,19 @@ This is an advanced configuration — the basic Ollama HA integration handles ho
 
 ### Step 1 — Install HACS
 
-1. In HA, go to **Settings** → **System** → **Repositories** and add `https://github.com/hacs/addons` as a third-party app repository ([HA docs](https://www.home-assistant.io/common-tasks/os/#installing-a-third-party-app-repository))
-2. Go to **Settings** → **Apps** → **Install app** → select **Get HACS** → **Install**
-3. Start the app and follow the logs
-4. Restart Home Assistant
-5. Go to **Settings** → **Devices & Services** → **+ Add Integration** → search **HACS**
-6. Authenticate via the GitHub device OAuth flow shown
+1. Go to **Settings → Apps → App store**
+2. In the top-right corner, select the three-dot menu and choose **Repositories**
+3. Add `https://github.com/hacs/addons` and select **Add**
+4. Go back to **Settings → Apps → Install app** → find and select **Get HACS** → **Install**
+5. Select **Start**
+6. Open the app logs and follow the instructions shown there
+7. Restart Home Assistant
+8. Go to **Settings → Devices & Services → + Add Integration** and search for **HACS**
+9. Complete the GitHub device OAuth flow to authenticate
 
 ### Step 2 — Install extended_openai_conversation
 
-In HACS, search for **Extended OpenAI Conversation** and download it. Restart Home Assistant.
+In HACS, add `https://github.com/jekalmin/extended_openai_conversation` as a custom integration repository first (HACS → three-dot menu → Custom Repositories → add the URL → category: Integration). Then search for **Extended OpenAI Conversation** and download it. Restart Home Assistant.
 
 ### Step 3 — Configure the integration
 
