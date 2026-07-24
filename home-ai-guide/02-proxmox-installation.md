@@ -18,7 +18,7 @@ Proxmox VE is a bare-metal hypervisor based on Debian. It runs Home Assistant OS
 
 On another machine:
 
-1. Download Proxmox VE ISO from `proxmox.com/downloads` (current version: 9.2-1)
+1. Download Proxmox VE ISO from `proxmox.com/downloads` (current version: **9.2-1**)
 2. Flash to USB drive using Balena Etcher or `dd`:
 
 ```bash
@@ -75,10 +75,10 @@ sed -i '/Enabled/c\Enabled: false' /etc/apt/sources.list.d/ceph.sources
 # Add no-subscription repo
 cat << EOF > /etc/apt/sources.list.d/ceph-no-subscription.sources
 Types: deb
-URIs: http://proxmox.com
+URIs: http://download.proxmox.com/debian/pve
 Suites: trixie
-Components: no-subscription
-Signed-By: /etc/apt/trusted.gpg.d/proxmox-release-trixie.gpg
+Components: pve-no-subscription
+Signed-By: /usr/share/keyrings/proxmox-archive-keyring.gpg
 EOF
 
 # Update
@@ -112,8 +112,10 @@ GRUB_CMDLINE_LINUX_DEFAULT="quiet"
 
 Change to:
 ```
-GRUB_CMDLINE_LINUX_DEFAULT="quiet amd_iommu=on iommu=pt"
+GRUB_CMDLINE_LINUX_DEFAULT="quiet iommu=pt"
 ```
+
+> **AMD CPUs:** `amd_iommu=on` is no longer needed — IOMMU is enabled by default on current AMD CPUs and kernels. `iommu=pt` (passthrough mode) still needs to be set explicitly to reduce overhead for PCI passthrough workloads. On Intel systems, use `quiet intel_iommu=on iommu=pt` instead.
 
 Save and update GRUB:
 
