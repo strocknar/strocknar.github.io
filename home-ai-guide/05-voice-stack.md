@@ -30,10 +30,10 @@ In HA web UI: **Settings → Apps → Install App**
 
 Install each of the following:
 
-### Wyoming Whisper (Speech-to-Text)
+### Whisper (Speech-to-Text)
 
 1. Search for `Whisper`
-2. Install **Wyoming Whisper**
+2. Install **Whisper**
 3. Configuration:
    ```yaml
    language: en
@@ -42,10 +42,10 @@ Install each of the following:
    > `small-int8` is the best balance of speed and accuracy for English. On the 780M iGPU via the HA VM, it runs in ~1–3 seconds per utterance. Use `tiny-int8` if latency is too high.
 4. Start the add-on and enable **Start on boot**
 
-### Wyoming Piper (Text-to-Speech)
+### Piper (Text-to-Speech)
 
 1. Search for `Piper`
-2. Install **Wyoming Piper**
+2. Install **Piper**
 3. Configuration:
    ```yaml
    voice: en_US-amy-medium
@@ -89,12 +89,12 @@ Go to **Settings → Devices & Services → Add Integration** → search **Ollam
 
 > If Ollama runs on the same VM as HA, use the VM's LAN IP, not `localhost`. HA add-ons run in a container and can't reach the host via `localhost`.
 
-Clcik `+ Add Conversation Agent`
+Click `+ Add Conversation Agent`
 
 | Setting | Value |
 |---|---|
 | URL | `http://<Ollama-host-IP>:11434` |
-| Model | `llama3.2` (or `qwen2.5:7b`) |
+| Model | `qwen3:8b-q4_K_M` |
 | Control Home Assistant | Check Assist |
 
 After saving, Ollama will appear as **"Ollama Conversation"** in the conversation agent dropdown.
