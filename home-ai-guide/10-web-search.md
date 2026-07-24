@@ -122,15 +122,25 @@ Try a search in the UI to confirm results appear.
 
 ## 10.2 Connect SearXNG to Open WebUI
 
-In Open WebUI: **Settings (gear icon) → Web Search**
+In Open WebUI: **avatar/username (bottom-left) → Admin Panel → Settings → Web Search**
+
+**General**
 
 | Setting | Value |
 |---|---|
-| Enable Web Search | ✅ On |
+| Web Search | ✅ On |
 | Web Search Engine | `searxng` |
-| SearXNG Query URL | `http://<docker-lxc-ip>:8080/search?q=<query>&format=json` |
-| Search Result Count | `5` |
-| Concurrent Requests | `1` |
+| Searxng Query URL | `http://<docker-lxc-ip>:8080/search?q=<query>&format=json` |
+| Searxng search language | `en` |
+| Bypass Embedding and Retrieval | Off (default) |
+| Bypass Web Loader | Off (default) |
+
+**Loader**
+
+| Setting | Value |
+|---|---|
+| Web Loader Engine | `Default` |
+| Concurrent Requests | `10` (default) |
 
 Save.
 
