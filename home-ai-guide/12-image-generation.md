@@ -2,7 +2,7 @@
 ---
 # 12 — Local Image Generation (ComfyUI + FLUX)
 
-[← Upgrading](11-upgrading.md) | [← Overview](README.md)
+[← Upgrading](11-upgrading.md) | [Devices →](13-devices.md)
 
 ---
 
@@ -295,4 +295,4 @@ nvidia-smi
 
 ---
 
-[← Upgrading](11-upgrading.md) | [← Overview](README.md)
+[← Upgrading](11-upgrading.md) | [Devices →](13-devices.md)

@@ -2,7 +2,7 @@
 ---
 # 11 — Upgrading & Future Expansion
 
-[← Web Search](10-web-search.md) | [← Overview](README.md)
+[← Web Search](10-web-search.md) | [Image Generation →](12-image-generation.md)
 
 ---
 
@@ -226,4 +226,4 @@ docker stop open-webui && docker rm open-webui
 
 ---
 
-[← Web Search](10-web-search.md) | [← Overview](README.md)
+[← Web Search](10-web-search.md) | [Image Generation →](12-image-generation.md)

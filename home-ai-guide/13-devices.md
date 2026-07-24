@@ -2,7 +2,7 @@
 ---
 # 13 — Devices & Home Assistant Compatibility
 
-[← Overview](README.md)
+[← Image Generation](12-image-generation.md) | [Satellites →](14-voice-satellites.md)
 
 ---
 
@@ -142,4 +142,4 @@ Frigate integrates with HA natively — motion events, object detection alerts, 
 
 ---
 
-[← Overview](README.md)
+[← Image Generation](12-image-generation.md) | [Satellites →](14-voice-satellites.md)
