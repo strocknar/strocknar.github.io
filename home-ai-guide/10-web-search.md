@@ -163,14 +163,67 @@ The model cites sources inline in its response.
 
 ## 10.4 Web Search from Home Assistant
 
-The Ollama conversation agent in HA can also use web search for queries it can't answer from its training data. This requires the `extended_openai_conversation` custom integration or a similar tool-use integration.
+The Ollama conversation agent in HA can also use web search for queries it can't answer from its training data. This requires the `extended_openai_conversation` custom integration via HACS.
 
 This is an advanced configuration — the basic Ollama HA integration handles home control commands well without web search. Add this only if you find the LLM frequently unable to answer questions you'd like it to handle.
 
-Basic flow:
-1. Install HACS (Home Assistant Community Store) via the HA add-on store
-2. Install `extended_openai_conversation` via HACS
-3. Configure it to point at your Ollama endpoint with a web search tool definition
+### Step 1 — Install HACS
+
+1. In HA, go to **Settings** → **System** → **Repositories** and add `https://github.com/hacs/addons` as a third-party app repository ([HA docs](https://www.home-assistant.io/common-tasks/os/#installing-a-third-party-app-repository))
+2. Go to **Settings** → **Apps** → **Install app** → select **Get HACS** → **Install**
+3. Start the app and follow the logs
+4. Restart Home Assistant
+5. Go to **Settings** → **Devices & Services** → **+ Add Integration** → search **HACS**
+6. Authenticate via the GitHub device OAuth flow shown
+
+### Step 2 — Install extended_openai_conversation
+
+In HACS, search for **Extended OpenAI Conversation** and download it. Restart Home Assistant.
+
+### Step 3 — Configure the integration
+
+Go to **Settings** → **Devices & Services** → **+ Add Integration** → **Extended OpenAI Conversation**.
+
+| Field | Value |
+|---|---|
+| API Provider | `OpenAI` |
+| Base URL | `http://<ollama-vm-ip>:11434/v1` |
+| API Key | any value (e.g. `ollama`) |
+| Skip Authentication | ✅ On |
+
+> The `/v1` suffix on the Base URL is mandatory — omitting it causes a 404.
+
+### Step 4 — Add a SearXNG web search function
+
+In the integration options, add a function definition that calls your already-deployed SearXNG instance:
+
+```yaml
+- spec:
+    name: search_web
+    description: Search the web for current information.
+    parameters:
+      type: object
+      properties:
+        query:
+          type: string
+          description: The search query.
+      required:
+        - query
+  function:
+    type: rest
+    resource_template: "http://<docker-lxc-ip>:8080/search?q={{ query }}&format=json&engines=google,duckduckgo"
+    value_template: >-
+      {% if value_json["results"] %}
+      {% for result in value_json["results"][:5] %}
+      {{ result.title }}: {{ result.url }}
+      {{ result.content }}
+      {% endfor %}
+      {% else %}
+      No results found.
+      {% endif %}
+```
+
+Update your system prompt to include something like: "You can search the web for current information when needed."
 
 ---
 
