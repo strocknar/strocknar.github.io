@@ -14,48 +14,46 @@
 
 | Phase | Change | Trigger | Cost |
 |---|---|---|---|
-| **Phase 1** | UM890 Pro refurb + NVMe | Now | ~$558–$593 |
+| **Phase 1** | UM890 Pro refurb + RAM + NVMe | Now | ~$940–$983 |
 | **Phase 2** | Add DEG1 + RM850x + RTX 3090 (used) | 32B performance needed | +~$939–$1,089 |
 | **Phase 3** | Add 2nd NVMe (2TB) for models | Storage pressure on 1TB | +~$80–100 |
-| **Phase 4** | Swap to AI X1 Pro-470 (32GB+1TB bundle) | Better iGPU or 3-slot NVMe needed | ~$759 (sale) / $949 (regular) |
-| **Phase 5** | Swap GPU to RTX 5090 | 70B access or coding speed | ~$4,100 |
-
-> **RAM note:** The UM890 Pro and AI X1 Pro-470 use **soldered LPDDR5X memory** — not user-replaceable. There is no RAM upgrade path for these mini PCs. The RAM lines have been removed from the upgrade ladder; Phase 1 costs reflect the UM890 Pro refurb + NVMe only.
+| **Phase 4** | Swap to AI X1 Pro-470 barebones | Better iGPU or 3-slot NVMe needed | +~$500–550 net (sell UM890) |
+| **Phase 5** | Upgrade to 64GB RAM | VM workload pressure | +~$150–200 (new kit) |
+| **Phase 6** | Swap GPU to RTX 5090 | 70B access or coding speed | ~$4,100 |
 
 ### Option B — Starting with AI X1 Pro-470
 
 | Phase | Change | Trigger | Cost |
 |---|---|---|---|
-| **Phase 1** | AI X1 Pro-470 (32GB+1TB bundle) | Now | ~$759 (sale) / $949 (regular) |
+| **Phase 1** | AI X1 Pro-470 + RAM + NVMe | Now | ~$1,316–$1,359 |
 | **Phase 2** | Add DEG1 + RM850x + RTX 3090 (used) | 32B performance needed | +~$939–$1,089 |
 | **Phase 3** | Add 2nd NVMe (2TB) for models | Storage pressure on 1TB | +~$80–100 |
 | **Phase 4** | Add 3rd NVMe (2TB) for media | External SSD inconvenience | +~$80–100 |
-| **Phase 5** | Swap GPU to RTX 5090 | 70B access or coding speed | ~$4,100 |
-
-> **No barebones option:** Minisforum sells the AI X1 Pro-470 only in configured bundles (32GB RAM + 1TB SSD). The $759 sale price (ending ~July 26, 2026) vs $949 regular includes RAM and NVMe — no additional storage/RAM purchase needed.
+| **Phase 5** | Upgrade to 64GB RAM | VM workload pressure | +~$150–200 (new kit) |
+| **Phase 6** | Swap GPU to RTX 5090 | 70B access or coding speed | ~$4,100 |
 
 ---
 
 ## Option A Phase 4: Migrating from UM890 Pro to AI X1 Pro-470
 
-> **Memory note:** Both the UM890 Pro and the AI X1 Pro-470 use **soldered LPDDR5X** — there are no SO-DIMM slots. RAM cannot be moved or upgraded. The NVMe drive transfers, but not RAM.
-
-The AI X1 Pro-470 is sold only as a complete bundle (32GB LPDDR5X + 1TB NVMe included). Your UM890 Pro NVMe drive can be installed as a second drive or used for backup; Proxmox will need to be reinstalled (or cloned) onto the new internal NVMe.
+The RAM and NVMe you bought for the UM890 Pro transfer directly — both machines use DDR5 SO-DIMM and M.2 2280 PCIe 4.0. No reinstallation needed; Proxmox boots from the moved NVMe unchanged.
 
 **Migration process:**
 
-1. Back up all Proxmox VMs (vzdump to external SSD)
-2. Shut down UM890 Pro, power off
-3. Remove the NVMe drive (optional — the AI X1 Pro-470 includes its own 1TB NVMe)
-4. Set up AI X1 Pro-470: install Proxmox fresh on the included NVMe, restore VMs from backup
-5. Connect OCuLink from DEG1 (already assembled) to X1 Pro-470
-6. Sell UM890 Pro — expect ~$200–250 return
+1. Shut down UM890 Pro, power off
+2. Remove RAM sticks and NVMe drive
+3. Install RAM and NVMe into AI X1 Pro-470 barebones
+4. Connect OCuLink from DEG1 (already assembled) to X1 Pro-470
+5. Power on — Proxmox boots from the existing NVMe, all VMs intact
+6. Verify RAM shows as 32GB in Proxmox, NVMe mounts correctly
+7. Sell UM890 Pro barebones (no RAM/NVMe) — expect ~$200–250 return
 
-**Net cost of the mini PC upgrade:** ~$509–749 after UM890 sale proceeds (using sale price $759 vs regular $949).
+**Net cost of the mini PC upgrade:** ~$500–550 after UM890 sale proceeds.
 
 **What improves after migration:**
 - iGPU inference: 780M → 890M (~25–30% faster for Phase 1 workloads)
 - NVMe slots: 2 → 3 (room for dedicated model weight and media drives)
+- RAM ceiling: 96GB → 128GB
 - ROCm: 780M is more mature; 890M is catching up — expect parity within months
 
 ---
@@ -85,9 +83,9 @@ When storage prices normalize (~$80–100 for 2TB NVMe):
 
 ---
 
-## Monitoring Memory Pressure
+## Phase 5: RAM Upgrade to 64GB
 
-Since both the UM890 Pro and AI X1 Pro-470 use **soldered LPDDR5X** (not user-replaceable), there is no RAM upgrade path. Monitor usage to ensure you stay within the 32GB budget:
+When you have concrete VM workloads that need more than 32GB:
 
 ```bash
 # Current usage check — run in Proxmox shell
@@ -97,11 +95,18 @@ qm status 100 --verbose  # HA VM
 qm status 101 --verbose  # Ollama VM
 ```
 
-If free memory drops consistently below 4GB, reduce VM RAM allocations (HA rarely needs more than 4–6GB; the Ollama VM's limit is more relevant).
+If free memory is consistently below 4GB, upgrade time.
+
+**Process:**
+1. Shut down all VMs
+2. Power off the mini PC
+3. Replace both SO-DIMM sticks with 2× 32GB DDR5-5600 kit (~$150–200 at normalized prices)
+4. Power on, verify Proxmox shows 64GB
+5. Increase Ollama VM RAM allocation: **VM 101 → Hardware → Memory → 24576 MB (24GB)**
 
 ---
 
-## Phase 5: GPU Swap
+## Phase 6: GPU Swap
 
 The DEG1 enclosure and RM850x PSU are reused for any future GPU. The swap process:
 

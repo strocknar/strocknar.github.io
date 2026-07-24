@@ -8,28 +8,30 @@ A complete start-to-finish guide for building a local AI system with Home Assist
 
 | Component | Model | Price |
 |---|---|---|
-| Mini PC | Minisforum UM890 Pro refurb (Ryzen 9 8945HS, 32GB LPDDR5X soldered) | $383 |
+| Mini PC | Minisforum UM890 Pro refurb (Ryzen 9 8945HS) | $383 |
+| RAM | Crucial 32GB Dual Channel DDR5-5600 (2×16GB) | $382–$390 |
 | NVMe | WD Black SN770 1TB | $175–$210 |
-| **Phase 1 Total** | | **$558–$593** |
+| **Phase 1 Total** | | **$940–$983** |
 | eGPU Dock | Minisforum DEG1 (OCuLink PCIe 4.0 x4) | $109 |
 | PSU | Corsair RM850x 850W ATX | $129.99 |
 | GPU | RTX 3090 24GB (used) | ~$700–850 |
-| **Full Build Total** | | **$1,497–$1,682** |
+| **Full Build Total** | | **$1,879–$2,072** |
 
-> The UM890 Pro ships with 32GB **soldered LPDDR5X** — RAM is not user-upgradeable. NVMe transfers to the AI X1 Pro-470 if you upgrade later.
+> RAM and NVMe move directly to the AI X1 Pro-470 if you upgrade later — no components stranded.
 
 ### Option B — Full Build (AI X1 Pro-470)
 
 | Component | Model | Price |
 |---|---|---|
-| Mini PC | Minisforum AI X1 Pro-470 (Ryzen AI 9 HX470, 32GB LPDDR5X + 1TB NVMe, soldered) | $759 (sale) / $949 (regular) |
+| Mini PC | Minisforum AI X1 Pro-470 (Ryzen AI 9 HX470) | $759 (sale) / $949 (regular) |
+| RAM | Crucial 32GB Dual Channel DDR5-5600 (2×16GB) | $382–$390 |
+| NVMe | WD Black SN770 1TB | $175–$210 |
 | eGPU Dock | Minisforum DEG1 (OCuLink PCIe 4.0 x4) | $109 |
 | PSU | Corsair RM850x 850W ATX | $129.99 |
 | GPU | RTX 3090 24GB (used) | ~$700–850 |
-| **Total** | | **$1,698–$2,039** |
+| **Total** | | **$2,255–$2,448** |
 
-> The AI X1 Pro-470 is sold only as a configured bundle (32GB **soldered LPDDR5X** + 1TB NVMe included — no barebones option).  
-> **Phase 1 (no eGPU):** $759–$949 — fully functional for HA and 7B–14B LLM inference  
+> **Phase 1 (no eGPU):** $1,316–$1,359 — fully functional for HA and 7B–14B LLM inference  
 > **Phase 2:** Add eGPU stack when ready (+$939–$1,089)
 
 ## Sections
