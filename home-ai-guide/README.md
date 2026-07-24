@@ -23,7 +23,7 @@ A complete start-to-finish guide for building a local AI system with Home Assist
 
 | Component | Model | Price |
 |---|---|---|
-| Mini PC | Minisforum AI X1 Pro-470 (Ryzen AI 9 HX470) | $759 |
+| Mini PC | Minisforum AI X1 Pro-470 (Ryzen AI 9 HX470) | $759 (sale) / $949 (regular) |
 | RAM | Crucial 32GB Dual Channel DDR5-5600 (2×16GB) | $382–$390 |
 | NVMe | WD Black SN770 1TB | $175–$210 |
 | eGPU Dock | Minisforum DEG1 (OCuLink PCIe 4.0 x4) | $109 |
@@ -80,6 +80,6 @@ Proxmox VE (bare metal, Debian-based)
 |---|---|---|---|---|---|
 | Phase 1 (Option A) | UM890 Pro | 780M iGPU | ~15–18 | ~8–10 | ~3–5 |
 | Phase 1 (Option B) | AI X1 Pro-470 | 890M iGPU | ~20–25 | ~10–14 | ~3–5 |
-| Phase 2 | + RTX 3090 (used) | eGPU | ~75–90 | ~55–65 | ~40–50 |
+| Phase 2 | + RTX 3090 (used) | eGPU | ~75–90 | ~55–65 | ~25–35 |
 
-> See [eGPU Setup](07-egpu-setup.md) for the complete Phase 2 setup process.
+> Phase 2 32B model is `qwen3:32b-q4_K_M` (~20GB). Tok/s is memory-bandwidth-bound on RTX 3090 (936 GB/s). See [eGPU Setup](07-egpu-setup.md) for the complete Phase 2 setup process.

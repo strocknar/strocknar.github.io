@@ -19,7 +19,7 @@
 | **Phase 3** | Add 2nd NVMe (2TB) for models | Storage pressure on 1TB | +~$80–100 |
 | **Phase 4** | Swap to AI X1 Pro-470 barebones | Better iGPU or 3-slot NVMe needed | +~$500–550 net (sell UM890) |
 | **Phase 5** | Upgrade to 64GB RAM | VM workload pressure | +~$150–200 (new kit) |
-| **Phase 6** | Swap GPU to RTX 5090 or RDNA 4 | 32B speed or 70B access | TBD |
+| **Phase 6** | Swap GPU to RTX 5090 | 70B access or coding speed | ~$4,100 |
 
 ### Option B — Starting with AI X1 Pro-470
 
@@ -30,7 +30,7 @@
 | **Phase 3** | Add 2nd NVMe (2TB) for models | Storage pressure on 1TB | +~$80–100 |
 | **Phase 4** | Add 3rd NVMe (2TB) for media | External SSD inconvenience | +~$80–100 |
 | **Phase 5** | Upgrade to 64GB RAM | VM workload pressure | +~$150–200 (new kit) |
-| **Phase 6** | Swap GPU to RTX 5090 or RDNA 4 | 32B speed or 70B access | TBD |
+| **Phase 6** | Swap GPU to RTX 5090 | 70B access or coding speed | ~$4,100 |
 
 ---
 
@@ -67,7 +67,7 @@ See [eGPU Setup](07-egpu-setup.md) for the complete process. Summary:
 3. Enable VFIO binding for RTX 3090 PCI IDs in Proxmox
 4. Add RTX 3090 as PCI passthrough device to Ollama VM
 5. Verify CUDA detection in Ollama VM (`nvidia-smi`)
-6. Pull 32B model and confirm ~40–50 tok/s
+6. Pull 32B model and confirm ~25–35 tok/s
 
 ---
 
@@ -118,13 +118,16 @@ The DEG1 enclosure and RM850x PSU are reused for any future GPU. The swap proces
 
 **Future GPU candidates:**
 
-> Starting from an RTX 3090 baseline. The 3090 handles 32B comfortably; upgrade when 70B fully-in-VRAM is a hard requirement.
+> Starting from an RTX 3090 baseline (24GB, 936 GB/s). The 3090 runs qwen3:32b-q4_K_M at ~25–35 tok/s — functional for coding. Upgrade only if 70B access or faster interactive speed is a hard requirement.
 
-| GPU | VRAM | Notes |
-|---|---|---|
-| RTX 5090 | 32GB | ~$2,000+; strong 32B; offloads ~11GB for 70B; CUDA |
-| AMD RDNA 4 (RX 9070 XT+) | 16GB | 32B offloads; wait for 24GB+ RDNA 4 variant |
-| AMD Radeon PRO W7900 | 48GB | 70B fits fully; ~$3,500 — only if 70B is a hard requirement |
+| GPU | VRAM | Bandwidth | Street Price (Jul 2026) | Verdict |
+|---|---|---|---|---|
+| RTX 4090 (used) | 24GB | 1,008 GB/s | ~$1,800 | **Skip** — same VRAM as 3090, only ~8% faster tok/s, no new model access |
+| RTX 5090 | 32GB GDDR7 | 1,792 GB/s | ~$4,100 | **Recommended if upgrading** — unlocks 70B Q2_K (~26GB); all models ~2× faster |
+| AMD RDNA 4 (RX 9070 XT) | 16GB | — | — | **Skip** — 16GB max in RDNA 4 lineup; no 24GB+ variant available; Ollama support experimental |
+| AMD Radeon PRO W7900 | 48GB | 864 GB/s | ~$4,582 | **Not recommended** — more expensive than RTX 5090, slower bandwidth, ROCm ecosystem |
+
+> **RTX 5090 unlocks:** qwen3:32b-q4_K_M at ~50–70 tok/s (2× faster than 3090), and 70B Q2_K (~26GB) fits in 32GB for the first time. The RTX 4090 is a dead-end upgrade — skip it entirely and go directly to RTX 5090 if upgrading.
 
 ---
 

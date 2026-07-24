@@ -38,7 +38,7 @@ In Proxmox web UI: **Create CT**
 | CT ID | `202` |
 | Hostname | `adguard` |
 | Unprivileged container | ✅ Yes (default) |
-| Template | Debian 12 |
+| Template | Debian 13 |
 | Disk | `8GB` |
 | CPU | `1 core` |
 | RAM | `512` MB |
@@ -121,7 +121,7 @@ nslookup google.com <adguard-lxc-ip>
 
 ## 6.2 Create the Docker LXC
 
-**First, download the Debian 12 template** (one-time setup):
+**First, download the Debian 13 template** (one-time setup):
 
 In the Proxmox left panel: **node → local → CT Templates → Templates button** → search `debian` → select **Debian 13** → **Download**. Wait for it to complete before creating the container.
 
@@ -133,7 +133,7 @@ In Proxmox web UI: **Create CT** (Create Container)
 | Hostname | `docker` |
 | **Unprivileged container** | **Uncheck this box** — required for Docker and device passthrough |
 | Password/Confirm Password | Make sure to remember this |
-| Template | Debian 12 |
+| Template | Debian 13 |
 | Disk | `40GB` |
 | CPU | `2 cores` |
 | RAM | `6144` MB (6GB) |
@@ -199,8 +199,6 @@ vim /opt/homelab/docker-compose.yml
 ```
 
 ```yaml
-version: "3.9"
-
 networks:
   homelab:
     driver: bridge
@@ -361,10 +359,20 @@ lxc.mount.entry: /dev/dri dev/dri none bind,optional,create=dir
 
 ```bash
 # In Plex LXC console
-curl https://downloads.plex.tv/plex-keys/PlexSign.key | apt-key add -
-echo "deb https://downloads.plex.tv/repo/deb public main" \
-  > /etc/apt/sources.list.d/plexmediaserver.list
-apt update && apt install -y plexmediaserver
+apt-get install -y curl gnupg
+
+# Download and store the Plex signing key
+mkdir -p /etc/apt/keyrings
+curl -fsSL https://downloads.plex.tv/plex-keys/PlexSign.key \
+  | gpg --dearmor \
+  | tee /etc/apt/keyrings/plexmediaserver.gpg > /dev/null
+
+# Add the Plex repository
+echo "deb [signed-by=/etc/apt/keyrings/plexmediaserver.gpg] \
+  https://downloads.plex.tv/repo/deb public main" \
+  | tee /etc/apt/sources.list.d/plexmediaserver.list
+
+apt-get update && apt-get install -y plexmediaserver
 systemctl enable --now plexmediaserver
 ```
 
