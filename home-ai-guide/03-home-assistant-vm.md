@@ -127,6 +127,35 @@ Name it `pre-update-YYYY-MM-DD`. If the update breaks something, restore the sna
 
 ---
 
+## 3.8 Reverse Proxy Configuration
+
+If you plan to access HA through Nginx Proxy Manager with a custom domain (section 6.8), these settings must be in `configuration.yaml` or HA will return `400 Bad Request` through the proxy.
+
+Open `configuration.yaml` using the **File Editor** add-on (**Settings → Apps → File Editor → Open Web UI**):
+
+```yaml
+homeassistant:
+  external_url: "https://ha.yourdomain.com"
+  internal_url: "http://<ha-vm-ip>:8123"
+
+http:
+  use_x_forwarded_for: true
+  trusted_proxies:
+    - 127.0.0.1
+    - 172.16.0.0/12    # Docker bridge range — covers NPM container IP
+    - 192.168.0.0/16   # Your LAN, if NPM is on a different host
+  ip_ban_enabled: true
+  login_attempts_threshold: 5
+```
+
+- `external_url` — used by webhooks, automations, and the Companion mobile app to generate URLs. Without it, any automation or integration that self-references will produce a broken bare IP link.
+- `internal_url` — tells the Companion app to connect directly to HA on your LAN instead of going through NPM, which is faster and works even if NPM is down.
+- `trusted_proxies` — HA rejects proxied requests unless the forwarding proxy's IP is explicitly listed here. `172.16.0.0/12` covers the default Docker bridge network.
+
+Restart HA after saving.
+
+---
+
 ## RAM Allocation Note
 
 4GB is sufficient for Home Assistant with 20–50 devices. If you add many integrations or run heavy automations, increase to 6GB:

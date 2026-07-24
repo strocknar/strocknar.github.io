@@ -261,6 +261,8 @@ services:
       - "3001:3000"
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=changeme
+      - GF_SERVER_ROOT_URL=https://grafana.yourdomain.com
+      - GF_SERVER_DOMAIN=grafana.yourdomain.com
     volumes:
       - grafana_data:/var/lib/grafana
     depends_on:
@@ -458,6 +460,7 @@ For each service:
 | Scheme | `http` |
 | Forward Hostname / IP | LAN IP of the service (e.g. `192.168.50.7`) |
 | Forward Port | Service port (e.g. `8123` for HA) |
+| **Websockets Support** | ✅ Enable — required for HA, Portainer, and Grafana |
 | **SSL Certificate** | Select the `*.yourdomain.com` wildcard cert |
 | Force SSL | ✅ Enable |
 | HTTP/2 Support | ✅ Enable |
