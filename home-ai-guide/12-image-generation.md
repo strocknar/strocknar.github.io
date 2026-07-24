@@ -58,11 +58,11 @@ git clone https://github.com/comfyanonymous/ComfyUI.git
 cd ComfyUI
 python3 -m venv venv
 source venv/bin/activate
-pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu124
+pip install torch torchvision --index-url https://download.pytorch.org/whl/cu126
 pip install -r requirements.txt
 ```
 
-> **CUDA PyTorch:** PyTorch bundles its own CUDA runtime, so the pip wheel works regardless of your system driver version. Check `nvidia-smi` — the CUDA version shown in the top-right corner is a guide for which wheel to use: `cu124` for CUDA 12.4, `cu126` for CUDA 12.6. `ubuntu-drivers autoinstall` on Ubuntu 24.04 typically installs driver 535–545 (CUDA 12.2), which works fine with `cu124`. Available wheel indexes: `download.pytorch.org/whl/torch_stable.html`.
+> **CUDA PyTorch:** PyTorch bundles its own CUDA runtime, so the pip wheel works regardless of your system driver version. `ubuntu-drivers autoinstall` on Ubuntu 26.04 installs driver 580 (CUDA 13.0 capable). PyTorch `cu126` (CUDA 12.6) requires driver ≥ 560 — driver 580 satisfies this with headroom. `cu126` is the safe stable choice. Available wheel indexes: `download.pytorch.org/whl/torch_stable.html`.
 
 ---
 
@@ -71,11 +71,11 @@ pip install -r requirements.txt
 FLUX model weights are large — store them on the external models SSD if configured ([section 9.4](09-external-storage.md)):
 
 ```bash
-# Install huggingface_hub downloader
+# Install huggingface_hub (includes the hf CLI — huggingface-cli was removed in v1.0.0)
 pip install huggingface_hub
 
 # Download FLUX.1 Schnell fp8 checkpoint (~17 GB)
-huggingface-cli download black-forest-labs/FLUX.1-schnell \
+hf download black-forest-labs/FLUX.1-schnell \
   flux1-schnell.safetensors \
   --local-dir ~/ComfyUI/models/checkpoints/
 ```
@@ -84,12 +84,12 @@ Download the required VAE and text encoders:
 
 ```bash
 # VAE
-huggingface-cli download black-forest-labs/FLUX.1-schnell \
+hf download black-forest-labs/FLUX.1-schnell \
   ae.safetensors \
   --local-dir ~/ComfyUI/models/vae/
 
 # Text encoders (CLIP + T5)
-huggingface-cli download comfyanonymous/flux_text_encoders \
+hf download comfyanonymous/flux_text_encoders \
   clip_l.safetensors t5xxl_fp8_e4m3fn.safetensors \
   --local-dir ~/ComfyUI/models/clip/
 ```
@@ -185,13 +185,13 @@ sudo systemctl restart ollama
 
 ## 12.5 Connect Open WebUI to ComfyUI
 
-In Open WebUI: **Settings → Images**
+In Open WebUI: **Admin Panel → Settings → Images**
 
 | Setting | Value |
 |---|---|
 | Image Generation Engine | `ComfyUI` |
 | ComfyUI Base URL | `http://localhost:8188` |
-| Default Model | `flux1-schnell.safetensors` |
+| Model | `flux1-schnell.safetensors` |
 
 Save. In the chat interface, click the **image icon** (or type `/image`) to generate an image from a prompt.
 
@@ -205,7 +205,7 @@ ComfyUI Manager adds a UI for installing custom nodes, model downloader, and wor
 
 ```bash
 cd ~/ComfyUI/custom_nodes
-git clone https://github.com/ltdrdata/ComfyUI-Manager.git
+git clone https://github.com/Comfy-Org/ComfyUI-Manager comfyui-manager
 ```
 
 Restart ComfyUI. A **Manager** button appears in the web UI.
@@ -226,13 +226,13 @@ Store all checkpoints on the models external SSD to avoid filling the internal N
 
 ```bash
 # SDXL — good for styles FLUX doesn't handle as well
-huggingface-cli download stabilityai/stable-diffusion-xl-base-1.0 \
+hf download stabilityai/stable-diffusion-xl-base-1.0 \
   sd_xl_base_1.0.safetensors \
   --local-dir ~/ComfyUI/models/checkpoints/
 
 # FLUX.1 Dev (requires HuggingFace login — better quality than Schnell)
-huggingface-cli login  # enter your HF token
-huggingface-cli download black-forest-labs/FLUX.1-dev \
+hf auth login  # enter your HF token
+hf download black-forest-labs/FLUX.1-dev \
   flux1-dev.safetensors \
   --local-dir ~/ComfyUI/models/checkpoints/
 ```
@@ -284,7 +284,7 @@ python -c "import torch; print(torch.cuda.is_available())"
 
 If `False`, reinstall PyTorch with the correct CUDA version:
 ```bash
-pip install torch --index-url https://download.pytorch.org/whl/cu124 --force-reinstall
+pip install torch --index-url https://download.pytorch.org/whl/cu126 --force-reinstall
 ```
 
 **Slow generation despite GPU usage:**
