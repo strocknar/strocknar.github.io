@@ -116,17 +116,12 @@ sudo lvextend -r -l +100%FREE /dev/your_vol_group/your_log_vol # e.g. /dev/ubunt
 Install ROCm (AMD's GPU compute stack, required for Ollama to use AMD GPUs):
 
 ```bash
-# Add AMD ROCm apt repository for Ubuntu 26.04 (Resolute Raccoon)
-wget https://repo.amd.com/rocm/rocm.gpg.key -O - | sudo gpg --dearmor -o /etc/apt/keyrings/amdrocm.gpg
-echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/amdrocm.gpg] https://repo.amd.com/rocm/packages-multi-arch/ubuntu2604 stable main" \
-  | sudo tee /etc/apt/sources.list.d/amdgpu-rocm.list
-sudo apt update
-sudo apt install -y rocm
+sudo apt install -y rocm rocm-smi
 sudo usermod -a -G render,video aiuser
 sudo usermod -a -G render,video ollama
 ```
 
-> **Why apt instead of amdgpu-install?** As of ROCm 7.14.0, AMD's primary install method is the native apt package manager. The `amdgpu-install` .deb tool is now described as "legacy" in ROCm docs, and Ubuntu 26.04 is not in the amdgpu-install repo (only noble/jammy are). On Ryzen APUs with iGPU passthrough, the inbox kernel driver is used — no DKMS module is needed. ROCm userspace only is the correct install for this setup.
+> **No AMD repo needed.** Ubuntu 26.04 (Resolute Raccoon) ships ROCm in its own `universe` repository. Do not add AMD's external repo (`repo.amd.com`) — it does not provide a `rocm` package for Ubuntu 26.04 and apt will silently fall back to Ubuntu's stub package without it. The `rocm` metapackage does not pull in `rocm-smi` automatically, so install both explicitly.
 
 Log out and back in for group changes to take effect on your interactive session. The `ollama` service user change takes effect on the next service restart.
 
