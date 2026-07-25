@@ -125,7 +125,7 @@ Save and exit BIOS (`F10`).
 
 ## Phase 3: eGPU Assembly (when ready)
 
-> Skip this phase initially. Complete [Proxmox](02-proxmox-installation.md) through [Ollama](04-ollama-open-webui.md) setup first, then return here.
+> Skip this phase initially. Complete [Proxmox](02-proxmox-installation.md) through [Ollama](05-ollama-open-webui.md) setup first, then return here.
 
 ### What You'll Need (Phase 2)
 
