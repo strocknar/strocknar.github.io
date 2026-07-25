@@ -1,8 +1,8 @@
 ---
 ---
-# 04 — Ollama + Open WebUI
+# 05 — Ollama + Open WebUI
 
-[← Home Assistant VM](03-home-assistant-vm.md) | [Next: Voice Stack →](05-voice-stack.md)
+[← Home Assistant VM](04-home-assistant-vm.md) | [Next: Voice Stack →](06-voice-stack.md)
 
 ---
 
@@ -325,4 +325,4 @@ ollama run <model>             # interactive CLI chat
 
 ---
 
-[← Home Assistant VM](03-home-assistant-vm.md) | [Next: Voice Stack →](05-voice-stack.md)
+[← Home Assistant VM](04-home-assistant-vm.md) | [Next: Voice Stack →](06-voice-stack.md)
