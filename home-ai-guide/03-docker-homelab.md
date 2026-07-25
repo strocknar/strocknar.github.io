@@ -101,7 +101,7 @@ Add one entry per service. All entries point to `<npm-lxc-ip>` — the static IP
 
 > All subdomains point to NPM's IP. NPM routes to the correct backend based on the hostname in the request.
 
-Add more entries here as you add services.
+Add more entries here as you add services. Or, you can use a wildcard like `*.home.yourdomain.com` to catch everything.
 
 ### Configure ASUS ZenWiFi XD6
 
@@ -201,6 +201,9 @@ Create the compose file:
 ```bash
 vim /opt/homelab/docker-compose.yml
 ```
+
+> You may have to install vim at this point with `apt-get install -y vim`
+> Vim may auto-indent. You can use `:set paste` to temporarily disable that
 
 ```yaml
 networks:
