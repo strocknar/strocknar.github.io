@@ -71,6 +71,8 @@ Go to **Settings → Devices & Services**. Look for `Piper`, `Whisper`, and `ope
 
 After adding, each service will appear under **Devices & Services → Wyoming**.
 
+> If openWakeWord does not show up or disappears, restart home assistant.
+
 ### Ollama (Conversation Agent)
 
 The Ollama integration (configured in [section 5.7](05-ollama-open-webui.md)) handles natural language commands that HA's built-in intent recognizer can't match.
