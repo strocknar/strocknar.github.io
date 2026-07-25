@@ -1,8 +1,8 @@
 ---
 ---
-# 03 — Home Assistant VM
+# 04 — Home Assistant VM
 
-[← Proxmox Installation](02-proxmox-installation.md) | [Next: Ollama + Open WebUI →](04-ollama-open-webui.md)
+[← Docker & Homelab](03-docker-homelab.md) | [Next: Ollama + Open WebUI →](05-ollama-open-webui.md)
 
 ---
 
@@ -129,7 +129,7 @@ Name it `pre-update-YYYY-MM-DD`. If the update breaks something, restore the sna
 
 ## 3.8 Reverse Proxy Configuration
 
-If you plan to access HA through Nginx Proxy Manager with a custom domain (section 6.8), these settings must be in `configuration.yaml` or HA will return `400 Bad Request` through the proxy.
+If you plan to access HA through Nginx Proxy Manager with a custom domain (section 3.8), these settings must be in `configuration.yaml` or HA will return `400 Bad Request` through the proxy.
 
 Open `configuration.yaml` using the **File Editor** add-on (**Settings → Apps → File Editor → Open Web UI**):
 
@@ -166,4 +166,4 @@ Shut down the VM first, make the change, restart.
 
 ---
 
-[← Proxmox Installation](02-proxmox-installation.md) | [Next: Ollama + Open WebUI →](04-ollama-open-webui.md)
+[← Docker & Homelab](03-docker-homelab.md) | [Next: Ollama + Open WebUI →](05-ollama-open-webui.md)
