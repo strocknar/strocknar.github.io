@@ -23,6 +23,14 @@ Proxmox LXC (Docker host)
 
 ---
 
+## 3.0 Template Download
+
+**First, download the Debian 13 template** (one-time setup):
+
+In the Proxmox left panel: **node → local → CT Templates → Templates button** → search `debian` → select **Debian 13** → **Download**. Wait for it to complete before creating the container.
+
+---
+
 ## 3.1 AdGuard Home — Split-Horizon DNS
 
 AdGuard Home runs in its own LXC to provide two things: network-wide ad blocking, and local DNS rewrites that make `*.yourdomain.com` resolve to Nginx Proxy Manager on your LAN (and over Tailscale — see [section 8](08-tailscale-remote-access.md)).
@@ -120,10 +128,6 @@ nslookup google.com <adguard-lxc-ip>
 ---
 
 ## 3.2 Create the Docker LXC
-
-**First, download the Debian 13 template** (one-time setup):
-
-In the Proxmox left panel: **node → local → CT Templates → Templates button** → search `debian` → select **Debian 13** → **Download**. Wait for it to complete before creating the container.
 
 In Proxmox web UI: **Create CT** (Create Container)
 
