@@ -12,7 +12,7 @@
 
 **Z-Wave USB stick (~$40)** — required for the Kwikset lock. Recommended: Zooz 800 Series USB or Aeotec Z-Stick 7 (800-series adapters with firmware ≥ 7.23.2 are the current recommended hardware for new setups).
 
-Pass through to the HA VM via Proxmox: **HA VM → Hardware → Add → USB Device** → select by Vendor/Device ID. See [section 03](03-home-assistant-vm.md) for USB passthrough instructions.
+Pass through to the HA VM via Proxmox: **HA VM → Hardware → Add → USB Device** → select by Vendor/Device ID. See [section 04](04-home-assistant-vm.md) for USB passthrough instructions.
 
 In HA: **Settings → Add Integration → Z-Wave JS**
 
