@@ -1,8 +1,8 @@
 ---
 ---
-# 06 — Docker & Homelab Services
+# 03 — Docker & Homelab Services
 
-[← Voice Stack](05-voice-stack.md) | [Next: eGPU Setup →](07-egpu-setup.md)
+[← Proxmox Installation](02-proxmox-installation.md) | [Next: Home Assistant VM →](04-home-assistant-vm.md)
 
 ---
 
@@ -494,4 +494,4 @@ Typing `ha.yourdomain.com` in any browser on your LAN:
 
 ---
 
-[← Voice Stack](05-voice-stack.md) | [Next: eGPU Setup →](07-egpu-setup.md)
+[← Proxmox Installation](02-proxmox-installation.md) | [Next: Home Assistant VM →](04-home-assistant-vm.md)
