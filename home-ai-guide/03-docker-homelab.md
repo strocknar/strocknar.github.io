@@ -366,17 +366,13 @@ lxc.mount.entry: /dev/dri dev/dri none bind,optional,create=dir
 
 ```bash
 # In Plex LXC console
-apt-get install -y curl gnupg
-
-# Download and store the Plex signing key
-mkdir -p /etc/apt/keyrings
-curl -fsSL https://downloads.plex.tv/plex-keys/PlexSign.key \
-  | gpg --dearmor \
-  | tee /etc/apt/keyrings/plexmediaserver.gpg > /dev/null
+apt-get install -y curl
 
 # Add the Plex repository
-echo "deb [signed-by=/etc/apt/keyrings/plexmediaserver.gpg] \
-  https://downloads.plex.tv/repo/deb public main" \
+# Note: Plex's signing key uses a SHA1 self-signature that Debian Trixie's
+# OpenPGP verifier (sqv) rejects since 2026-02-01. Use [trusted=yes] to
+# skip signature verification — the package still comes over HTTPS.
+echo "deb [trusted=yes] https://downloads.plex.tv/repo/deb public main" \
   | tee /etc/apt/sources.list.d/plexmediaserver.list
 
 apt-get update && apt-get install -y plexmediaserver
