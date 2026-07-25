@@ -24,7 +24,7 @@ All components run as HA add-ons within the HA OS VM. A Wyoming satellite handle
 
 ---
 
-## 5.1 Install Voice Add-ons
+## 6.1 Install Voice Add-ons
 
 In HA web UI: **Settings → Apps → Install App**
 
@@ -61,7 +61,7 @@ Install each of the following:
 
 ---
 
-## 5.1.5 Register Integrations
+## 6.1.5 Register Integrations
 
 The add-ons expose services via the **Wyoming Protocol**, but HA won't see them in Voice Assistants until you register the integrations. You also need the **Ollama** integration to use it as a conversation agent.
 
@@ -73,7 +73,7 @@ After adding, each service will appear under **Devices & Services → Wyoming**.
 
 ### Ollama (Conversation Agent)
 
-The Ollama integration (configured in [section 4.7](05-ollama-open-webui.md)) handles natural language commands that HA's built-in intent recognizer can't match.
+The Ollama integration (configured in [section 5.7](05-ollama-open-webui.md)) handles natural language commands that HA's built-in intent recognizer can't match.
 
 **How it works:**
 - HA first tries its built-in intent matcher ("turn on lights", "set timer", etc.)
@@ -101,7 +101,7 @@ After saving, Ollama will appear as **"Ollama Conversation"** in the conversatio
 
 ---
 
-## 5.2 Configure the Voice Pipeline
+## 6.2 Configure the Voice Pipeline
 
 In HA web UI: **Settings → Voice Assistants → Add Assistant**
 
@@ -135,7 +135,7 @@ questions, be brief (1-2 sentences).
 
 ---
 
-## 5.3 Test the Pipeline
+## 6.3 Test the Pipeline
 
 **Text test (works over HTTP):**
 
@@ -154,7 +154,7 @@ Options:
 
 ---
 
-## 5.4 Wyoming Satellite (Remote Microphone)
+## 6.4 Wyoming Satellite (Remote Microphone)
 
 > **Building satellite hardware?** See [14 — Voice Satellites](14-voice-satellites.md) for step-by-step setup of the HA Voice Preview Edition and Pi 3 A+ satellite builds.
 
@@ -186,7 +186,7 @@ Search "ESPHome voice satellite" in the HA community forums for current recommen
 
 ---
 
-## 5.5 Tune Wake Word Sensitivity
+## 6.5 Tune Wake Word Sensitivity
 
 If you get false triggers or missed wake words:
 

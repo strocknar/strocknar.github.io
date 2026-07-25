@@ -219,7 +219,7 @@ docker compose up -d
 # Open WebUI updates (in Ollama VM)
 docker pull ghcr.io/open-webui/open-webui:main
 docker stop open-webui && docker rm open-webui
-# Re-run the docker run command from section 4.5
+# Re-run the docker run command from section 5.5
 ```
 
 > If an Ollama update breaks GPU detection, check the Ollama GitHub releases page for CUDA regression notes before upgrading. `nvidia-smi` should continue to show the RTX 3090 — Ollama CUDA issues are typically a library path problem resolvable with `sudo apt install --reinstall nvidia-cuda-toolkit`.

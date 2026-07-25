@@ -23,7 +23,7 @@ Proxmox LXC (Docker host)
 
 ---
 
-## 6.1 AdGuard Home — Split-Horizon DNS
+## 3.1 AdGuard Home — Split-Horizon DNS
 
 AdGuard Home runs in its own LXC to provide two things: network-wide ad blocking, and local DNS rewrites that make `*.yourdomain.com` resolve to Nginx Proxy Manager on your LAN (and over Tailscale — see [section 8](08-tailscale-remote-access.md)).
 
@@ -82,7 +82,7 @@ This is how `*.yourdomain.com` resolves to NPM on your LAN instead of the public
 
 In the AdGuard web UI: **Filters → DNS Rewrites → Add DNS rewrite**
 
-Add one entry per service. All entries point to `<npm-lxc-ip>` — the static IP you will assign to the Docker LXC in section 6.2:
+Add one entry per service. All entries point to `<npm-lxc-ip>` — the static IP you will assign to the Docker LXC in section 3.2:
 
 | Domain | Answer |
 |---|---|
@@ -119,7 +119,7 @@ nslookup google.com <adguard-lxc-ip>
 
 ---
 
-## 6.2 Create the Docker LXC
+## 3.2 Create the Docker LXC
 
 **First, download the Debian 13 template** (one-time setup):
 
@@ -138,7 +138,7 @@ In Proxmox web UI: **Create CT** (Create Container)
 | CPU | `2 cores` |
 | RAM | `6144` MB (6GB) |
 | Network — Bridge | `vmbr0` |
-| Network — IPv4 | Static, `<docker-lxc-ip>/24` — use `/24`, not `/32` (match your subnet). This IP is what you entered as `<npm-lxc-ip>` in section 6.1. |
+| Network — IPv4 | Static, `<docker-lxc-ip>/24` — use `/24`, not `/32` (match your subnet). This IP is what you entered as `<npm-lxc-ip>` in section 3.1. |
 | Network — Gateway | Your router IP (e.g. `192.168.50.1`) |
 | **DNS tab — DNS server** | `<adguard-lxc-ip>` — set this so the LXC resolves hostnames through AdGuard |
 
@@ -161,7 +161,7 @@ Start the LXC.
 
 ---
 
-## 6.3 Install Docker
+## 3.3 Install Docker
 
 In the Docker LXC shell (Proxmox web UI: **LXC 200 → Console**):
 
@@ -181,7 +181,7 @@ docker run hello-world
 
 ---
 
-## 6.4 Create Docker Compose Directory
+## 3.4 Create Docker Compose Directory
 
 ```bash
 mkdir -p /opt/homelab
@@ -190,7 +190,7 @@ cd /opt/homelab
 
 ---
 
-## 6.5 Deploy the Stack
+## 3.5 Deploy the Stack
 
 Create the compose file:
 
@@ -298,7 +298,7 @@ docker compose up -d
 
 ---
 
-## 6.6 Access the Services
+## 3.6 Access the Services
 
 | Service | URL | Default login |
 |---|---|---|
@@ -314,7 +314,7 @@ Change all default passwords immediately.
 
 ---
 
-## 6.7 Install Plex Media Server
+## 3.7 Install Plex Media Server
 
 Plex runs in its own LXC to keep it isolated and to allow iGPU passthrough for hardware transcoding.
 
@@ -380,18 +380,18 @@ Access: `http://<plex-lxc-ip>:32400/web`
 
 ---
 
-## 6.8 Nginx Proxy Manager — HTTPS Setup
+## 3.8 Nginx Proxy Manager — HTTPS Setup
 
 The goal: reach services by a friendly name (`ha.yourdomain.com`) on your internal network only, with valid browser-trusted HTTPS through NPM — no port forwarding, no public exposure.
 
-This uses **DNS-01 challenge** (Let's Encrypt proves domain ownership via a DNS TXT record instead of port 80) combined with **split-horizon DNS** (AdGuard Home resolves the domain to a local IP — configured in section 6.1).
+This uses **DNS-01 challenge** (Let's Encrypt proves domain ownership via a DNS TXT record instead of port 80) combined with **split-horizon DNS** (AdGuard Home resolves the domain to a local IP — configured in section 3.1).
 
 ### Prerequisites
 
 - A domain hosted in **AWS Route 53**
 - An AWS IAM user with permissions to modify Route 53 records (created in Step 1 below)
-- NPM running (from section 6.5)
-- AdGuard Home running with DNS rewrites configured (from section 6.1)
+- NPM running (from section 3.5)
+- AdGuard Home running with DNS rewrites configured (from section 3.1)
 
 ---
 
@@ -456,7 +456,7 @@ NPM will create a DNS TXT record in Route 53 via the AWS API to prove ownership,
 
 ### Step 3 — Create Proxy Hosts in NPM
 
-> Local DNS rewrites are already handled by AdGuard Home (section 6.1). No additional DNS configuration is needed here.
+> Local DNS rewrites are already handled by AdGuard Home (section 3.1). No additional DNS configuration is needed here.
 
 In NPM admin UI: **Hosts → Proxy Hosts → Add Proxy Host**
 

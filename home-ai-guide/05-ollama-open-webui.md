@@ -33,7 +33,7 @@ The iGPU shares system RAM as VRAM. With 32GB total:
 
 ---
 
-## 4.1 Create the Ollama VM
+## 5.1 Create the Ollama VM
 
 ### Download Ubuntu ISO
 
@@ -88,7 +88,7 @@ Start the VM, open the console, follow the Ubuntu Server installer:
 
 ---
 
-## 4.2 Install ROCm
+## 5.2 Install ROCm
 
 SSH into the Ollama VM:
 
@@ -137,7 +137,7 @@ rocm-smi
 
 ---
 
-## 4.3 Install Ollama
+## 5.3 Install Ollama
 
 ```bash
 curl -fsSL https://ollama.com/install.sh | sh
@@ -178,7 +178,7 @@ sudo systemctl restart ollama
 
 ---
 
-## 4.4 Pull Your First Models
+## 5.4 Pull Your First Models
 
 All are Q4_K_M quantizations — the standard Ollama default for best quality/size tradeoff.
 
@@ -208,7 +208,7 @@ ollama pull qwen3-coder:30b-a3b-q4_K_M  # alternative: MoE coding model (256K co
 
 ---
 
-## 4.5 Install Open WebUI
+## 5.5 Install Open WebUI
 
 Open WebUI provides a ChatGPT-style interface backed by your local Ollama instance.
 
@@ -239,7 +239,7 @@ Create your admin account on first visit.
 
 ---
 
-## 4.6 Test Inference
+## 5.6 Test Inference
 
 In Open WebUI, select a model from the dropdown and send a message. Verify:
 
@@ -260,7 +260,7 @@ GPU memory usage should increase as the model runs.
 
 ---
 
-## 4.7 Connect Ollama to Home Assistant
+## 5.7 Connect Ollama to Home Assistant
 
 In HA web UI: **Settings → Devices & Services → Add Integration → Ollama**
 
@@ -271,7 +271,7 @@ This enables Ollama as the conversation agent for voice commands and automations
 
 ---
 
-## 4.8 Customize the Model's Personality (System Prompt)
+## 5.8 Customize the Model's Personality (System Prompt)
 
 Open WebUI lets you set a persistent system prompt that applies to every conversation — the equivalent of a `~/.claude/CLAUDE.md` for your local models.
 
