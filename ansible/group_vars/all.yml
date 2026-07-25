@@ -1,0 +1,1 @@
+config: "{{ lookup('file', playbook_dir + '/config.yml') | from_yaml }}"
