@@ -1,8 +1,8 @@
 ---
 ---
-# 05 — Home Assistant Voice Stack
+# 06 — Home Assistant Voice Stack
 
-[← Ollama + Open WebUI](04-ollama-open-webui.md) | [Next: Docker & Homelab →](06-docker-homelab.md)
+[← Ollama + Open WebUI](05-ollama-open-webui.md) | [Next: eGPU Setup →](07-egpu-setup.md)
 
 ---
 
@@ -73,7 +73,7 @@ After adding, each service will appear under **Devices & Services → Wyoming**.
 
 ### Ollama (Conversation Agent)
 
-The Ollama integration (configured in [section 4.7](04-ollama-open-webui.md)) handles natural language commands that HA's built-in intent recognizer can't match.
+The Ollama integration (configured in [section 4.7](05-ollama-open-webui.md)) handles natural language commands that HA's built-in intent recognizer can't match.
 
 **How it works:**
 - HA first tries its built-in intent matcher ("turn on lights", "set timer", etc.)
@@ -211,4 +211,4 @@ Phase 1 latency is acceptable for home automation commands. If STT latency is to
 
 ---
 
-[← Ollama + Open WebUI](04-ollama-open-webui.md) | [Next: Docker & Homelab →](06-docker-homelab.md)
+[← Ollama + Open WebUI](05-ollama-open-webui.md) | [Next: eGPU Setup →](07-egpu-setup.md)
