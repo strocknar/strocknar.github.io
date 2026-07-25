@@ -66,6 +66,8 @@ Complete the Home Assistant onboarding wizard:
 - Set your home location
 - Skip device discovery for now
 
+> Need to shutdown and set CPU from 'kvm' to 'host' so that Piper works later
+
 ---
 
 ## 4.3 Configure Static IP for HA VM
