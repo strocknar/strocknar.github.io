@@ -2,7 +2,7 @@
 ---
 # 02 — Proxmox Installation
 
-[← Hardware Assembly](01-hardware-assembly.md) | [Next: Home Assistant VM →](03-home-assistant-vm.md)
+[← Hardware Assembly](01-hardware-assembly.md) | [Next: Docker & Homelab Services →](03-docker-homelab.md)
 
 ---
 
@@ -236,4 +236,4 @@ This is optional — skip if your router handles VLAN segmentation.
 
 ---
 
-[← Hardware Assembly](01-hardware-assembly.md) | [Next: Home Assistant VM →](03-home-assistant-vm.md)
+[← Hardware Assembly](01-hardware-assembly.md) | [Next: Docker & Homelab Services →](03-docker-homelab.md)

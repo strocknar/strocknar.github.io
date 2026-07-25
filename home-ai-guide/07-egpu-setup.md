@@ -2,7 +2,7 @@
 ---
 # 07 — eGPU Setup (RTX 3090 via OCuLink)
 
-[← Docker & Homelab](06-docker-homelab.md) | [Next: Tailscale →](08-tailscale-remote-access.md)
+[← Voice Stack](06-voice-stack.md) | [Next: Tailscale →](08-tailscale-remote-access.md)
 
 ---
 
@@ -274,4 +274,4 @@ Confirm `/etc/modprobe.d/vfio.conf` no longer contains the iGPU IDs. Run `update
 
 ---
 
-[← Docker & Homelab](06-docker-homelab.md) | [Next: Tailscale →](08-tailscale-remote-access.md)
+[← Voice Stack](06-voice-stack.md) | [Next: Tailscale →](08-tailscale-remote-access.md)
