@@ -1,0 +1,17 @@
+# This file is a placeholder. The active inventory is hosts.ini, which is
+# generated at runtime by run.sh from the values in config.yml.
+# See hosts.ini.example below for the expected format.
+#
+# hosts.ini format:
+#
+# [proxmox_host]
+# proxmox ansible_host=<proxmox.host_ip> ansible_user=root
+#
+# [lxc]
+# adguard ansible_host=<guests.adguard_ip> ansible_user=root
+# docker  ansible_host=<guests.docker_ip>  ansible_user=root
+# plex    ansible_host=<guests.plex_ip>    ansible_user=root
+#
+# [vms]
+# haos   ansible_host=<guests.haos_ip>   ansible_user=root
+# ollama ansible_host=<guests.ollama_ip> ansible_user=root
