@@ -8,8 +8,16 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 if ! command -v terraform &>/dev/null; then
   echo "Installing Terraform..."
   TF_VERSION="1.9.8"
+  if ! command -v unzip &>/dev/null; then
+    apt-get install -y -qq unzip
+  fi
   wget -qO /tmp/terraform.zip \
     "https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_linux_amd64.zip"
+  wget -qO /tmp/terraform_${TF_VERSION}_SHA256SUMS \
+    "https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_SHA256SUMS"
+  grep "terraform_${TF_VERSION}_linux_amd64.zip" /tmp/terraform_${TF_VERSION}_SHA256SUMS \
+    | sha256sum --check --status || { echo "Terraform checksum verification failed"; exit 1; }
+  rm /tmp/terraform_${TF_VERSION}_SHA256SUMS
   unzip -o /tmp/terraform.zip -d /usr/local/bin/
   rm /tmp/terraform.zip
 fi
@@ -26,7 +34,13 @@ fi
 # ── Read config.yml ───────────────────────────────────────────────────────────
 
 CFG="${SCRIPT_DIR}/config.yml"
-get_cfg() { python3 -c "import yaml,sys; d=yaml.safe_load(open('${CFG}')); print($1)"; }
+get_cfg() {
+  python3 - "$CFG" "$1" << 'PYEOF'
+import yaml, sys
+d = yaml.safe_load(open(sys.argv[1]))
+print(eval(sys.argv[2]))
+PYEOF
+}
 
 PROXMOX_IP=$(get_cfg "d['proxmox']['host_ip']")
 PROXMOX_API_URL=$(get_cfg "d['proxmox']['api_url']")
@@ -76,7 +90,7 @@ export TF_VAR_igpu_pci_id="${IGPU_PCI_ID}"
 export TF_VAR_rtx3090_pci_id="${RTX_PCI_ID}"
 
 cd "${SCRIPT_DIR}/terraform"
-terraform init -upgrade
+terraform init
 terraform apply -auto-approve
 cd "${SCRIPT_DIR}"
 
@@ -104,12 +118,12 @@ export ANSIBLE_HOST_KEY_CHECKING=False
 
 ansible-playbook site.yml \
   -i inventory/hosts.ini \
-  --extra-vars "ansible_ssh_pass=${ANSIBLE_SSH_PASS}" \
-  --extra-vars "adguard_password=${ADGUARD_PASSWORD}" \
-  --extra-vars "grafana_password=${GRAFANA_PASSWORD}" \
-  --extra-vars "aws_key_id=${AWS_KEY_ID}" \
-  --extra-vars "aws_secret_key=${AWS_SECRET_KEY}" \
-  --extra-vars "plex_claim_token=${PLEX_CLAIM_TOKEN}" \
+  --extra-vars "ansible_ssh_pass='${ANSIBLE_SSH_PASS}'" \
+  --extra-vars "adguard_password='${ADGUARD_PASSWORD}'" \
+  --extra-vars "grafana_password='${GRAFANA_PASSWORD}'" \
+  --extra-vars "aws_key_id='${AWS_KEY_ID}'" \
+  --extra-vars "aws_secret_key='${AWS_SECRET_KEY}'" \
+  --extra-vars "plex_claim_token='${PLEX_CLAIM_TOKEN}'" \
   --extra-vars "@config.yml"
 
 echo ""

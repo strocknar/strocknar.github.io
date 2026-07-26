@@ -6,3 +6,6 @@ docs/superpowers
 *.tfstate
 *.tfstate.*
 crash.log
+
+# Ansible runtime-generated inventory (contains live IPs)
+ansible/inventory/hosts.ini
