@@ -32,6 +32,14 @@
     state: present
     update_cache: true
 
+- name: Write Plex claim token (first-run only)
+  ansible.builtin.copy:
+    dest: /etc/default/plexmediaserver
+    content: "PLEX_CLAIM={{ plex_claim_token }}\n"
+    mode: "0600"
+    force: false
+  when: plex_claim_token is defined and plex_claim_token != ""
+
 - name: Enable and start Plex
   ansible.builtin.systemd:
     name: plexmediaserver

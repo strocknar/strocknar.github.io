@@ -15,7 +15,7 @@ resource "proxmox_virtual_environment_container" "docker" {
 
     ip_config {
       ipv4 {
-        address = "${var.docker_ip}/24"
+        address = "${var.docker_ip}/${var.subnet_mask}"
         gateway = var.gateway
       }
     }

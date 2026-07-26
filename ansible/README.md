@@ -7,7 +7,7 @@ Run from the Proxmox web UI shell with a single command.
 
 ### 1. Proxmox is installed and reachable
 
-- Proxmox VE 8.x installed and accessible at your configured IP
+- Proxmox VE 9.x installed and accessible at your configured IP
 - You have root SSH access from the Proxmox shell to itself (loopback SSH)
 
 ### 2. Create Proxmox API token for Terraform
@@ -129,7 +129,7 @@ Open WebUI:     http://<ollama_ip>:3000
 Portainer:      http://<docker_ip>:9000
 AdGuard:        http://<adguard_ip>
 NPM Admin:      http://<docker_ip>:81
-Grafana:        http://<docker_ip>:3000
+Grafana:        http://<docker_ip>:3001
 Prometheus:     http://<docker_ip>:9090
 Plex:           http://<plex_ip>:32400
 ```

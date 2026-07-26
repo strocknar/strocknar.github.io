@@ -46,3 +46,8 @@ variable "debian_template" {
   type    = string
   default = "local:vztmpl/debian-13-standard_13.0-1_amd64.tar.zst"
 }
+
+variable "subnet_mask" {
+  type    = string
+  default = "24"
+}

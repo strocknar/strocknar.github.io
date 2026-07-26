@@ -15,7 +15,7 @@ resource "proxmox_virtual_environment_container" "plex" {
 
     ip_config {
       ipv4 {
-        address = "${var.plex_ip}/24"
+        address = "${var.plex_ip}/${var.subnet_mask}"
         gateway = var.gateway
       }
     }

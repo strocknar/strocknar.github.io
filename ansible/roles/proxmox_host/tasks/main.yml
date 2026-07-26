@@ -36,7 +36,7 @@
 
 - name: Set IOMMU GRUB flag
   ansible.builtin.set_fact:
-    iommu_flag: "{{ 'intel_iommu=on iommu=pt' if cpu_vendor == 'intel' else 'iommu=pt' }}"
+    iommu_flag: "{{ 'intel_iommu=on iommu=pt' if cpu_vendor == 'intel' else 'amd_iommu=on iommu=pt' }}"
 
 - name: Update GRUB IOMMU setting
   ansible.builtin.lineinfile:

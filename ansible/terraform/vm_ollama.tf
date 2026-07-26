@@ -3,6 +3,12 @@ variable "ubuntu_cloud_image" {
   default = "local:0/ubuntu-24.04-minimal-cloudimg-amd64.img"
 }
 
+variable "ollama_root_password" {
+  type      = string
+  sensitive = true
+  default   = ""
+}
+
 resource "proxmox_virtual_environment_vm" "ollama" {
   node_name = var.proxmox_node
   vm_id     = 101
@@ -36,7 +42,7 @@ resource "proxmox_virtual_environment_vm" "ollama" {
   initialization {
     ip_config {
       ipv4 {
-        address = "${var.ollama_ip}/24"
+        address = "${var.ollama_ip}/${var.subnet_mask}"
         gateway = var.gateway
       }
     }
@@ -46,7 +52,8 @@ resource "proxmox_virtual_environment_vm" "ollama" {
     }
 
     user_account {
-      username = "ubuntu"
+      username = "root"
+      password = var.ollama_root_password
       keys     = []
     }
   }

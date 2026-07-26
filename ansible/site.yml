@@ -36,7 +36,8 @@
 
 - name: Wait for Home Assistant VM (VM 100)
   hosts: haos
-  become: true
+  become: false
+  gather_facts: false
   any_errors_fatal: true
   roles:
     - haos_vm

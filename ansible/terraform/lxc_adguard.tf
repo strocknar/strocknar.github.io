@@ -11,7 +11,7 @@ resource "proxmox_virtual_environment_container" "adguard" {
 
     ip_config {
       ipv4 {
-        address = "${var.adguard_ip}/24"
+        address = "${var.adguard_ip}/${var.subnet_mask}"
         gateway = var.gateway
       }
     }
