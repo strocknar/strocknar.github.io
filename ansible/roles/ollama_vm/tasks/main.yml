@@ -5,6 +5,12 @@
     state: present
     update_cache: true
 
+- name: Create Ollama systemd override directory
+  ansible.builtin.file:
+    path: /etc/systemd/system/ollama.service.d
+    state: directory
+    mode: "0755"
+
 # ── Phase 1: ROCm for AMD 780M iGPU ──────────────────────────────────────────
 
 - name: Install ROCm (Phase 1 only)
@@ -66,12 +72,6 @@
   ansible.builtin.shell: curl -fsSL https://ollama.com/install.sh | sh
   when: not ollama_bin.stat.exists
   changed_when: true
-
-- name: Create Ollama systemd override directory
-  ansible.builtin.file:
-    path: /etc/systemd/system/ollama.service.d
-    state: directory
-    mode: "0755"
 
 - name: Set OLLAMA_KEEP_ALIVE=-1 override
   ansible.builtin.copy:
