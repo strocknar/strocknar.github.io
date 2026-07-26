@@ -1,0 +1,39 @@
+---
+- name: Install dependencies
+  ansible.builtin.apt:
+    name: [curl, gnupg]
+    state: present
+    update_cache: true
+
+- name: Create keyrings dir
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: "0755"
+
+- name: Download and store Plex signing key
+  ansible.builtin.shell: |
+    curl -fsSL https://downloads.plex.tv/plex-keys/PlexSign.key \
+      | gpg --dearmor \
+      | tee /etc/apt/keyrings/plexmediaserver.gpg > /dev/null
+  args:
+    creates: /etc/apt/keyrings/plexmediaserver.gpg
+
+- name: Add Plex apt repository
+  ansible.builtin.copy:
+    dest: /etc/apt/sources.list.d/plexmediaserver.list
+    content: |
+      deb [signed-by=/etc/apt/keyrings/plexmediaserver.gpg] https://downloads.plex.tv/repo/deb public main
+    mode: "0644"
+
+- name: Install plexmediaserver
+  ansible.builtin.apt:
+    name: plexmediaserver
+    state: present
+    update_cache: true
+
+- name: Enable and start Plex
+  ansible.builtin.systemd:
+    name: plexmediaserver
+    enabled: true
+    state: started
