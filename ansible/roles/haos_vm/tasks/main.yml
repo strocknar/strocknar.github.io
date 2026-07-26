@@ -1,0 +1,16 @@
+---
+- name: Wait for Home Assistant to come up (up to 10 min — first boot is slow)
+  ansible.builtin.wait_for:
+    host: "{{ config.guests.haos_ip }}"
+    port: 8123
+    timeout: 600
+    msg: "Home Assistant did not come up within 10 minutes. Check the VM console."
+  delegate_to: localhost
+
+- name: Print onboarding reminder
+  ansible.builtin.debug:
+    msg: >
+      Home Assistant is up at http://{{ config.guests.haos_ip }}:8123
+      Complete the onboarding wizard manually — create your admin account,
+      set your home location, and skip device discovery for now.
+      Then set a static IP in Settings → System → Network.
