@@ -43,7 +43,9 @@
     path: /etc/default/grub
     regexp: '^GRUB_CMDLINE_LINUX_DEFAULT='
     line: 'GRUB_CMDLINE_LINUX_DEFAULT="quiet {{ iommu_flag }}"'
-  notify: update grub and initramfs
+  notify:
+    - update grub and initramfs
+    - reboot proxmox
 
 - name: Write VFIO modules
   ansible.builtin.copy:
@@ -53,6 +55,9 @@
       vfio_iommu_type1
       vfio_pci
     mode: "0644"
+  notify:
+    - update grub and initramfs
+    - reboot proxmox
 
 - name: Set VFIO PCI IDs fact
   ansible.builtin.set_fact:
@@ -64,7 +69,9 @@
     src: vfio.conf.j2
     dest: /etc/modprobe.d/vfio.conf
     mode: "0644"
-  notify: update grub and initramfs
+  notify:
+    - update grub and initramfs
+    - reboot proxmox
 
 - name: Mask sleep and suspend targets
   ansible.builtin.systemd:
@@ -79,13 +86,10 @@
 - name: Patch LXC 200 conf for Docker (apparmor + cgroup2)
   ansible.builtin.blockinfile:
     path: /etc/pve/lxc/200.conf
-    marker: "# {mark} ANSIBLE MANAGED — docker compat"
+    marker: "# {mark} ANSIBLE MANAGED - docker compat"
     block: |
       lxc.apparmor.profile: unconfined
       lxc.cgroup2.devices.allow: a
       lxc.cap.drop:
     create: false
-
-- name: Restart LXC 200 to apply conf changes
-  ansible.builtin.command: pct reboot 200
-  changed_when: true
+  notify: restart lxc 200
