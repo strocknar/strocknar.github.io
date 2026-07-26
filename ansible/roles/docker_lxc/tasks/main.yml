@@ -1,0 +1,22 @@
+---
+- name: Install curl
+  ansible.builtin.apt:
+    name: curl
+    state: present
+    update_cache: true
+
+- name: Check if Docker is installed
+  ansible.builtin.stat:
+    path: /usr/bin/docker
+  register: docker_bin
+
+- name: Install Docker via get.docker.com
+  ansible.builtin.shell: curl -fsSL https://get.docker.com | sh
+  when: not docker_bin.stat.exists
+  changed_when: true
+
+- name: Create /opt/homelab
+  ansible.builtin.file:
+    path: /opt/homelab
+    state: directory
+    mode: "0755"

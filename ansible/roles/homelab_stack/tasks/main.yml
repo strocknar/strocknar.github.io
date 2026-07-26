@@ -1,0 +1,17 @@
+---
+- name: Template docker-compose.yml
+  ansible.builtin.template:
+    src: docker-compose.yml.j2
+    dest: /opt/homelab/docker-compose.yml
+    mode: "0644"
+
+- name: Template prometheus.yml
+  ansible.builtin.template:
+    src: prometheus.yml.j2
+    dest: /opt/homelab/prometheus.yml
+    mode: "0644"
+
+- name: Start homelab stack
+  community.docker.docker_compose_v2:
+    project_src: /opt/homelab
+    state: present
