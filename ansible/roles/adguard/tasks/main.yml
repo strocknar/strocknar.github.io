@@ -23,6 +23,7 @@
     host: "{{ ansible_host }}"
     timeout: 60
     msg: "AdGuard setup port 3000 did not open in time"
+  when: not adguard_bin.stat.exists
 
 - name: Complete AdGuard initial setup via API
   ansible.builtin.uri:
@@ -41,6 +42,7 @@
     status_code: [200, 400]
   register: adguard_setup
   changed_when: adguard_setup.status == 200
+  when: not adguard_bin.stat.exists
 
 - name: Wait for AdGuard web UI on port 80
   ansible.builtin.wait_for:
