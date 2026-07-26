@@ -1,0 +1,91 @@
+---
+- name: Disable PVE enterprise repo
+  ansible.builtin.lineinfile:
+    path: /etc/apt/sources.list.d/pve-enterprise.sources
+    regexp: '^Enabled:'
+    line: 'Enabled: false'
+    create: false
+
+- name: Disable Ceph enterprise repo
+  ansible.builtin.lineinfile:
+    path: /etc/apt/sources.list.d/ceph.sources
+    regexp: '^Enabled:'
+    line: 'Enabled: false'
+    create: false
+
+- name: Write PVE no-subscription repo
+  ansible.builtin.copy:
+    dest: /etc/apt/sources.list.d/pve-no-subscription.sources
+    content: |
+      Types: deb
+      URIs: http://download.proxmox.com/debian/pve
+      Suites: trixie
+      Components: pve-no-subscription
+      Signed-By: /usr/share/keyrings/proxmox-archive-keyring.gpg
+    mode: "0644"
+
+- name: Apt update and full-upgrade
+  ansible.builtin.apt:
+    update_cache: true
+    upgrade: full
+    cache_valid_time: 3600
+
+- name: Detect CPU vendor
+  ansible.builtin.set_fact:
+    cpu_vendor: "{{ 'intel' if 'Intel' in ansible_processor | join(' ') else 'amd' }}"
+
+- name: Set IOMMU GRUB flag
+  ansible.builtin.set_fact:
+    iommu_flag: "{{ 'intel_iommu=on iommu=pt' if cpu_vendor == 'intel' else 'iommu=pt' }}"
+
+- name: Update GRUB IOMMU setting
+  ansible.builtin.lineinfile:
+    path: /etc/default/grub
+    regexp: '^GRUB_CMDLINE_LINUX_DEFAULT='
+    line: 'GRUB_CMDLINE_LINUX_DEFAULT="quiet {{ iommu_flag }}"'
+  notify: update grub and initramfs
+
+- name: Write VFIO modules
+  ansible.builtin.copy:
+    dest: /etc/modules-load.d/vfio.conf
+    content: |
+      vfio
+      vfio_iommu_type1
+      vfio_pci
+    mode: "0644"
+
+- name: Set VFIO PCI IDs fact
+  ansible.builtin.set_fact:
+    vfio_ids: >-
+      {{ config.rtx3090_pci_ids_vfio if config.phase == 2 else config.igpu_pci_ids_vfio }}
+
+- name: Write VFIO modprobe config
+  ansible.builtin.template:
+    src: vfio.conf.j2
+    dest: /etc/modprobe.d/vfio.conf
+    mode: "0644"
+  notify: update grub and initramfs
+
+- name: Mask sleep and suspend targets
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    masked: true
+  loop:
+    - sleep.target
+    - suspend.target
+    - hibernate.target
+    - hybrid-sleep.target
+
+- name: Patch LXC 200 conf for Docker (apparmor + cgroup2)
+  ansible.builtin.blockinfile:
+    path: /etc/pve/lxc/200.conf
+    marker: "# {mark} ANSIBLE MANAGED — docker compat"
+    block: |
+      lxc.apparmor.profile: unconfined
+      lxc.cgroup2.devices.allow: a
+      lxc.cap.drop:
+    create: false
+
+- name: Restart LXC 200 to apply conf changes
+  ansible.builtin.command: pct reboot 200
+  changed_when: true

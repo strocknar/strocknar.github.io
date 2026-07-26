@@ -1,0 +1,14 @@
+---
+- name: update grub and initramfs
+  ansible.builtin.command: update-grub
+  changed_when: true
+  notify: update initramfs
+
+- name: update initramfs
+  ansible.builtin.command: update-initramfs -u -k all
+  changed_when: true
+  notify: reboot proxmox
+
+- name: reboot proxmox
+  ansible.builtin.reboot:
+    reboot_timeout: 120
