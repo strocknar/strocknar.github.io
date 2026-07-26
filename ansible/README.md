@@ -10,13 +10,6 @@ Run from the Proxmox web UI shell with a single command.
 - Proxmox VE 8.x installed and accessible at your configured IP
 - You have root SSH access from the Proxmox shell to itself (loopback SSH)
 
-Verify SSH loopback access:
-```bash
-ssh root@localhost echo ok
-```
-
-If it prompts for a host key, accept it. The automation will skip host key checking.
-
 ### 2. Create Proxmox API token for Terraform
 
 In the Proxmox web UI shell:
@@ -61,7 +54,16 @@ xz -d /var/lib/vz/template/iso/haos_ova-${HA_VERSION}.qcow2.xz
 
 Update `ansible/terraform/vm_haos.tf` — set the `file_id` and `import_from` fields to match the path above.
 
-### 6. Fill in config.yml
+### 6. Enable SSH on Proxmox host (loopback)
+
+Ansible connects to the Proxmox host via SSH. Verify loopback SSH works:
+```bash
+ssh root@localhost echo ok
+```
+
+If it prompts for a host key, accept it. Ansible will skip host key checking.
+
+### 7. Fill in config.yml
 
 Edit `ansible/config.yml` with your actual IPs, domain, and phase:
 
