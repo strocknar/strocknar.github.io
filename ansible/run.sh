@@ -88,7 +88,8 @@ export TF_VAR_ollama_ip="${OLLAMA_IP}"
 export TF_VAR_phase="${PHASE}"
 export TF_VAR_igpu_pci_id="${IGPU_PCI_ID}"
 export TF_VAR_rtx3090_pci_id="${RTX_PCI_ID}"
-export TF_VAR_subnet_mask=$(get_cfg "d['network']['subnet_mask']")
+SUBNET_MASK=$(get_cfg "d['network']['subnet_mask']")
+export TF_VAR_subnet_mask="${SUBNET_MASK}"
 export TF_VAR_ollama_root_password="${ANSIBLE_SSH_PASS}"
 
 cd "${SCRIPT_DIR}/terraform"

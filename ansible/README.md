@@ -67,6 +67,18 @@ If it prompts for a host key, accept it. Ansible will skip host key checking.
 
 Edit `ansible/config.yml` with your actual IPs, domain, and phase:
 
+### Note: Home Assistant static IP
+
+HAOS does not support cloud-init — Terraform cannot set a static IP on the HA VM. The VM boots
+with DHCP. After the HA onboarding wizard completes, configure a static IP in
+**Settings → System → Network** and set it to the value you specified in `config.yml`
+(`guests.haos_ip`). Until then, the `haos_vm` Ansible role's port-8123 wait will use the IP from
+`config.yml` — if DHCP assigned a different address, the wait will time out after 10 minutes and
+you will need to update `config.yml` with the actual DHCP address and re-run `bash run.sh`.
+
+Also consider creating a DHCP reservation on your router for the HA VM's MAC address to ensure
+it always gets the same IP on subsequent reboots.
+
 ```yaml
 proxmox:
   host_ip: 192.168.1.10           # Your Proxmox host IP
