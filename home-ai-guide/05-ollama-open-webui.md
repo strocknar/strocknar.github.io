@@ -57,6 +57,7 @@ In Proxmox web UI: **Create VM**
 | RAM | `8192` MB (8GB) — see Phase 1 Resource Reality above |
 | Disk | `60GB` (on local-lvm) |
 | Network | `vmbr0` |
+| Start at boot | ✅ Yes |
 
 ### Add iGPU Passthrough to VM
 
@@ -173,6 +174,7 @@ Save and restart:
 
 ```bash
 sudo systemctl daemon-reload
+sudo systemctl enable ollama
 sudo systemctl restart ollama
 ```
 
