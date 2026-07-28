@@ -424,7 +424,12 @@ Attach this inline policy to the user (replace `<HOSTED_ZONE_ID>` with your Rout
     {
       "Effect": "Allow",
       "Action": "route53:ChangeResourceRecordSets",
-      "Resource": "arn:aws:route53:::hostedzone/<HOSTED_ZONE_ID>"
+      "Resource": "arn:aws:route53:::hostedzone/<HOSTED_ZONE_ID>",
+      "Condition": {
+        "ForAllValues:StringEquals": {
+          "route53:ChangeResourceRecordSetsRecordTypes": ["TXT"]
+        }
+      }
     }
   ]
 }
