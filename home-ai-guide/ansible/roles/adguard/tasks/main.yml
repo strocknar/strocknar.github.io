@@ -17,6 +17,12 @@
   when: not adguard_bin.stat.exists
   changed_when: true
 
+- name: Enable AdGuardHome service
+  ansible.builtin.systemd:
+    name: AdGuardHome
+    enabled: true
+    daemon_reload: true
+
 - name: Wait for AdGuard setup UI on port 3000
   ansible.builtin.wait_for:
     port: 3000
