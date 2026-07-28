@@ -1,0 +1,25 @@
+proxmox:
+  host_ip: 192.168.1.10
+  node_name: proxmox
+  api_url: https://192.168.1.10:8006/api2/json
+
+network:
+  gateway: 192.168.1.1
+  dns_fallback: 1.1.1.1
+  subnet_mask: "24"
+
+guests:
+  adguard_ip: 192.168.1.20
+  docker_ip: 192.168.1.21
+  plex_ip: 192.168.1.22
+  haos_ip: 192.168.1.23
+  ollama_ip: 192.168.1.24
+
+domain: yourdomain.com
+
+phase: 1
+
+igpu_pci_ids: "1002:1900"
+igpu_pci_ids_vfio: "1002:1900,1002:1640"
+rtx3090_pci_ids: ""
+rtx3090_pci_ids_vfio: ""

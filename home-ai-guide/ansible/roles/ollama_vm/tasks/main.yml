@@ -1,0 +1,113 @@
+---
+- name: Install base dependencies
+  ansible.builtin.apt:
+    name: [curl, wget, gpg, software-properties-common]
+    state: present
+    update_cache: true
+
+- name: Create Ollama systemd override directory
+  ansible.builtin.file:
+    path: /etc/systemd/system/ollama.service.d
+    state: directory
+    mode: "0755"
+
+# ── Phase 1: ROCm for AMD 780M iGPU ──────────────────────────────────────────
+
+- name: Install ROCm (Phase 1 only)
+  when: config.phase == 1
+  block:
+    - name: Add ROCm apt repo key
+      ansible.builtin.shell: |
+        wget -qO - https://repo.radeon.com/rocm/rocm.gpg.key \
+          | gpg --dearmor \
+          | tee /etc/apt/keyrings/rocm.gpg > /dev/null
+      args:
+        creates: /etc/apt/keyrings/rocm.gpg
+
+    - name: Add ROCm apt repo
+      ansible.builtin.copy:
+        dest: /etc/apt/sources.list.d/rocm.list
+        content: |
+          deb [arch=amd64 signed-by=/etc/apt/keyrings/rocm.gpg] https://repo.radeon.com/rocm/apt/6.4 noble main
+        mode: "0644"
+
+    - name: Install ROCm packages
+      ansible.builtin.apt:
+        name: [rocm-hip-sdk, rocm-opencl-sdk]
+        state: present
+        update_cache: true
+
+    - name: Set HSA_OVERRIDE_GFX_VERSION for 780M in Ollama service
+      ansible.builtin.copy:
+        dest: /etc/systemd/system/ollama.service.d/rocm-override.conf
+        content: |
+          [Service]
+          Environment="HSA_OVERRIDE_GFX_VERSION=11.0.0"
+        mode: "0644"
+      notify: reload systemd
+
+# ── Phase 2: NVIDIA drivers + CUDA ───────────────────────────────────────────
+
+- name: Install NVIDIA drivers (Phase 2 only)
+  when: config.phase == 2
+  block:
+    - name: Install ubuntu-drivers-common
+      ansible.builtin.apt:
+        name: ubuntu-drivers-common
+        state: present
+        update_cache: true
+
+    - name: Install NVIDIA drivers automatically
+      ansible.builtin.command: ubuntu-drivers autoinstall
+      changed_when: true
+
+# ── Ollama ────────────────────────────────────────────────────────────────────
+
+- name: Check if Ollama is installed
+  ansible.builtin.stat:
+    path: /usr/local/bin/ollama
+  register: ollama_bin
+
+- name: Install Ollama
+  ansible.builtin.shell: curl -fsSL https://ollama.com/install.sh | sh
+  when: not ollama_bin.stat.exists
+  changed_when: true
+
+- name: Set OLLAMA_KEEP_ALIVE=-1 override
+  ansible.builtin.copy:
+    dest: /etc/systemd/system/ollama.service.d/keep-alive.conf
+    content: |
+      [Service]
+      Environment="OLLAMA_KEEP_ALIVE=-1"
+    mode: "0644"
+  notify: reload systemd
+
+- name: Enable and start Ollama
+  ansible.builtin.systemd:
+    name: ollama
+    enabled: true
+    state: started
+    daemon_reload: true
+
+# ── Docker (for Open WebUI) ───────────────────────────────────────────────────
+
+- name: Install Docker (needed for Open WebUI container)
+  ansible.builtin.shell: curl -fsSL https://get.docker.com | sh
+  args:
+    creates: /usr/bin/docker
+
+# ── Open WebUI ────────────────────────────────────────────────────────────────
+
+- name: Deploy Open WebUI systemd service
+  ansible.builtin.template:
+    src: open-webui.service.j2
+    dest: /etc/systemd/system/open-webui.service
+    mode: "0644"
+  notify: reload systemd
+
+- name: Enable and start Open WebUI
+  ansible.builtin.systemd:
+    name: open-webui
+    enabled: true
+    state: started
+    daemon_reload: true

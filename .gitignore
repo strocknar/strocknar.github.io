@@ -1,1 +1,11 @@
 docs/superpowers
+
+# Terraform
+.terraform/
+.terraform.lock.hcl
+*.tfstate
+*.tfstate.*
+crash.log
+
+# Ansible runtime-generated inventory (contains live IPs)
+ansible/inventory/hosts.ini

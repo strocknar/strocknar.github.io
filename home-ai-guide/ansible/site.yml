@@ -1,0 +1,50 @@
+---
+- name: Configure Proxmox host
+  hosts: proxmox_host
+  become: true
+  any_errors_fatal: true
+  roles:
+    - proxmox_host
+
+- name: Configure AdGuard Home (CT 202)
+  hosts: adguard
+  become: true
+  any_errors_fatal: true
+  roles:
+    - adguard
+
+- name: Install Docker in LXC (CT 200)
+  hosts: docker
+  become: true
+  any_errors_fatal: true
+  roles:
+    - docker_lxc
+
+- name: Deploy homelab Docker stack (CT 200)
+  hosts: docker
+  become: true
+  any_errors_fatal: true
+  roles:
+    - homelab_stack
+
+- name: Configure Plex (CT 201)
+  hosts: plex
+  become: true
+  any_errors_fatal: true
+  roles:
+    - plex
+
+- name: Wait for Home Assistant VM (VM 100)
+  hosts: haos
+  become: false
+  gather_facts: false
+  any_errors_fatal: true
+  roles:
+    - haos_vm
+
+- name: Configure Ollama VM (VM 101)
+  hosts: ollama
+  become: true
+  any_errors_fatal: true
+  roles:
+    - ollama_vm

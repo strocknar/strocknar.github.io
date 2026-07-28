@@ -1,0 +1,95 @@
+---
+- name: Install curl
+  ansible.builtin.apt:
+    name: curl
+    state: present
+    update_cache: true
+
+- name: Check if AdGuard is already installed
+  ansible.builtin.stat:
+    path: /usr/local/bin/AdGuardHome
+  register: adguard_bin
+
+- name: Install AdGuard Home
+  ansible.builtin.shell: |
+    curl -s -S -L https://raw.githubusercontent.com/AdguardTeam/AdGuardHome/master/scripts/install.sh \
+      | sh -s -- -v
+  when: not adguard_bin.stat.exists
+  changed_when: true
+
+- name: Wait for AdGuard setup UI on port 3000
+  ansible.builtin.wait_for:
+    port: 3000
+    host: "{{ ansible_host }}"
+    timeout: 60
+    msg: "AdGuard setup port 3000 did not open in time"
+  when: not adguard_bin.stat.exists
+
+- name: Complete AdGuard initial setup via API
+  ansible.builtin.uri:
+    url: "http://{{ ansible_host }}:3000/control/install/configure"
+    method: POST
+    body_format: json
+    body:
+      web:
+        ip: "0.0.0.0"
+        port: 80
+      dns:
+        ip: "0.0.0.0"
+        port: 53
+      username: admin
+      password: "{{ adguard_password }}"
+    status_code: [200, 400]
+  register: adguard_setup
+  changed_when: adguard_setup.status == 200
+  when: not adguard_bin.stat.exists
+
+- name: Wait for AdGuard web UI on port 80
+  ansible.builtin.wait_for:
+    port: 80
+    host: "{{ ansible_host }}"
+    timeout: 30
+
+- name: Enable AdGuard DNS filter blocklist
+  ansible.builtin.uri:
+    url: "http://{{ ansible_host }}/control/filtering/add_url"
+    method: POST
+    url_username: admin
+    url_password: "{{ adguard_password }}"
+    force_basic_auth: true
+    body_format: json
+    body:
+      name: "AdGuard DNS filter"
+      url: "https://adguardteam.github.io/AdGuardSDNSFilter/Filters/filter.txt"
+      enabled: true
+    status_code: [200, 400]
+
+- name: Get existing DNS rewrites
+  ansible.builtin.uri:
+    url: "http://{{ ansible_host }}/control/rewrite/list"
+    method: GET
+    url_username: admin
+    url_password: "{{ adguard_password }}"
+    force_basic_auth: true
+    return_content: true
+  register: existing_rewrites
+
+- name: Add DNS rewrites for all services
+  ansible.builtin.uri:
+    url: "http://{{ ansible_host }}/control/rewrite/add"
+    method: POST
+    url_username: admin
+    url_password: "{{ adguard_password }}"
+    force_basic_auth: true
+    body_format: json
+    body:
+      domain: "{{ item.domain }}"
+      answer: "{{ config.guests.docker_ip }}"
+    status_code: [200, 400]
+  loop:
+    - { domain: "ha.{{ config.domain }}" }
+    - { domain: "ollama.{{ config.domain }}" }
+    - { domain: "portainer.{{ config.domain }}" }
+    - { domain: "grafana.{{ config.domain }}" }
+  when: >
+    (existing_rewrites.json | selectattr('domain', 'equalto', item.domain) | list | length) == 0
