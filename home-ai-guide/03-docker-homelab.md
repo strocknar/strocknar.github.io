@@ -54,6 +54,7 @@ In Proxmox web UI: **Create CT**
 | Network — IPv4 | Static, `<adguard-lxc-ip>/24` — choose a free IP on your LAN and note it |
 | Network — Gateway | Your router IP |
 | DNS tab — DNS server | `1.1.1.1` (temporary — you'll switch this to AdGuard itself once it's running) |
+| Start at boot | ✅ Yes |
 
 Start the LXC.
 
@@ -64,6 +65,12 @@ In the AdGuard LXC console:
 ```bash
 apt update && apt install -y curl
 curl -s -S -L https://raw.githubusercontent.com/AdguardTeam/AdGuardHome/master/scripts/install.sh | sh -s -- -v
+```
+
+Enable AdGuard Home to start automatically on boot:
+
+```bash
+systemctl enable AdGuardHome
 ```
 
 The installer registers AdGuard Home as a systemd service and starts it automatically.
@@ -145,6 +152,7 @@ In Proxmox web UI: **Create CT** (Create Container)
 | Network — IPv4 | Static, `<docker-lxc-ip>/24` — use `/24`, not `/32` (match your subnet). This IP is what you entered as `<npm-lxc-ip>` in section 3.1. |
 | Network — Gateway | Your router IP (e.g. `192.168.50.1`) |
 | **DNS tab — DNS server** | `<adguard-lxc-ip>` — set this so the LXC resolves hostnames through AdGuard |
+| Start at boot | ✅ Yes |
 
 After creation, before starting — edit the LXC config for Docker compatibility:
 
@@ -181,6 +189,12 @@ Verify:
 
 ```bash
 docker run hello-world
+```
+
+Enable Docker to start automatically on boot:
+
+```bash
+systemctl enable docker
 ```
 
 ---
@@ -336,6 +350,7 @@ Same process as the Docker LXC but:
 | RAM | `2048` MB |
 | Disk | `20GB` (media stored on external SSD — see [External Storage](09-external-storage.md)) |
 | Privileged | ✅ Yes |
+| Start at boot | ✅ Yes |
 
 ### Pass 780M iGPU to Plex LXC
 
