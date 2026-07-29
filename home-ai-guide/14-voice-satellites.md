@@ -12,8 +12,8 @@ This section covers building satellite voice devices to replace Amazon Echo unit
 
 Two device types are covered. Build one of each as a prototype before committing to room assignments:
 
-- **Option A — HA Voice Preview Edition:** Purpose-built satellite, ~10 minutes to set up, hardware echo cancellation. Best for living areas near TVs.
-- **Option B — Pi 3 A+ + ReSpeaker + Pebble V3:** DIY satellite with a real speaker and multi-room music capability via Snapcast. Best for bedrooms.
+- **Option A — HA Voice Preview Edition:** Purpose-built satellite, ~10 minutes to set up, hardware echo cancellation. Best for living areas near TVs. Requires Alpha firmware to participate in Music Assistant playback.
+- **Option B — Pi 3 A+ + ReSpeaker + Pebble V3:** DIY satellite with a real speaker and multi-room music capability via Sendspin. Best for bedrooms.
 
 ## Architecture
 
@@ -25,19 +25,22 @@ Two device types are covered. Build one of each as a prototype before committing
 │  │  - OpenWakeWord  │    │  - Music Assistant    │    │
 │  │  - Whisper STT   │    │    (YouTube Music +   │    │
 │  │  - Piper TTS     │    │     Plex fallback)    │    │
-│  │  - Ollama agent  │    │  - Snapcast Server    │    │
-│  └─────────────────┘    └──────────────────────┘    │
+│  │  - Ollama agent  │    │  - Sendspin server    │    │
+│  └─────────────────┘    │    (built into MA)    │    │
+│                          └──────────────────────┘    │
 └─────────────────────────────────────────────────────┘
-         ▲ Wyoming Protocol (TCP)        ▲ Snapcast stream
-         │                               │
-┌────────┴───────┐            ┌──────────┴──────────┐
-│ HA Voice PE    │            │  Pi 3 A+ Satellite   │
-│                │            │                       │
-│ - Wyoming sat  │            │  - wyoming-satellite  │
-│   (built-in)   │            │  - snapclient         │
-│ - Hardware AEC │            │  - ReSpeaker HAT      │
-│   (XMOS XU316) │            │  - Pebble V3 speaker  │
-└────────────────┘            └───────────────────────┘
+         ▲ Wyoming Protocol (TCP)    ▲ Sendspin (WS :8927)
+         │                           │
+┌────────┴───────┐        ┌──────────┴──────────┐
+│ HA Voice PE    │        │  Pi 3 A+ Satellite   │
+│                │        │                       │
+│ - Wyoming sat  │        │  - wyoming-satellite  │
+│   (built-in)   │        │  - sendspin-cli       │
+│ - Hardware AEC │        │  - ReSpeaker HAT      │
+│   (XMOS XU316) │        │  - Pebble V3 speaker  │
+│ - Sendspin     │        │                       │
+│   (Alpha fw)   │        │                       │
+└────────────────┘        └───────────────────────┘
 ```
 
 ---
@@ -124,13 +127,32 @@ Save.
 
 The hardware mute switch on the top of the device disconnects the microphone at the hardware level — no software interaction. When muted, the LED ring shows red. The device will not respond to wake words until unmuted.
 
+### Enable music playback on the Voice PE
+
+By default the Voice PE only handles voice. To make it a Music Assistant player, it requires the Sendspin Alpha firmware — a separate ESPHome build that adds the Sendspin client alongside the existing Wyoming satellite firmware.
+
+> Do this **after** section 14.3 is complete. The Voice PE needs MA's Sendspin server running before it can connect.
+
+1. On a browser, navigate to the Voice PE Alpha firmware installer:
+   `https://esphome.github.io/home-assistant-voice-pe-alpha/`
+
+2. Connect the Voice PE via USB-C to your computer.
+
+3. Follow the on-screen flash instructions. The installer runs in-browser via Web Serial — Chrome or Edge required.
+
+4. Once flashed, the Voice PE reboots and reconnects to Wi-Fi. In MA web UI → **Players**, it appears within ~60 seconds as a Sendspin player.
+
+5. In HA, the same device now exposes both a Wyoming satellite (for voice) and a `media_player` entity (for music). They are independent — muting the mic does not stop music.
+
+> The Alpha firmware is a technical preview. If you run into issues, the stable Wyoming-only firmware can be re-flashed from the standard HA Voice PE installer at `https://esphome.github.io/home-assistant-voice-pe/`.
+
 ---
 
 ## 14.3 Server-Side Setup (Docker LXC — one-time)
 
-Complete this before setting up the Pi satellite. The Pi's `snapclient` needs a running Snapcast server to connect to.
+Complete this before setting up the Pi satellite or flashing the Voice PE.
 
-### Add Music Assistant and Snapcast to Docker Compose
+### Add Music Assistant to Docker Compose
 
 In the Docker LXC shell:
 
@@ -138,7 +160,7 @@ In the Docker LXC shell:
 vim /opt/homelab/docker-compose.yml
 ```
 
-Add the following services inside the `services:` block (alongside your existing Portainer, Grafana, etc.):
+Add inside the `services:` block:
 
 ```yaml
   music-assistant:
@@ -149,86 +171,25 @@ Add the following services inside the `services:` block (alongside your existing
     volumes:
       - /opt/homelab/music-assistant:/data
     privileged: true
-
-  snapcast-server:
-    image: ghcr.io/badaix/snapcast:latest
-    container_name: snapcast-server
-    restart: always
-    network_mode: host
-    volumes:
-      - /opt/homelab/snapcast:/etc/snapcast
-      - /tmp/snapcast:/tmp/snapcast
 ```
 
-> Both services use `network_mode: host` so that mDNS discovery and Snapcast's multicast stream work correctly across your LAN. Do not use bridge networking for these.
+> `network_mode: host` is required. MA uses mDNS to discover players (AirPlay, Sendspin) and bridge networking breaks mDNS across the LAN.
 
-Also add the volumes at the top-level `volumes:` block:
-
-```yaml
-volumes:
-  # ... existing volumes ...
-  music_assistant_data:
-  snapcast_data:
-```
-
-> The volume declarations are only needed if you switch away from bind mounts later. The bind mounts in the service definitions above (`/opt/homelab/music-assistant` and `/opt/homelab/snapcast`) are sufficient for now.
-
-Create the data directories:
+Create the data directory and start the container:
 
 ```bash
 mkdir -p /opt/homelab/music-assistant
-mkdir -p /opt/homelab/snapcast
-mkdir -p /tmp/snapcast
-```
-
-Start the new containers:
-
-```bash
 cd /opt/homelab
-docker compose up -d music-assistant snapcast-server
+docker compose up -d music-assistant
 ```
 
-Verify both are running:
+Verify it is running:
 
 ```bash
-docker ps | grep -E "music-assistant|snapcast"
+docker ps | grep music-assistant
 ```
 
-Expected: both containers show `Up`.
-
-### Configure Snapcast Server
-
-Create the Snapcast server config:
-
-```bash
-vim /opt/homelab/snapcast/snapserver.conf
-```
-
-```ini
-[server]
-threads = -1
-
-[stream]
-source = pipe:///tmp/snapcast/snapcast.fifo?name=MusicAssistant&sampleformat=48000:16:2&codec=flac
-
-[http]
-enabled = true
-port = 1780
-```
-
-Restart Snapcast to pick up the config:
-
-```bash
-docker restart snapcast-server
-```
-
-Create the named pipe that Music Assistant writes audio to:
-
-```bash
-[ -p /tmp/snapcast/snapcast.fifo ] || mkfifo /tmp/snapcast/snapcast.fifo
-```
-
-> This FIFO is recreated at boot — add `mkfifo /tmp/snapcast/snapcast.fifo` to `/etc/rc.local` or a systemd service to ensure it exists after reboots.
+Expected: container shows `Up`.
 
 ### Configure Music Assistant
 
@@ -238,7 +199,7 @@ On first launch, MA runs a setup wizard:
 
 1. **Add YouTube Music provider:**
    - **Settings → Music Providers → Add → YouTube Music**
-   - MA uses `ytmusicapi` for authentication. Follow the on-screen OAuth flow — it opens a Google login page.
+   - MA uses `ytmusicapi` for authentication. Follow the on-screen OAuth flow.
    - Once authenticated, MA indexes your YouTube Music library.
 
 2. **Add Plex provider:**
@@ -246,13 +207,13 @@ On first launch, MA runs a setup wizard:
    - Enter your Plex server URL: `http://<plex-lxc-ip>:32400`
    - Authenticate with your Plex account token.
 
-   > This is your fallback provider. When YouTube Music is unavailable (internet down), MA automatically uses Plex.
+   > This is your fallback provider. When YouTube Music is unavailable, MA uses Plex automatically.
 
-3. **Add Snapcast output player:**
-   - **Settings → Player Providers → Add → Snapcast**
-   - Host: `localhost` (MA and Snapcast are on the same host)
-   - Port: `1780`
-   - MA discovers the `MusicAssistant` stream and creates a player entity for each connected snapclient.
+3. **Enable Sendspin player provider:**
+   - **Settings → Player Providers → Add → Sendspin**
+   - No additional configuration required. MA starts the Sendspin server on port `8927` and auto-discovers any Sendspin clients on the LAN via mDNS.
+
+   > Sendspin is MA's native multi-room protocol. It is in technical preview — the protocol may change in future MA versions, but it is functional and actively maintained.
 
 ### Add Music Assistant to Home Assistant
 
@@ -260,7 +221,7 @@ In HA web UI: **Settings → Devices & Services → Add Integration → Music As
 
 - MA Server URL: `http://<docker-lxc-ip>:8095`
 
-HA now exposes each MA player as a media player entity, enabling voice commands like "computer, play children's music in the bedroom."
+HA now exposes each MA player as a `media_player` entity, enabling voice commands like "computer, play children's music in the bedroom."
 
 ---
 
@@ -403,39 +364,35 @@ Test: say **"computer, what time is it?"**
 
 The Pi's ReSpeaker LED ring lights up on wake word detection, and you hear Piper's TTS response through the Pebble V3.
 
-### 14.4.5 Install Snapcast Client
+### 14.4.5 Install Sendspin Client
+
+The Sendspin CLI provides an automated systemd installer that handles audio device selection and service registration interactively:
 
 ```bash
-sudo apt install -y snapclient
+curl -fsSL https://raw.githubusercontent.com/Sendspin/sendspin-cli/refs/heads/main/scripts/systemd/install-systemd.sh | sudo bash
 ```
 
-Configure it to point at the Snapcast server:
+The script will prompt you to:
+- Name the player (e.g., `bedroom-satellite`) — this is the name that appears in MA
+- Select an audio output device — choose the ReSpeaker HAT (`plughw:1,0`)
+
+After the script completes, verify the service is running:
 
 ```bash
-sudo vim /etc/default/snapclient
-```
-
-```bash
-SNAPCLIENT_OPTS="--host <docker-lxc-ip> --port 1704 --soundcard plughw:1,0"
-```
-
-> Replace `<docker-lxc-ip>` with the IP address of your Docker LXC. Port `1704` is the Snapcast default binary protocol port.
-
-Enable and start:
-
-```bash
-sudo systemctl enable snapclient
-sudo systemctl start snapclient
-sudo systemctl status snapclient
+sudo systemctl status sendspin
 ```
 
 Expected: `Active: active (running)`
+
+The client announces itself via mDNS. Within ~30 seconds, it appears as a player in MA without any manual pairing.
+
+> Settings persist in `~/.config/sendspin/settings-daemon.json`. To rename the player or change the audio device later, edit that file and restart the service: `sudo systemctl restart sendspin`.
 
 ### 14.4.6 Verify Music Assistant Player
 
 In Music Assistant web UI (`http://<docker-lxc-ip>:8095`):
 
-Go to **Players**. Within ~30 seconds of starting snapclient, a new player appears named `bedroom-satellite` (matching your snapclient hostname).
+Go to **Players**. Within ~30 seconds of starting the Sendspin client, a new player appears named `bedroom-satellite` (the name you chose during the installer).
 
 In HA: **Developer Tools → States** — search for `media_player`. A new entity for the bedroom satellite appears.
 
@@ -457,7 +414,7 @@ To play synchronized audio across multiple Pi satellites:
 
 In Music Assistant: click the **Group** icon on any player → select which bedroom players to include → play music.
 
-All grouped players receive the same Snapcast stream and play in sync within ~30ms.
+All grouped Sendspin players receive the same stream and play in sync. Sendspin uses sample-accurate synchronization — latency between grouped players is typically under 30ms.
 
 In HA voice: **"computer, play lullabies everywhere"** — MA groups all bedroom players and starts playback.
 
@@ -485,7 +442,7 @@ Music playback start time (voice command to first audio): ~2–3 seconds on a st
 | Internet down | Voice + local device control work normally. YouTube Music fails; Plex plays from local library. |
 | YouTube Music unavailable | Music Assistant automatically falls back to Plex provider. |
 | HA server unreachable | Satellites go silent — no local processing on the satellite itself. |
-| Snapcast server down | Voice still works. Music requests fail with a spoken error from Piper. |
+| Sendspin server down (MA container down) | Voice still works. Music requests fail with a spoken error from Piper. |
 
 ---
 
@@ -515,17 +472,24 @@ Music playback start time (voice command to first audio): ~2–3 seconds on a st
 - Test: `aplay -D plughw:1,0 /usr/share/sounds/alsa/Front_Center.wav`
 - Adjust HAT output volume: `alsamixer` → select ReSpeaker card → raise PCM/Speaker level
 
-**snapclient not connecting**
+**Sendspin client not connecting**
 
-- Verify Snapcast server is running: `docker ps | grep snapcast`
-- Verify the FIFO exists: `ls -la /tmp/snapcast/snapcast.fifo`
-- If FIFO missing after reboot, recreate: `mkfifo /tmp/snapcast/snapcast.fifo` then `docker restart snapcast-server`
+- Verify the sendspin service is running on the Pi: `sudo systemctl status sendspin`
+- Verify MA's Sendspin provider is enabled: MA web UI → **Settings → Player Providers → Sendspin**
+- Confirm port `8927` is reachable from the Pi: `nc -zv <docker-lxc-ip> 8927`
+- Check logs: `journalctl -u sendspin -f`
 
 **Music Assistant player not appearing**
 
-- Confirm snapclient is running and connected: `systemctl status snapclient`
-- In MA web UI → Settings → Player Providers → Snapcast → check connection status
+- Confirm the sendspin service is active: `sudo systemctl status sendspin`
+- mDNS discovery requires the Pi and MA to be on the same subnet. If on different VLANs, mDNS packets will not cross — move both to the same VLAN or configure mDNS reflection on your router.
 - Restart MA container: `docker restart music-assistant`
+
+**Voice PE not appearing as MA player**
+
+- Confirm the Alpha firmware is flashed (standard firmware does not include Sendspin)
+- Confirm MA's Sendspin provider is enabled and MA is running
+- Check the Voice PE's ESPHome logs in HA: **Settings → Devices & Services → [Voice PE] → Logs**
 
 ---
 
