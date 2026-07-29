@@ -1,0 +1,6 @@
+---
+preload_models: >-
+  {{
+    ['qwen3:8b-q4_K_M'] if config.phase == 1
+    else ['qwen3:32b-q4_K_M']
+  }}

@@ -89,6 +89,28 @@
     state: started
     daemon_reload: true
 
+# ── Ollama model preload on boot ─────────────────────────────────────────────
+
+- name: Deploy ollama-preload script
+  ansible.builtin.template:
+    src: ollama-preload.sh.j2
+    dest: /usr/local/bin/ollama-preload.sh
+    mode: "0755"
+
+- name: Deploy ollama-preload systemd service
+  ansible.builtin.template:
+    src: ollama-preload.service.j2
+    dest: /etc/systemd/system/ollama-preload.service
+    mode: "0644"
+  notify: reload systemd
+
+- name: Enable and start ollama-preload
+  ansible.builtin.systemd:
+    name: ollama-preload
+    enabled: true
+    state: started
+    daemon_reload: true
+
 # ── Docker (for Open WebUI) ───────────────────────────────────────────────────
 
 - name: Install Docker (needed for Open WebUI container)

@@ -178,6 +178,68 @@ sudo systemctl enable ollama
 sudo systemctl restart ollama
 ```
 
+### 5.3.1 Preload Models into VRAM on Boot
+
+`OLLAMA_KEEP_ALIVE=-1` prevents eviction once a model is loaded, but doesn't load anything on boot — the first request after a reboot still pays the full cold-start penalty (90 seconds to 5+ minutes depending on model size).
+
+Fix this with a systemd oneshot service that fires after Ollama is ready and pre-loads your model into VRAM before any request arrives.
+
+**VRAM budget**: Only preload models that fit within your available VRAM. On Phase 1 (8GB UMA), only `qwen3:8b` fits. On Phase 2 (RTX 3090, 24GB), pick one large model — `qwen3:32b` (20GB) and `qwen3:14b` (9.3GB) don't fit simultaneously.
+
+Create the preload script:
+
+```bash
+sudo tee /usr/local/bin/ollama-preload.sh > /dev/null <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Wait for Ollama to be API-ready
+until curl -sf http://localhost:11434/api/tags > /dev/null 2>&1; do
+  sleep 2
+done
+
+# Load model into VRAM — empty prompt triggers weight transfer, no output generated
+# Phase 1: use qwen3:8b-q4_K_M
+# Phase 2: use qwen3:32b-q4_K_M (or whichever model you want warm)
+curl -s http://localhost:11434/api/generate \
+  -d '{"model": "qwen3:8b-q4_K_M", "prompt": "", "keep_alive": -1}' \
+  > /dev/null
+EOF
+sudo chmod +x /usr/local/bin/ollama-preload.sh
+```
+
+> Edit the model name in the script to match your phase. On Phase 2, replace `qwen3:8b-q4_K_M` with `qwen3:32b-q4_K_M`.
+
+Create the systemd service:
+
+```bash
+sudo tee /etc/systemd/system/ollama-preload.service > /dev/null <<'EOF'
+[Unit]
+Description=Preload Ollama models into VRAM on boot
+After=ollama.service
+Wants=ollama.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/local/bin/ollama-preload.sh
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+sudo systemctl daemon-reload
+sudo systemctl enable --now ollama-preload
+```
+
+Verify after reboot:
+
+```bash
+sudo systemctl status ollama-preload
+ollama ps   # should show your model loaded in VRAM
+```
+
 ---
 
 ## 5.4 Pull Your First Models

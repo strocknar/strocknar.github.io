@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# Waits for Ollama to be ready, then loads each model into VRAM.
+# Called by ollama-preload.service on boot.
+set -euo pipefail
+
+OLLAMA_URL="http://localhost:11434"
+
+until curl -sf "${OLLAMA_URL}/api/tags" > /dev/null 2>&1; do
+  sleep 2
+done
+
+{% for model in preload_models %}
+curl -s "${OLLAMA_URL}/api/generate" \
+  -d '{"model": "{{ model }}", "prompt": "", "keep_alive": -1}' \
+  > /dev/null
+{% endfor %}

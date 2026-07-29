@@ -1,0 +1,13 @@
+[Unit]
+Description=Preload Ollama models into VRAM on boot
+After=ollama.service
+Wants=ollama.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/local/bin/ollama-preload.sh
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
