@@ -49,6 +49,8 @@ A complete start-to-finish guide for building a local AI system with Home Assist
 11. [Upgrading & Future Expansion](11-upgrading.md)
 12. [Local Image Generation (ComfyUI + FLUX)](12-image-generation.md)
 13. [Devices & Home Assistant Compatibility](13-devices.md)
+14. [Voice Satellites](14-voice-satellites.md)
+15. [Local Coding Assistant](15-coding-assistant.md)
 
 ## Architecture Overview
 

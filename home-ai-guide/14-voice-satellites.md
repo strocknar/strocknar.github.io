@@ -2,7 +2,7 @@
 ---
 # 14 — Voice Satellites
 
-[← Devices & HA Compatibility](13-devices.md)
+[← Devices & HA Compatibility](13-devices.md) | [Next: Local Coding Assistant →](15-coding-assistant.md)
 
 ---
 
@@ -493,4 +493,4 @@ Music playback start time (voice command to first audio): ~2–3 seconds on a st
 
 ---
 
-[← Devices & HA Compatibility](13-devices.md)
+[← Devices & HA Compatibility](13-devices.md) | [Next: Local Coding Assistant →](15-coding-assistant.md)
