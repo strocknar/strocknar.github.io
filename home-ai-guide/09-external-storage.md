@@ -19,7 +19,117 @@ Internal 1TB NVMe stays clean: Proxmox OS + all VM/LXC system disks only.
 
 ---
 
-## 9.1 Format External Drives
+## 9.0 Adding a Drive That Already Has Data
+
+If your media drive is already formatted and populated — from a previous Plex install, a NAS, or another machine — **skip section 9.1 entirely**. Formatting destroys all existing data.
+
+### Step 1 — Identify the Drive
+
+Connect the drive. On the Proxmox host shell:
+
+```bash
+lsblk -f
+```
+
+Find the drive by size. The `FSTYPE` column shows the existing filesystem. Note the device name (e.g., `/dev/sdc`).
+
+**Filesystem compatibility:**
+
+| Filesystem | Status | Notes |
+|---|---|---|
+| `ext4` | Native | Best option — no extra packages needed |
+| `exFAT` | Supported | Install `exfatprogs` first |
+| `NTFS` | Supported | Install `ntfs-3g` first; write performance is slower |
+| `HFS+` / `APFS` | Read-only | Linux has no full write support without commercial drivers — convert to ext4 first |
+
+If your drive is HFS+/APFS (came from a Mac), the safest path is to copy the media off it, reformat as ext4, and copy it back before proceeding.
+
+### Step 2 — Install Filesystem Driver (if needed)
+
+```bash
+# For exFAT drives
+apt install -y exfatprogs
+
+# For NTFS drives
+apt install -y ntfs-3g
+```
+
+Skip this if the drive is already ext4.
+
+### Step 3 — Get the UUID
+
+```bash
+blkid /dev/sdX   # substitute your actual device name
+```
+
+Note the UUID and FSTYPE. Always use UUIDs in fstab — device names like `/dev/sdc` can shift on reboot if drive order changes.
+
+### Step 4 — Mount on Proxmox Host
+
+```bash
+mkdir -p /mnt/media
+vim /etc/fstab
+```
+
+Add the appropriate line for your filesystem:
+
+```
+# ext4
+UUID=<uuid>  /mnt/media  ext4  defaults,nofail  0  2
+
+# exFAT
+UUID=<uuid>  /mnt/media  exfat  defaults,nofail,uid=0,gid=0,umask=0022  0  0
+
+# NTFS
+UUID=<uuid>  /mnt/media  ntfs-3g  defaults,nofail,uid=0,gid=0,umask=0022  0  0
+```
+
+> `nofail` is critical — without it, Proxmox will fail to boot if the drive isn't connected.
+
+```bash
+mount -a
+ls /mnt/media   # your media files should be visible here
+```
+
+### Step 5 — Fix File Ownership (ext4 only)
+
+This is the most common silent failure when moving a drive between Linux systems. Plex in the LXC runs as user `plex` (uid `1000`). If the files were owned by a different uid on the old system, Plex will silently fail to read them.
+
+```bash
+ls -lan /mnt/media | head -20
+```
+
+If the uid shown is not `1000`, fix it — this takes a while on a large library:
+
+```bash
+chown -R 1000:1000 /mnt/media
+```
+
+For exFAT and NTFS drives, ownership is controlled by mount options, not file metadata. Use `uid=1000,gid=1000` in the fstab entry instead of running `chown`.
+
+### Step 6 — Pass to Plex LXC and Add Library
+
+Follow **section 9.5** to bind-mount `/mnt/media` into the Plex LXC, then add `/media` as a library location in the Plex web UI. Plex will scan and match your existing files against its metadata database — it does not move or re-download anything.
+
+> **Tip:** Plex matching works best with standard naming: `Movie Title (Year)/Movie Title (Year).mkv` and `Show Name/Season XX/Show Name - SXXEXX - Title.mkv`. If the library came from a working Plex install, the filenames are presumably already correct.
+
+### Optional — Migrate Plex Database
+
+If the drive came from an existing Plex Media Server and you want to preserve watch history, ratings, and playlists, copy the Plex data directory from the old machine:
+
+```bash
+# On the old machine — find the Plex data directory
+# Linux/LXC: /var/lib/plexmediaserver/Library/Application Support/Plex Media Server/
+# Copy it to the new Plex LXC at the same path
+```
+
+Without this, Plex re-scans the files and fetches metadata fresh — your media is all there, but watch history and custom artwork are lost.
+
+---
+
+## 9.1 Format External Drives (New Drives Only)
+
+> **Skip this section if your drive already has data.** See section 9.0 above.
 
 Connect both SSDs to the UM890 Pro's USB ports. In the Proxmox shell:
 
