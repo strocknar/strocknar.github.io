@@ -138,7 +138,7 @@ Install NVIDIA drivers:
 
 ```bash
 sudo apt update
-sudo ubuntu-drivers autoinstall
+sudo ubuntu-drivers install
 sudo reboot
 ```
 
