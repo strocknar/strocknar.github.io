@@ -28,3 +28,5 @@
   file: home-ai-guide/14-voice-satellites.md
 - title: Coding Assistant
   file: home-ai-guide/15-coding-assistant.md
+- title: Inference Backends
+  file: home-ai-guide/16-inference-backends.md

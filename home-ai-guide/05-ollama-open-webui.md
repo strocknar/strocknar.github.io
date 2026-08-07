@@ -184,7 +184,7 @@ sudo systemctl restart ollama
 
 Fix this with a systemd oneshot service that fires after Ollama is ready and pre-loads your model into VRAM before any request arrives.
 
-**VRAM budget**: Only preload models that fit within your available VRAM. On Phase 1 (8GB UMA), only `qwen3:8b` fits. On Phase 2 (RTX 3090, 24GB), pick one large model — `qwen3:32b` (20GB) and `qwen3:14b` (9.3GB) don't fit simultaneously.
+**VRAM budget**: Only preload models that fit within your available VRAM. On Phase 1 (8GB UMA), only `qwen3:8b` fits. On Phase 2 (RTX 3090, 24GB), pick one large model — `qwen3-coder:30b-a3b` (21GB) and `qwen3:14b` (9.3GB) don't fit simultaneously.
 
 Create the preload script:
 
@@ -200,7 +200,7 @@ done
 
 # Load model into VRAM — empty prompt triggers weight transfer, no output generated
 # Phase 1: use qwen3:8b-q4_K_M
-# Phase 2: use qwen3:32b-q4_K_M (or whichever model you want warm)
+# Phase 2: use qwen3-coder:30b-a3b-q4_K_M
 curl -s http://localhost:11434/api/generate \
   -d '{"model": "qwen3:8b-q4_K_M", "prompt": "", "keep_alive": -1}' \
   > /dev/null
@@ -208,7 +208,7 @@ EOF
 sudo chmod +x /usr/local/bin/ollama-preload.sh
 ```
 
-> Edit the model name in the script to match your phase. On Phase 2, replace `qwen3:8b-q4_K_M` with `qwen3:32b-q4_K_M`.
+> Edit the model name in the script to match your phase. On Phase 2, replace `qwen3:8b-q4_K_M` with `qwen3-coder:30b-a3b-q4_K_M`.
 
 Create the systemd service:
 
@@ -252,8 +252,8 @@ ollama pull qwen3:8b-q4_K_M
 
 # Phase 2: pull these after the RTX 3090 rebuild
 ollama pull qwen3:14b-q4_K_M
-ollama pull qwen3:32b-q4_K_M          # primary coding assistant (~20GB, ~25-35 tok/s)
-ollama pull qwen3-coder:30b-a3b-q4_K_M  # alternative: MoE coding model (256K context)
+ollama pull qwen3-coder:30b-a3b-q4_K_M  # primary coding assistant (MoE, 21GB, 100% GPU, ~13s/response)
+ollama pull qwen3:32b-q4_K_M          # ⚠️ NOT recommended — 29GB exceeds 24GB VRAM, spills to CPU
 ```
 
 > Models are stored in `~/.ollama/models` by default. On a 1TB drive, you have room for several models. Use `ollama rm <model>` to remove ones you're not using.
@@ -266,8 +266,8 @@ ollama pull qwen3-coder:30b-a3b-q4_K_M  # alternative: MoE coding model (256K co
 |---|---|---|---|
 | `qwen3:8b-q4_K_M` | ~5.2GB | 1 + 2 | HA LLM agent; hallucinates more than 14B but fast enough for short commands |
 | `qwen3:14b-q4_K_M` | ~9.3GB | 2 | Sweet spot for daily use; Phase 1 speed is tolerable but not enjoyable |
-| `qwen3:32b-q4_K_M` | ~20GB | 2 | **Primary coding assistant**; dense model, ~25–35 tok/s on RTX 3090 |
-| `qwen3-coder:30b-a3b-q4_K_M` | ~19GB | 2 | Coding alternative (MoE, 256K context); 3B active params per token |
+| `qwen3:32b-q4_K_M` | ~29GB | 2 | ⚠️ Exceeds 24GB VRAM — 29GB total spills to CPU (18%/82% CPU/GPU). Measured: 8–9 min/response on RTX 3090. Do not use as primary model. |
+| `qwen3-coder:30b-a3b-q4_K_M` | ~21GB | 2 | **Primary coding assistant** (MoE — 3B active params/token, 100% GPU at 21GB) |
 | `devstral:24b-small-2505-q4_K_M` | ~14GB | 2 | Pure coding agent; 1–2 tok/s on Phase 1 iGPU — unusable until RTX 3090 |
 
 ---

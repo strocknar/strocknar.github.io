@@ -10,7 +10,7 @@
 
 ## Overview
 
-Once Phase 2 is running, `qwen3:32b-q4_K_M` at 25–35 tok/s is fast enough to be a genuinely useful day-to-day coding assistant — not just a curiosity. This section covers wiring it into two tools:
+Once Phase 2 is running, `qwen3-coder:30b-a3b-q4_K_M` at ~80–100 tok/s is fast enough to be a genuinely useful day-to-day coding assistant — not just a curiosity. This section covers wiring it into two tools:
 
 - **VSCode** via Continue.dev (chat + autocomplete) or Cline (agentic)
 - **OpenCode** — an open-source terminal coding agent, the closest local equivalent to Claude Code
@@ -25,21 +25,20 @@ Both reach your Ollama VM over the LAN or through Tailscale when you're off-netw
 
 The RTX 3090 has 24GB VRAM. Running a chat model and an autocomplete model simultaneously requires fitting both:
 
-| Model | Size | Role |
-|---|---|---|
-| `qwen3:32b-q4_K_M` | ~20GB | Chat, code review, refactors |
-| `qwen3:8b-q4_K_M` | ~5.2GB | **Too large** — 20 + 5.2 = 25.2GB, over budget |
-| `qwen2.5-coder:3b` | ~2GB | Autocomplete — 20 + 2 = 22GB ✅ |
+| Model | Size | Role | Notes |
+|---|---|---|---|
+| `qwen3-coder:30b-a3b-q4_K_M` | ~21GB | Chat, code review, refactors | MoE architecture — only ~3B parameters active per token despite 30B total |
+| `qwen2.5-coder:3b` | ~2GB | Autocomplete — 21 + 2 = 23GB ✅ | Fast single-token completions |
+| `qwen3:32b-q4_K_M` | ~29GB | ⚠️ Do not use | Exceeds 24GB VRAM — spills to CPU, measured 8–9 min/response |
 
-**Recommendation: use `qwen2.5-coder:3b` for autocomplete and `qwen3:32b-q4_K_M` for chat.** Both stay resident in VRAM simultaneously with 2GB headroom. The 3B model is also faster than the 8B for single-token completions — autocomplete latency improves.
+**Recommendation: use `qwen2.5-coder:3b` for autocomplete and `qwen3-coder:30b-a3b-q4_K_M` for chat.** Both stay resident in VRAM simultaneously with ~1GB headroom. The MoE architecture means the 30B model activates only ~3B params per token — it runs at ~80–100 tok/s fully GPU-resident.
 
-Pull the autocomplete model on the Ollama VM:
+Pull both models on the Ollama VM:
 
 ```bash
+ollama pull qwen3-coder:30b-a3b-q4_K_M
 ollama pull qwen2.5-coder:3b
 ```
-
-> **Alternative for large codebases:** `qwen3-coder:30b-a3b-q4_K_M` has a 256K context window (vs. ~32K for qwen3:32b) at the same ~19GB footprint. If you regularly work with large files or need to feed an entire codebase into context, swap it in for chat. See the model table in [Ollama + Open WebUI](05-ollama-open-webui.md#model-reference).
 
 ---
 
@@ -74,17 +73,17 @@ Replace `~/.continue/config.yaml` with:
 
 ```yaml
 models:
-  - title: Qwen3 32B (Chat)
-    provider: ollama
-    model: qwen3:32b-q4_K_M
-    apiBase: http://<ollama-vm-ip>:11434
-    contextLength: 32768
-
-  - title: Qwen3 Coder 30B (Large Context)
+  - title: Qwen3 Coder 30B (Primary)
     provider: ollama
     model: qwen3-coder:30b-a3b-q4_K_M
     apiBase: http://<ollama-vm-ip>:11434
     contextLength: 262144
+
+  - title: Qwen3 14B (Fast)
+    provider: ollama
+    model: qwen3:14b-q4_K_M
+    apiBase: http://<ollama-vm-ip>:11434
+    contextLength: 32768
 
 tabAutocompleteModel:
   title: Qwen2.5 Coder 3B (Autocomplete)
@@ -93,14 +92,16 @@ tabAutocompleteModel:
   apiBase: http://<ollama-vm-ip>:11434
 ```
 
+> **Note:** `qwen3:32b-q4_K_M` is not included — at 29GB it exceeds the RTX 3090's 24GB VRAM and spills layers to CPU, resulting in 8–9 minute responses. Do not add it to this config.
+
 > **Phase 1 config:** Remove the autocomplete block entirely or point it at `qwen3:8b-q4_K_M`. The 3B autocomplete model is only worth using on Phase 2 where it responds fast enough to feel like Copilot.
 
 ### Usage
 
-- **Chat panel** (`Cmd+L` / `Ctrl+L`): opens the chat sidebar backed by `qwen3:32b`
+- **Chat panel** (`Cmd+L` / `Ctrl+L`): opens the chat sidebar backed by `qwen3-coder:30b-a3b`
 - **Inline edit** (`Cmd+I` / `Ctrl+I`): select code, describe the change
 - **Tab autocomplete**: enabled automatically once `tabAutocompleteModel` is set — appears as ghost text while you type
-- **Switch model**: use the model dropdown in the chat panel to swap between 32B and the 30B coder model
+- **Switch model**: use the model dropdown in the chat panel to swap between the 30B coder and 14B models
 
 ---
 
@@ -121,7 +122,7 @@ In VSCode Settings (`Cmd+,` / `Ctrl+,`), search `Cline` and set:
 | API Provider | `OpenAI Compatible` |
 | Base URL | `http://<ollama-vm-ip>:11434/v1` |
 | API Key | `ollama` |
-| Model | `qwen3:32b-q4_K_M` |
+| Model | `qwen3-coder:30b-a3b-q4_K_M` |
 
 Or edit `settings.json` directly:
 
@@ -130,7 +131,7 @@ Or edit `settings.json` directly:
   "cline.apiProvider": "openai",
   "cline.openAiBaseUrl": "http://<ollama-vm-ip>:11434/v1",
   "cline.openAiApiKey": "ollama",
-  "cline.openAiModelId": "qwen3:32b-q4_K_M"
+  "cline.openAiModelId": "qwen3-coder:30b-a3b-q4_K_M"
 }
 ```
 
@@ -181,9 +182,6 @@ Create `~/.config/opencode/opencode.json`:
         "baseURL": "http://<ollama-vm-ip>:11434/v1"
       },
       "models": {
-        "qwen3:32b-q4_K_M": {
-          "name": "Qwen3 32B"
-        },
         "qwen3-coder:30b-a3b-q4_K_M": {
           "name": "Qwen3 Coder 30B"
         }
@@ -203,8 +201,10 @@ opencode
 
 OpenCode auto-detects your project's language server (LSP) and wires it up. Select your model with `/models` inside the session.
 
-> **Multi-agent sessions:** OpenCode supports running parallel agent sessions. On Phase 2, this works well — two concurrent requests to `qwen3:32b` are within what the RTX 3090 can serve, though throughput per session drops roughly in half.
+> **Multi-agent sessions:** OpenCode supports running parallel agent sessions. On Phase 2, this works well — two concurrent requests to `qwen3-coder:30b-a3b` are within what the RTX 3090 can serve, though throughput per session drops roughly in half.
 
 ---
+
+> For alternative inference backends and a full MoE model reference table, see [Inference Backends](16-inference-backends.md).
 
 [← Voice Satellites](14-voice-satellites.md)
