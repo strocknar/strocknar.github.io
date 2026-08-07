@@ -2,7 +2,7 @@
 ---
 # 15 — Local Coding Assistant
 
-[← Voice Satellites](14-voice-satellites.md)
+[← Voice Satellites](14-voice-satellites.md) | [Next: Inference Backends →](16-inference-backends.md)
 
 ---
 
@@ -207,4 +207,4 @@ OpenCode auto-detects your project's language server (LSP) and wires it up. Sele
 
 > For alternative inference backends and a full MoE model reference table, see [Inference Backends](16-inference-backends.md).
 
-[← Voice Satellites](14-voice-satellites.md)
+[← Voice Satellites](14-voice-satellites.md) | [Next: Inference Backends →](16-inference-backends.md)
