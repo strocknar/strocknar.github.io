@@ -38,19 +38,23 @@ A complete start-to-finish guide for building a local AI system with Home Assist
 
 1. [Hardware Assembly](01-hardware-assembly.md)
 2. [Proxmox Installation](02-proxmox-installation.md)
-3. [Docker & Homelab Services](03-docker-homelab.md)
-4. [Home Assistant VM](04-home-assistant-vm.md)
-5. [Ollama + Open WebUI](05-ollama-open-webui.md)
-6. [Home Assistant Voice Stack](06-voice-stack.md)
-7. [eGPU Setup](07-egpu-setup.md)
-8. [Remote Access with Tailscale](08-tailscale-remote-access.md)
-9. [Storage: External SSDs](09-external-storage.md)
-10. [Web Search Integration](10-web-search.md)
-11. [Upgrading & Future Expansion](11-upgrading.md)
-12. [Local Image Generation (ComfyUI + FLUX)](12-image-generation.md)
-13. [Devices & Home Assistant Compatibility](13-devices.md)
-14. [Voice Satellites](14-voice-satellites.md)
-15. [Local Coding Assistant](15-coding-assistant.md)
+3. [External Storage](03-external-storage.md)
+4. [Docker & Homelab Services](04-docker-homelab.md)
+5. [Nginx Proxy Manager](05-nginx-proxy-manager.md)
+6. [Plex LXC](06-plex-lxc.md)
+7. [Samba Network Shares](07-samba.md)
+8. [Home Assistant VM](08-home-assistant-vm.md)
+9. [Ollama + Open WebUI](09-ollama-open-webui.md)
+10. [Home Assistant Voice Stack](10-voice-stack.md)
+11. [eGPU Setup](11-egpu-setup.md)
+12. [Remote Access with Tailscale](12-tailscale-remote-access.md)
+13. [Web Search Integration](13-web-search.md)
+14. [Upgrading & Future Expansion](14-upgrading.md)
+15. [Local Image Generation (ComfyUI + FLUX)](15-image-generation.md)
+16. [Devices & Home Assistant Compatibility](16-devices.md)
+17. [Voice Satellites](17-voice-satellites.md)
+18. [Local Coding Assistant](18-coding-assistant.md)
+19. [Inference Backends](19-inference-backends.md)
 
 ## Architecture Overview
 
@@ -84,4 +88,4 @@ Proxmox VE (bare metal, Debian-based)
 | Phase 1 (Option B) | AI X1 Pro-470 | 890M iGPU | ~20–25 | ~10–14 | ~3–5 |
 | Phase 2 | + RTX 3090 (used) | eGPU | ~75–90 | ~55–65 | ~25–35 |
 
-> Phase 2 32B model is `qwen3:32b-q4_K_M` (~20GB). Tok/s is memory-bandwidth-bound on RTX 3090 (936 GB/s). See [eGPU Setup](07-egpu-setup.md) for the complete Phase 2 setup process.
+> Phase 2 32B model is `qwen3:32b-q4_K_M` (~20GB). Tok/s is memory-bandwidth-bound on RTX 3090 (936 GB/s). See [eGPU Setup](11-egpu-setup.md) for the complete Phase 2 setup process.
