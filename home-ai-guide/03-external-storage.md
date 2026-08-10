@@ -2,7 +2,7 @@
 ---
 # 03 — External Storage (USB SSDs)
 
-[← Docker & Homelab Services](04-docker-homelab.md) | [Next: Plex LXC →](06-plex-lxc.md)
+[← Proxmox Installation](02-proxmox-installation.md) | [Next: Docker & Homelab Services →](04-docker-homelab.md)
 
 ---
 
@@ -243,4 +243,4 @@ This is the natural upgrade path — no reinstallation required.
 
 ---
 
-[← Docker & Homelab Services](04-docker-homelab.md) | [Next: Plex LXC →](06-plex-lxc.md)
+[← Proxmox Installation](02-proxmox-installation.md) | [Next: Docker & Homelab Services →](04-docker-homelab.md)
