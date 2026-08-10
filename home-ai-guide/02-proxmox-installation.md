@@ -2,7 +2,7 @@
 ---
 # 02 — Proxmox Installation
 
-[← Hardware Assembly](01-hardware-assembly.md) | [Next: Docker & Homelab Services →](03-docker-homelab.md)
+[← Hardware Assembly](01-hardware-assembly.md) | [Next: External Storage →](03-external-storage.md)
 
 ---
 
@@ -151,7 +151,7 @@ vim /etc/modprobe.d/vfio.conf
 options vfio-pci ids=1002:1900,1002:1640
 ```
 
-> Use the IDs from `lspci -nn`. This binds only the iGPU to VFIO. In Phase 2, you will replace these IDs with the RTX 3090's IDs — see [eGPU Setup](07-egpu-setup.md).
+> Use the IDs from `lspci -nn`. This binds only the iGPU to VFIO. In Phase 2, you will replace these IDs with the RTX 3090's IDs — see [eGPU Setup](11-egpu-setup.md).
 
 ### Update initramfs and Reboot
 
@@ -199,7 +199,7 @@ In the Proxmox web UI:
 
 By default Proxmox splits the disk into `local` (ISOs, backups) and `local-lvm` (VM disks). The defaults are fine for a single-disk setup.
 
-To add external USB SSDs later, see [External Storage](09-external-storage.md).
+To add external USB SSDs later, see [External Storage](03-external-storage.md).
 
 ---
 
@@ -236,4 +236,4 @@ This is optional — skip if your router handles VLAN segmentation.
 
 ---
 
-[← Hardware Assembly](01-hardware-assembly.md) | [Next: Docker & Homelab Services →](03-docker-homelab.md)
+[← Hardware Assembly](01-hardware-assembly.md) | [Next: External Storage →](03-external-storage.md)

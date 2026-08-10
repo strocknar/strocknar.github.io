@@ -1,8 +1,8 @@
 ---
 ---
-# 05 — Ollama + Open WebUI
+# 09 — Ollama + Open WebUI
 
-[← Home Assistant VM](04-home-assistant-vm.md) | [Next: Voice Stack →](06-voice-stack.md)
+[← Home Assistant VM](08-home-assistant-vm.md) | [Next: Voice Stack →](10-voice-stack.md)
 
 ---
 
@@ -14,7 +14,7 @@ Ollama (model backend) and Open WebUI (chat interface) run in a dedicated Proxmo
 
 **Phase 1 (iGPU):** The 780M iGPU is passed through to this VM from Proxmox. Ollama uses it via ROCm. With 8GB UMA, `qwen3:8b` fits fully on GPU. Generation speed is functional for Home Assistant voice responses, but too slow (~1–2 tok/s on larger models, ~5–8 tok/s on 8B) to use Open WebUI as a day-to-day ChatGPT replacement — that experience requires the eGPU.
 
-**Phase 2 (RTX 3090):** Destroy and rebuild this VM (see [eGPU Setup](07-egpu-setup.md)). NVIDIA drivers replace ROCm. Full 32B capability at ~25–35 tok/s. Open WebUI becomes genuinely usable as a local alternative to cloud LLMs.
+**Phase 2 (RTX 3090):** Destroy and rebuild this VM (see [eGPU Setup](11-egpu-setup.md)). NVIDIA drivers replace ROCm. Full 32B capability at ~25–35 tok/s. Open WebUI becomes genuinely usable as a local alternative to cloud LLMs.
 
 ### Phase 1 Resource Reality
 
@@ -33,7 +33,7 @@ The iGPU shares system RAM as VRAM. With 32GB total:
 
 ---
 
-## 5.1 Create the Ollama VM
+## 9.1 Create the Ollama VM
 
 ### Download Ubuntu ISO
 
@@ -89,7 +89,7 @@ Start the VM, open the console, follow the Ubuntu Server installer:
 
 ---
 
-## 5.2 Install ROCm
+## 9.2 Install ROCm
 
 SSH into the Ollama VM:
 
@@ -138,7 +138,7 @@ rocm-smi
 
 ---
 
-## 5.3 Install Ollama
+## 9.3 Install Ollama
 
 ```bash
 curl -fsSL https://ollama.com/install.sh | sh
@@ -178,7 +178,7 @@ sudo systemctl enable ollama
 sudo systemctl restart ollama
 ```
 
-### 5.3.1 Preload Models into VRAM on Boot
+### 9.3.1 Preload Models into VRAM on Boot
 
 `OLLAMA_KEEP_ALIVE=-1` prevents eviction once a model is loaded, but doesn't load anything on boot — the first request after a reboot still pays the full cold-start penalty (90 seconds to 5+ minutes depending on model size).
 
@@ -242,7 +242,7 @@ ollama ps   # should show your model loaded in VRAM
 
 ---
 
-## 5.4 Pull Your First Models
+## 9.4 Pull Your First Models
 
 All are Q4_K_M quantizations — the standard Ollama default for best quality/size tradeoff.
 
@@ -272,7 +272,7 @@ ollama pull qwen3:32b-q4_K_M          # ⚠️ NOT recommended — 29GB exceeds 
 
 ---
 
-## 5.5 Install Open WebUI
+## 9.5 Install Open WebUI
 
 Open WebUI provides a ChatGPT-style interface backed by your local Ollama instance.
 
@@ -303,7 +303,7 @@ Create your admin account on first visit.
 
 ---
 
-## 5.6 Test Inference
+## 9.6 Test Inference
 
 In Open WebUI, select a model from the dropdown and send a message. Verify:
 
@@ -324,7 +324,7 @@ GPU memory usage should increase as the model runs.
 
 ---
 
-## 5.7 Connect Ollama to Home Assistant
+## 9.7 Connect Ollama to Home Assistant
 
 In HA web UI: **Settings → Devices & Services → Add Integration → Ollama**
 
@@ -335,7 +335,7 @@ This enables Ollama as the conversation agent for voice commands and automations
 
 ---
 
-## 5.8 Customize the Model's Personality (System Prompt)
+## 9.8 Customize the Model's Personality (System Prompt)
 
 Open WebUI lets you set a persistent system prompt that applies to every conversation — the equivalent of a `~/.claude/CLAUDE.md` for your local models.
 
@@ -389,4 +389,4 @@ ollama run <model>             # interactive CLI chat
 
 ---
 
-[← Home Assistant VM](04-home-assistant-vm.md) | [Next: Voice Stack →](06-voice-stack.md)
+[← Home Assistant VM](08-home-assistant-vm.md) | [Next: Voice Stack →](10-voice-stack.md)

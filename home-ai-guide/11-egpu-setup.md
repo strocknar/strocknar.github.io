@@ -1,8 +1,8 @@
 ---
 ---
-# 07 — eGPU Setup (RTX 3090 via OCuLink)
+# 11 — eGPU Setup (RTX 3090 via OCuLink)
 
-[← Voice Stack](06-voice-stack.md) | [Next: Tailscale →](08-tailscale-remote-access.md)
+[← Voice Stack](10-voice-stack.md) | [Next: Tailscale →](12-tailscale-remote-access.md)
 
 ---
 
@@ -17,7 +17,7 @@ This guide migrates from Phase 1 (780M iGPU in Ollama VM) to Phase 2 (RTX 3090 v
 3. Add RTX 3090 as PCI passthrough to the new VM
 4. Verify CUDA and Ollama GPU detection
 
-The iGPU automatically returns to the Proxmox host when its VFIO binding is removed — Plex hardware transcoding becomes available after the reboot in step 7.2.
+The iGPU automatically returns to the Proxmox host when its VFIO binding is removed — Plex hardware transcoding becomes available after the reboot in step 11.2.
 
 ---
 
@@ -30,7 +30,7 @@ The iGPU automatically returns to the Proxmox host when its VFIO binding is remo
 
 ---
 
-## 7.1 Identify the RTX 3090 PCI IDs
+## 11.1 Identify the RTX 3090 PCI IDs
 
 Power on the DEG1 before the UM890 Pro (always). In the Proxmox shell:
 
@@ -49,7 +49,7 @@ Standard RTX 3090 IDs are `10de:2204` and `10de:1aef` — confirm yours match.
 
 ---
 
-## 7.2 Update VFIO Binding to RTX 3090
+## 11.2 Update VFIO Binding to RTX 3090
 
 Edit `/etc/modprobe.d/vfio.conf` (created in [Proxmox Installation §2.5](02-proxmox-installation.md)):
 
@@ -88,7 +88,7 @@ Look for `Kernel driver in use: amdgpu`. Plex hardware transcoding is now availa
 
 ---
 
-## 7.3 Rebuild the Ollama VM
+## 11.3 Rebuild the Ollama VM
 
 The Phase 1 VM has ROCm installed. Rather than converting it, destroy and recreate it cleanly with the NVIDIA stack.
 
@@ -126,7 +126,7 @@ Start the VM and install Ubuntu 24.04 Server (minimal install, OpenSSH enabled, 
 
 ---
 
-## 7.4 Install NVIDIA Drivers
+## 11.4 Install NVIDIA Drivers
 
 SSH into the new Ollama VM:
 
@@ -152,7 +152,7 @@ Expected output: RTX 3090 listed with 24576 MiB VRAM, driver version, CUDA versi
 
 ---
 
-## 7.5 Install Ollama
+## 11.5 Install Ollama
 
 ```bash
 curl -fsSL https://ollama.com/install.sh | sh
@@ -194,7 +194,7 @@ journalctl -u ollama -n 50
 
 ---
 
-## 7.6 Install Open WebUI
+## 11.6 Install Open WebUI
 
 ```bash
 # Install Docker
@@ -214,7 +214,7 @@ docker run -d \
 
 ---
 
-## 7.7 Pull and Test Primary Model
+## 11.7 Pull and Test Primary Model
 
 ```bash
 ollama pull qwen3-coder:30b-a3b-q4_K_M
@@ -277,4 +277,4 @@ Confirm `/etc/modprobe.d/vfio.conf` no longer contains the iGPU IDs. Run `update
 
 ---
 
-[← Voice Stack](06-voice-stack.md) | [Next: Tailscale →](08-tailscale-remote-access.md)
+[← Voice Stack](10-voice-stack.md) | [Next: Tailscale →](12-tailscale-remote-access.md)

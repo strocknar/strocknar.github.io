@@ -1,8 +1,8 @@
 ---
 ---
-# 03 — Docker & Homelab Services
+# 04 — Docker & Homelab Services
 
-[← Proxmox Installation](02-proxmox-installation.md) | [Next: Home Assistant VM →](04-home-assistant-vm.md)
+[← External Storage](03-external-storage.md) | [Next: Nginx Proxy Manager →](05-nginx-proxy-manager.md)
 
 ---
 
@@ -23,7 +23,7 @@ Proxmox LXC (Docker host)
 
 ---
 
-## 3.0 Template Download
+## 4.0 Template Download
 
 **First, download the Debian 13 template** (one-time setup):
 
@@ -31,9 +31,9 @@ In the Proxmox left panel: **node → local → CT Templates → Templates butto
 
 ---
 
-## 3.1 AdGuard Home — Split-Horizon DNS
+## 4.1 AdGuard Home — Split-Horizon DNS
 
-AdGuard Home runs in its own LXC to provide two things: network-wide ad blocking, and local DNS rewrites that make `*.yourdomain.com` resolve to Nginx Proxy Manager on your LAN (and over Tailscale — see [section 8](08-tailscale-remote-access.md)).
+AdGuard Home runs in its own LXC to provide two things: network-wide ad blocking, and local DNS rewrites that make `*.yourdomain.com` resolve to Nginx Proxy Manager on your LAN (and over Tailscale — see [section 12](12-tailscale-remote-access.md)).
 
 **Why AdGuard gets its own LXC:** DNS is infrastructure. You don't want a Docker stack restart to take down name resolution for every device on your LAN.
 
@@ -97,7 +97,7 @@ This is how `*.yourdomain.com` resolves to NPM on your LAN instead of the public
 
 In the AdGuard web UI: **Filters → DNS Rewrites → Add DNS rewrite**
 
-Add one entry per service. All entries point to `<npm-lxc-ip>` — the static IP you will assign to the Docker LXC in section 3.2:
+Add one entry per service. All entries point to `<npm-lxc-ip>` — the static IP you will assign to the Docker LXC in section 4.2:
 
 | Domain | Answer |
 |---|---|
@@ -134,7 +134,7 @@ nslookup google.com <adguard-lxc-ip>
 
 ---
 
-## 3.2 Create the Docker LXC
+## 4.2 Create the Docker LXC
 
 In Proxmox web UI: **Create CT** (Create Container)
 
@@ -149,7 +149,7 @@ In Proxmox web UI: **Create CT** (Create Container)
 | CPU | `2 cores` |
 | RAM | `6144` MB (6GB) |
 | Network — Bridge | `vmbr0` |
-| Network — IPv4 | Static, `<docker-lxc-ip>/24` — use `/24`, not `/32` (match your subnet). This IP is what you entered as `<npm-lxc-ip>` in section 3.1. |
+| Network — IPv4 | Static, `<docker-lxc-ip>/24` — use `/24`, not `/32` (match your subnet). This IP is what you entered as `<npm-lxc-ip>` in section 4.1. |
 | Network — Gateway | Your router IP (e.g. `192.168.50.1`) |
 | **DNS tab — DNS server** | `<adguard-lxc-ip>` — set this so the LXC resolves hostnames through AdGuard |
 | Start at boot | ✅ Yes |
@@ -173,7 +173,7 @@ Start the LXC.
 
 ---
 
-## 3.3 Install Docker
+## 4.3 Install Docker
 
 In the Docker LXC shell (Proxmox web UI: **LXC 200 → Console**):
 
@@ -199,7 +199,7 @@ systemctl enable docker
 
 ---
 
-## 3.4 Create Docker Compose Directory
+## 4.4 Create Docker Compose Directory
 
 ```bash
 mkdir -p /opt/homelab
@@ -208,7 +208,7 @@ cd /opt/homelab
 
 ---
 
-## 3.5 Deploy the Stack
+## 4.5 Deploy the Stack
 
 Create the compose file:
 
@@ -319,7 +319,7 @@ docker compose up -d
 
 ---
 
-## 3.6 Access the Services
+## 4.6 Access the Services
 
 | Service | URL | Default login |
 |---|---|---|
@@ -335,186 +335,4 @@ Change all default passwords immediately.
 
 ---
 
-## 3.7 Install Plex Media Server
-
-Plex runs in its own LXC to keep it isolated and to allow iGPU passthrough for hardware transcoding.
-
-### Create Plex LXC
-
-Same process as the Docker LXC but:
-
-| Setting | Value |
-|---|---|
-| CT ID | `201` |
-| Hostname | `plex` |
-| RAM | `2048` MB |
-| Disk | `20GB` (media stored on external SSD — see [External Storage](09-external-storage.md)) |
-| Privileged | ✅ Yes |
-| Start at boot | ✅ Yes |
-
-### Pass 780M iGPU to Plex LXC
-
-> **Phase 1 note:** In Phase 1, the 780M iGPU is passed through to the Ollama VM. The `/dev/dri/` device will not be present on the host until Phase 2 (when the RTX 3090 replaces the iGPU in VFIO binding). Skip the hardware transcoding setup for now and configure it after completing [eGPU Setup](07-egpu-setup.md).
-
-In Proxmox host shell:
-
-```bash
-ls /dev/dri/
-# Note the renderD128 and card0/card1 device names
-```
-
-Edit the Plex LXC config:
-
-```bash
-vim /etc/pve/lxc/201.conf
-```
-
-Add:
-
-```
-lxc.cgroup2.devices.allow: c 226:0 rwm
-lxc.cgroup2.devices.allow: c 226:128 rwm
-lxc.mount.entry: /dev/dri dev/dri none bind,optional,create=dir
-```
-
-### Install Plex in LXC
-
-```bash
-# In Plex LXC console
-apt-get install -y curl
-
-# Add the Plex repository
-# Note: Plex's signing key uses a SHA1 self-signature that Debian Trixie's
-# OpenPGP verifier (sqv) rejects since 2026-02-01. Use [trusted=yes] to
-# skip signature verification — the package still comes over HTTPS.
-echo "deb [trusted=yes] https://downloads.plex.tv/repo/deb public main" \
-  | tee /etc/apt/sources.list.d/plexmediaserver.list
-
-apt-get update && apt-get install -y plexmediaserver
-systemctl enable --now plexmediaserver
-```
-
-Access: `http://<plex-lxc-ip>:32400/web`
-
----
-
-## 3.8 Nginx Proxy Manager — HTTPS Setup
-
-The goal: reach services by a friendly name (`ha.yourdomain.com`) on your internal network only, with valid browser-trusted HTTPS through NPM — no port forwarding, no public exposure.
-
-This uses **DNS-01 challenge** (Let's Encrypt proves domain ownership via a DNS TXT record instead of port 80) combined with **split-horizon DNS** (AdGuard Home resolves the domain to a local IP — configured in section 3.1).
-
-### Prerequisites
-
-- A domain hosted in **AWS Route 53**
-- An AWS IAM user with permissions to modify Route 53 records (created in Step 1 below)
-- NPM running (from section 3.5)
-- AdGuard Home running with DNS rewrites configured (from section 3.1)
-
----
-
-### Step 1 — Create an IAM User for DNS-01
-
-NPM needs AWS credentials that can create/delete Route 53 TXT records for the Let's Encrypt challenge.
-
-1. In the [AWS IAM console](https://console.aws.amazon.com/iam) → **Users → Create user**
-2. Name it `certbot-dns` (no console access needed)
-3. After creation, go to the user → **Security credentials → Create access key** → select **Other** → create
-4. Save the **Access Key ID** and **Secret Access Key** — shown once
-
-Attach this inline policy to the user (replace `<HOSTED_ZONE_ID>` with your Route 53 hosted zone ID, found in Route 53 → Hosted zones):
-
-```json
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": [
-        "route53:ListHostedZones",
-        "route53:GetChange"
-      ],
-      "Resource": "*"
-    },
-    {
-      "Effect": "Allow",
-      "Action": "route53:ChangeResourceRecordSets",
-      "Resource": "arn:aws:route53:::hostedzone/<HOSTED_ZONE_ID>",
-      "Condition": {
-        "ForAllValues:StringEquals": {
-          "route53:ChangeResourceRecordSetsRecordTypes": ["TXT"]
-        }
-      }
-    }
-  ]
-}
-```
-
----
-
-### Step 2 — Request a Wildcard Certificate in NPM
-
-1. In NPM admin UI: **SSL Certificates → Add SSL Certificate → Let's Encrypt**
-2. Fill in:
-
-   | Field | Value |
-   |---|---|
-   | Domain Names | `*.yourdomain.com` and `yourdomain.com` |
-   | Email | your email |
-   | Use a DNS Challenge | ✅ Enable |
-   | DNS Provider | `Route53` |
-   | Credentials File Content | see below |
-
-   Credentials content:
-   ```
-   dns_route53_access_key_id = AKIAIOSFODNN7EXAMPLE
-   dns_route53_secret_access_key = wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
-   ```
-
-3. Agree to Let's Encrypt ToS → **Save**
-
-NPM will create a DNS TXT record in Route 53 via the AWS API to prove ownership, then issue a wildcard cert. This takes ~30 seconds.
-
----
-
-### Step 3 — Create Proxy Hosts in NPM
-
-> Local DNS rewrites are already handled by AdGuard Home (section 3.1). No additional DNS configuration is needed here.
-
-In NPM admin UI: **Hosts → Proxy Hosts → Add Proxy Host**
-
-For each service:
-
-| Field | Value |
-|---|---|
-| Domain Names | `ha.yourdomain.com` |
-| Scheme | `http` |
-| Forward Hostname / IP | LAN IP of the service (e.g. `192.168.50.7`) |
-| Forward Port | Service port (e.g. `8123` for HA) |
-| **Websockets Support** | ✅ Enable — required for HA, Portainer, and Grafana |
-| **SSL Certificate** | Select the `*.yourdomain.com` wildcard cert |
-| Force SSL | ✅ Enable |
-| HTTP/2 Support | ✅ Enable |
-
-Repeat for each service. Example entries:
-
-| Subdomain | Backend IP | Port |
-|---|---|---|
-| `ha.yourdomain.com` | HA VM LAN IP | `8123` |
-| `ollama.yourdomain.com` | Ollama VM LAN IP | `3000` |
-| `portainer.yourdomain.com` | Docker LXC IP | `9000` |
-| `grafana.yourdomain.com` | Docker LXC IP | `3001` |
-
----
-
-### Result
-
-Typing `ha.yourdomain.com` in any browser on your LAN:
-- Resolves to NPM via AdGuard DNS rewrite
-- NPM proxies to HA and serves valid HTTPS with the wildcard cert
-- Never leaves your network
-- Full browser mic access works (HTTPS required for microphone in mobile browsers)
-
----
-
-[← Proxmox Installation](02-proxmox-installation.md) | [Next: Home Assistant VM →](04-home-assistant-vm.md)
+[← External Storage](03-external-storage.md) | [Next: Nginx Proxy Manager →](05-nginx-proxy-manager.md)

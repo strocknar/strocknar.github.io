@@ -1,8 +1,8 @@
 ---
 ---
-# 11 — Upgrading & Future Expansion
+# 14 — Upgrading & Future Expansion
 
-[← Web Search](10-web-search.md) | [Image Generation →](12-image-generation.md)
+[← Web Search](13-web-search.md) | [Image Generation →](15-image-generation.md)
 
 ---
 
@@ -60,7 +60,7 @@ The RAM and NVMe you bought for the UM890 Pro transfer directly — both machine
 
 ## Phase 2: Adding the eGPU
 
-See [eGPU Setup](07-egpu-setup.md) for the complete process. Summary:
+See [eGPU Setup](11-egpu-setup.md) for the complete process. Summary:
 
 1. Assemble DEG1 with RM850x and RTX 3090 (used)
 2. Power DEG1 before the UM890 Pro (or AI X1 Pro-470 if already upgraded)
@@ -113,7 +113,7 @@ The DEG1 enclosure and RM850x PSU are reused for any future GPU. The swap proces
 1. Power off everything
 2. Remove RTX 3090 from DEG1
 3. Install new GPU
-4. Update VFIO binding in Proxmox with new GPU PCI IDs (steps 7.1–7.2)
+4. Update VFIO binding in Proxmox with new GPU PCI IDs (steps 11.1–11.2)
 5. Update Ollama VM PCI passthrough device
 
 **Future GPU candidates:**
@@ -219,11 +219,11 @@ docker compose up -d
 # Open WebUI updates (in Ollama VM)
 docker pull ghcr.io/open-webui/open-webui:main
 docker stop open-webui && docker rm open-webui
-# Re-run the docker run command from section 5.5
+# Re-run the docker run command from section 9.5
 ```
 
 > If an Ollama update breaks GPU detection, check the Ollama GitHub releases page for CUDA regression notes before upgrading. `nvidia-smi` should continue to show the RTX 3090 — Ollama CUDA issues are typically a library path problem resolvable with `sudo apt install --reinstall nvidia-cuda-toolkit`.
 
 ---
 
-[← Web Search](10-web-search.md) | [Image Generation →](12-image-generation.md)
+[← Web Search](13-web-search.md) | [Image Generation →](15-image-generation.md)

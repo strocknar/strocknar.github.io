@@ -1,8 +1,8 @@
 ---
 ---
-# 12 — Local Image Generation (ComfyUI + FLUX)
+# 15 — Local Image Generation (ComfyUI + FLUX)
 
-[← Upgrading](11-upgrading.md) | [Devices →](13-devices.md)
+[← Upgrading](14-upgrading.md) | [Devices →](16-devices.md)
 
 ---
 
@@ -36,7 +36,7 @@ Ollama VM (RTX 3090 passthrough)
 
 ---
 
-## 12.1 Install ComfyUI
+## 15.1 Install ComfyUI
 
 SSH into the Ollama VM:
 
@@ -66,9 +66,9 @@ pip install -r requirements.txt
 
 ---
 
-## 12.2 Download FLUX.1 Schnell (fp8)
+## 15.2 Download FLUX.1 Schnell (fp8)
 
-FLUX model weights are large — store them on the external models SSD if configured ([section 9.4](09-external-storage.md)):
+FLUX model weights are large — store them on the external models SSD if configured ([section 3.4](03-external-storage.md)):
 
 ```bash
 # Install huggingface_hub (includes the hf CLI — huggingface-cli was removed in v1.0.0)
@@ -98,7 +98,7 @@ Total download: ~20 GB. Allow 10–30 minutes depending on connection speed.
 
 ---
 
-## 12.3 Run ComfyUI
+## 15.3 Run ComfyUI
 
 ```bash
 cd ~/ComfyUI
@@ -160,7 +160,7 @@ sudo systemctl enable --now comfyui
 
 ---
 
-## 12.4 Configure Ollama VRAM Release
+## 15.4 Configure Ollama VRAM Release
 
 By default Ollama holds a loaded model in VRAM until it times out. Set the timeout so VRAM is freed for ComfyUI when LLM inference is idle:
 
@@ -183,7 +183,7 @@ sudo systemctl restart ollama
 
 ---
 
-## 12.5 Connect Open WebUI to ComfyUI
+## 15.5 Connect Open WebUI to ComfyUI
 
 In Open WebUI: **Admin Panel → Settings → Images**
 
@@ -199,7 +199,7 @@ Example: `/image a cyberpunk cityscape at night, neon reflections on wet pavemen
 
 ---
 
-## 12.6 ComfyUI Manager (Recommended)
+## 15.6 ComfyUI Manager (Recommended)
 
 ComfyUI Manager adds a UI for installing custom nodes, model downloader, and workflow templates — saves significant manual configuration:
 
@@ -220,7 +220,7 @@ Useful custom nodes to install via Manager:
 
 ---
 
-## 12.7 Additional Models
+## 15.7 Additional Models
 
 Store all checkpoints on the models external SSD to avoid filling the internal NVMe:
 
@@ -251,7 +251,7 @@ With LLM models (~30–50 GB) added, a 2TB models drive fills up. Prune models y
 
 ---
 
-## 12.8 Phase 1 (No eGPU)
+## 15.8 Phase 1 (No eGPU)
 
 Image generation on the 780M iGPU before the eGPU arrives is possible but slow:
 
@@ -288,11 +288,11 @@ pip install torch --index-url https://download.pytorch.org/whl/cu126 --force-rei
 ```
 
 **Slow generation despite GPU usage:**
-Ensure Ollama has released VRAM (check `OLLAMA_KEEP_ALIVE` setting in [section 12.4](12-image-generation.md)). Confirm no other process is holding GPU memory:
+Ensure Ollama has released VRAM (check `OLLAMA_KEEP_ALIVE` setting in [section 15.4](15-image-generation.md)). Confirm no other process is holding GPU memory:
 ```bash
 nvidia-smi
 ```
 
 ---
 
-[← Upgrading](11-upgrading.md) | [Devices →](13-devices.md)
+[← Upgrading](14-upgrading.md) | [Devices →](16-devices.md)

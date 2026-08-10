@@ -1,8 +1,8 @@
 ---
 ---
-# 10 — Web Search Integration (SearXNG + Open WebUI)
+# 13 — Web Search Integration (SearXNG + Open WebUI)
 
-[← External Storage](09-external-storage.md) | [Next: Upgrading →](11-upgrading.md)
+[← Tailscale](12-tailscale-remote-access.md) | [Next: Upgrading →](14-upgrading.md)
 
 ---
 
@@ -24,7 +24,7 @@ Your prompts and search queries stay entirely on your network. SearXNG proxies s
 
 ---
 
-## 10.1 Deploy SearXNG
+## 13.1 Deploy SearXNG
 
 Add SearXNG to the Docker stack in the Docker LXC.
 
@@ -120,7 +120,7 @@ Try a search in the UI to confirm results appear.
 
 ---
 
-## 10.2 Connect SearXNG to Open WebUI
+## 13.2 Connect SearXNG to Open WebUI
 
 In Open WebUI: **avatar/username (bottom-left) → Admin Panel → Settings → Web Search**
 
@@ -146,7 +146,7 @@ Save.
 
 ---
 
-## 10.3 Using Web Search in Open WebUI
+## 13.3 Using Web Search in Open WebUI
 
 In the chat interface, click the **globe icon** (or use the `+` menu) to enable web search for a message. When enabled, Open WebUI will:
 
@@ -161,7 +161,7 @@ The model cites sources inline in its response.
 
 ---
 
-## 10.4 Web Search from Home Assistant
+## 13.4 Web Search from Home Assistant
 
 The Ollama conversation agent in HA can also use web search for queries it can't answer from its training data. This requires the `extended_openai_conversation` custom integration via HACS.
 
@@ -230,7 +230,7 @@ Update your system prompt to include something like: "You can search the web for
 
 ---
 
-## 10.5 Perplexica (Optional Alternative)
+## 13.5 Perplexica (Optional Alternative)
 
 Perplexica is a full Perplexity-style interface that combines search and LLM into a single purpose-built UI. If you prefer a dedicated research tool over Open WebUI's integrated search:
 
@@ -257,4 +257,4 @@ Perplexica and Open WebUI serve different use cases — Open WebUI is the better
 
 ---
 
-[← External Storage](09-external-storage.md) | [Next: Upgrading →](11-upgrading.md)
+[← Tailscale](12-tailscale-remote-access.md) | [Next: Upgrading →](14-upgrading.md)

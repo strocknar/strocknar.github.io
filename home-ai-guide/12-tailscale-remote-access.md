@@ -1,8 +1,8 @@
 ---
 ---
-# 08 — Remote Access with Tailscale
+# 12 — Remote Access with Tailscale
 
-[← eGPU Setup](07-egpu-setup.md) | [Next: External Storage →](09-external-storage.md)
+[← eGPU Setup](11-egpu-setup.md) | [Next: Web Search →](13-web-search.md)
 
 ---
 
@@ -18,13 +18,13 @@ Tailscale builds an encrypted WireGuard mesh network between your devices. Once 
 
 ---
 
-## 8.1 Create a Tailscale Account
+## 12.1 Create a Tailscale Account
 
 Sign up at `tailscale.com`. Use a Google, GitHub, or Microsoft account — no separate password needed.
 
 ---
 
-## 8.2 Install Tailscale on Proxmox Host
+## 12.2 Install Tailscale on Proxmox Host
 
 In the Proxmox shell:
 
@@ -32,7 +32,7 @@ In the Proxmox shell:
 curl -fsSL https://tailscale.com/install.sh | sh
 ```
 
-Enable IP forwarding — required for subnet routing (section 8.4):
+Enable IP forwarding — required for subnet routing (section 12.4):
 
 ```bash
 echo "net.ipv4.ip_forward=1" > /etc/sysctl.d/99-ip-forward.conf
@@ -55,18 +55,18 @@ systemctl enable tailscaled
 
 ---
 
-## 8.3 Install Tailscale on Your Phone
+## 12.3 Install Tailscale on Your Phone
 
 - **iOS:** App Store → search "Tailscale"
 - **Android:** Play Store → search "Tailscale"
 
-Open the app and sign in with the same account you used in step 8.1.
+Open the app and sign in with the same account you used in step 12.1.
 
 Both devices now appear in your Tailscale network. Your phone can reach Proxmox at its `100.x.x.x` address from anywhere — home WiFi, cellular, hotel WiFi.
 
 ---
 
-## 8.4 Configure Subnet Router
+## 12.4 Configure Subnet Router
 
 The Proxmox host advertises your entire home LAN subnet over Tailscale. Any Tailscale-connected device (your phone, laptop, etc.) can then reach every device on your LAN — NPM, AdGuard, VMs — as if it were physically home.
 
@@ -87,7 +87,7 @@ Your Tailscale devices will now route LAN traffic through the Proxmox host autom
 
 ---
 
-## 8.5 Configure Split DNS in Tailscale
+## 12.5 Configure Split DNS in Tailscale
 
 This makes `*.yourdomain.com` resolve correctly on remote devices over Tailscale — without routing all DNS through your homelab.
 
@@ -95,7 +95,7 @@ In the **Tailscale admin console**: **DNS → Nameservers → Add nameserver**
 
 | Field | Value |
 |---|---|
-| Nameserver IP | `<adguard-lxc-ip>` (your LAN IP — reachable via the subnet router configured in 8.4) |
+| Nameserver IP | `<adguard-lxc-ip>` (your LAN IP — reachable via the subnet router configured in 12.4) |
 | Restrict to domain | ✅ Enable |
 | Domain | `yourdomain.com` |
 
@@ -109,7 +109,7 @@ Click **Save**.
 
 ---
 
-## 8.6 Open WebUI on Mobile
+## 12.6 Open WebUI on Mobile
 
 Open WebUI has a mobile-friendly interface. From your phone browser:
 
@@ -125,7 +125,7 @@ This creates a home screen icon that opens Open WebUI in fullscreen, indistingui
 
 ---
 
-## 8.7 Home Assistant Companion App
+## 12.7 Home Assistant Companion App
 
 The official HA Companion App (iOS/Android) uses `ha.yourdomain.com` — the same URL whether you're home or remote. AdGuard resolves it to NPM on your LAN; Tailscale split DNS resolves it through AdGuard when you're remote. No manual switching required.
 
@@ -137,13 +137,13 @@ The official HA Companion App (iOS/Android) uses `ha.yourdomain.com` — the sam
 
 ---
 
-## 8.8 Tailscale Admin Console
+## 12.8 Tailscale Admin Console
 
 At `login.tailscale.com/admin`:
 
 - View all connected devices and their Tailscale IPs
 - Disable a device if a phone is lost or stolen
-- Manage subnet routes and split DNS settings (configured in sections 8.4 and 8.5)
+- Manage subnet routes and split DNS settings (configured in sections 12.4 and 12.5)
 
 ### MagicDNS
 
@@ -181,4 +181,4 @@ All services use the same URL whether you're on your home LAN, home WiFi, or con
 
 ---
 
-[← eGPU Setup](07-egpu-setup.md) | [Next: External Storage →](09-external-storage.md)
+[← eGPU Setup](11-egpu-setup.md) | [Next: Web Search →](13-web-search.md)

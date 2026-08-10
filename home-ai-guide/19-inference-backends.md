@@ -1,8 +1,8 @@
 ---
 ---
-# 16 — Inference Backends
+# 19 — Inference Backends
 
-[← Coding Assistant](15-coding-assistant.md)
+[← Coding Assistant](18-coding-assistant.md)
 
 ---
 
@@ -62,7 +62,7 @@ Result: ~80–100 tok/s fully GPU-resident vs 8–9 minutes for a 32B dense mode
 
 ---
 
-## 16.1 llama.cpp Server Setup
+## 19.1 llama.cpp Server Setup
 
 ### Download
 
@@ -153,4 +153,4 @@ In VSCode settings:
 
 ---
 
-[← Coding Assistant](15-coding-assistant.md)
+[← Coding Assistant](18-coding-assistant.md)

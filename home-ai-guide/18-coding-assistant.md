@@ -1,8 +1,8 @@
 ---
 ---
-# 15 — Local Coding Assistant
+# 18 — Local Coding Assistant
 
-[← Voice Satellites](14-voice-satellites.md) | [Next: Inference Backends →](16-inference-backends.md)
+[← Voice Satellites](17-voice-satellites.md) | [Next: Inference Backends →](19-inference-backends.md)
 
 ---
 
@@ -53,13 +53,13 @@ Both tools below use the same Ollama endpoints. Your Ollama VM exposes:
 
 Replace `<ollama-vm-ip>` with:
 - Your LAN IP when at home (e.g. `192.168.1.x`)
-- Your Tailscale IP (`100.x.x.x`) when remote — see [Remote Access with Tailscale](08-tailscale-remote-access.md)
+- Your Tailscale IP (`100.x.x.x`) when remote — see [Remote Access with Tailscale](12-tailscale-remote-access.md)
 
 API key: any non-empty string (e.g. `ollama`). Ollama ignores it but most tools require a non-blank value.
 
 ---
 
-## 15.1 VSCode — Continue.dev
+## 18.1 VSCode — Continue.dev
 
 Continue.dev is the recommended VSCode extension for Ollama. It handles both chat and autocomplete from a single config file, with native Ollama support (no proxy needed).
 
@@ -105,7 +105,7 @@ tabAutocompleteModel:
 
 ---
 
-## 15.2 VSCode — Cline (Agentic)
+## 18.2 VSCode — Cline (Agentic)
 
 Cline is a VSCode extension that acts as an autonomous coding agent: it reads and writes files, runs terminal commands, and loops until a task is complete. Use it for larger tasks like multi-file refactors, scaffolding new features, or anything that requires coordinating across files.
 
@@ -149,7 +149,7 @@ They complement each other — install both. Continue.dev handles the everyday f
 
 ---
 
-## 15.3 OpenCode
+## 18.3 OpenCode
 
 OpenCode is an open-source terminal coding agent. It runs in your terminal, understands your project via LSP, and can edit files and run commands — the same model as Claude Code, but local and model-agnostic.
 
@@ -205,6 +205,6 @@ OpenCode auto-detects your project's language server (LSP) and wires it up. Sele
 
 ---
 
-> For alternative inference backends and a full MoE model reference table, see [Inference Backends](16-inference-backends.md).
+> For alternative inference backends and a full MoE model reference table, see [Inference Backends](19-inference-backends.md).
 
-[← Voice Satellites](14-voice-satellites.md) | [Next: Inference Backends →](16-inference-backends.md)
+[← Voice Satellites](17-voice-satellites.md) | [Next: Inference Backends →](19-inference-backends.md)

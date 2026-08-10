@@ -1,8 +1,8 @@
 ---
 ---
-# 04 — Home Assistant VM
+# 08 — Home Assistant VM
 
-[← Docker & Homelab](03-docker-homelab.md) | [Next: Ollama + Open WebUI →](05-ollama-open-webui.md)
+[← Samba](07-samba.md) | [Next: Ollama + Open WebUI →](09-ollama-open-webui.md)
 
 ---
 
@@ -19,7 +19,7 @@ Running Home Assistant OS in a Proxmox VM is the **officially supported** path r
 
 ---
 
-## 4.1 Install via Official Script
+## 8.1 Install via Official Script
 
 The Home Assistant team maintains an official Proxmox installation script. In the Proxmox shell:
 
@@ -51,7 +51,7 @@ The script downloads the HA OS image, creates the VM, and starts it.
 
 ---
 
-## 4.2 First Boot
+## 8.2 First Boot
 
 In Proxmox web UI, select the HA VM → **Console**.
 
@@ -70,7 +70,7 @@ Complete the Home Assistant onboarding wizard:
 
 ---
 
-## 4.3 Configure Static IP for HA VM
+## 8.3 Configure Static IP for HA VM
 
 In HA web UI: **Settings → System → Network**
 
@@ -80,7 +80,7 @@ Update your router's DHCP reservations to lock this IP to the HA VM's MAC addres
 
 ---
 
-## 4.4 Pass Through USB Devices (Zigbee/Z-Wave Dongles)
+## 8.4 Pass Through USB Devices (Zigbee/Z-Wave Dongles)
 
 If you use a Zigbee coordinator (e.g., Sonoff Zigbee 3.0 USB) or Z-Wave stick, pass it through from Proxmox to the HA VM:
 
@@ -92,7 +92,7 @@ Select **Use USB Vendor/Device ID** and choose your dongle from the list. This e
 
 ---
 
-## 4.5 Install Essential Add-ons
+## 8.5 Install Essential Add-ons
 
 In HA web UI: **Settings → Apps → Install App**
 
@@ -107,7 +107,7 @@ Install and start these add-ons:
 
 ---
 
-## 4.6 Configure HA Backups to Proxmox Storage
+## 8.6 Configure HA Backups to Proxmox Storage
 
 HA OS backups can be stored on the Proxmox host via a network share or Samba add-on.
 
@@ -119,7 +119,7 @@ Set frequency to weekly and retain 3 copies.
 
 ---
 
-## 4.7 Proxmox VM Snapshot (Before Major Updates)
+## 8.7 Proxmox VM Snapshot (Before Major Updates)
 
 Before updating HA OS or major integrations:
 
@@ -129,7 +129,7 @@ Name it `pre-update-YYYY-MM-DD`. If the update breaks something, restore the sna
 
 ---
 
-## 4.8 Reverse Proxy Configuration
+## 8.8 Reverse Proxy Configuration
 
 If you plan to access HA through Nginx Proxy Manager with a custom domain (section 3.8), these settings must be in `configuration.yaml` or HA will return `400 Bad Request` through the proxy.
 
@@ -168,4 +168,4 @@ Shut down the VM first, make the change, restart.
 
 ---
 
-[← Docker & Homelab](03-docker-homelab.md) | [Next: Ollama + Open WebUI →](05-ollama-open-webui.md)
+[← Samba](07-samba.md) | [Next: Ollama + Open WebUI →](09-ollama-open-webui.md)

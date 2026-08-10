@@ -2,31 +2,37 @@
   file: home-ai-guide/01-hardware-assembly.md
 - title: Proxmox Installation
   file: home-ai-guide/02-proxmox-installation.md
-- title: Docker & Homelab Services
-  file: home-ai-guide/03-docker-homelab.md
-- title: Home Assistant VM
-  file: home-ai-guide/04-home-assistant-vm.md
-- title: Ollama + Open WebUI
-  file: home-ai-guide/05-ollama-open-webui.md
-- title: Home Assistant Voice Stack
-  file: home-ai-guide/06-voice-stack.md
-- title: eGPU Setup
-  file: home-ai-guide/07-egpu-setup.md
-- title: Remote Access with Tailscale
-  file: home-ai-guide/08-tailscale-remote-access.md
 - title: "Storage: External SSDs"
-  file: home-ai-guide/09-external-storage.md
+  file: home-ai-guide/03-external-storage.md
+- title: Docker & Homelab Services
+  file: home-ai-guide/04-docker-homelab.md
+- title: Nginx Proxy Manager
+  file: home-ai-guide/05-nginx-proxy-manager.md
+- title: Plex LXC
+  file: home-ai-guide/06-plex-lxc.md
+- title: Samba Network Shares
+  file: home-ai-guide/07-samba.md
+- title: Home Assistant VM
+  file: home-ai-guide/08-home-assistant-vm.md
+- title: Ollama + Open WebUI
+  file: home-ai-guide/09-ollama-open-webui.md
+- title: Home Assistant Voice Stack
+  file: home-ai-guide/10-voice-stack.md
+- title: eGPU Setup
+  file: home-ai-guide/11-egpu-setup.md
+- title: Remote Access with Tailscale
+  file: home-ai-guide/12-tailscale-remote-access.md
 - title: Web Search Integration
-  file: home-ai-guide/10-web-search.md
+  file: home-ai-guide/13-web-search.md
 - title: Upgrading & Future Expansion
-  file: home-ai-guide/11-upgrading.md
+  file: home-ai-guide/14-upgrading.md
 - title: Local Image Generation (ComfyUI + FLUX)
-  file: home-ai-guide/12-image-generation.md
+  file: home-ai-guide/15-image-generation.md
 - title: Devices & Home Assistant Compatibility
-  file: home-ai-guide/13-devices.md
+  file: home-ai-guide/16-devices.md
 - title: Voice Satellites
-  file: home-ai-guide/14-voice-satellites.md
+  file: home-ai-guide/17-voice-satellites.md
 - title: Coding Assistant
-  file: home-ai-guide/15-coding-assistant.md
+  file: home-ai-guide/18-coding-assistant.md
 - title: Inference Backends
-  file: home-ai-guide/16-inference-backends.md
+  file: home-ai-guide/19-inference-backends.md

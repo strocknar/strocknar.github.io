@@ -1,8 +1,8 @@
 ---
 ---
-# 09 — External Storage (USB SSDs)
+# 03 — External Storage (USB SSDs)
 
-[← Tailscale](08-tailscale-remote-access.md) | [Next: Web Search →](10-web-search.md)
+[← Proxmox Installation](02-proxmox-installation.md) | [Next: Docker & Homelab Services →](04-docker-homelab.md)
 
 ---
 
@@ -19,9 +19,9 @@ Internal 1TB NVMe stays clean: Proxmox OS + all VM/LXC system disks only.
 
 ---
 
-## 9.0 Adding a Drive That Already Has Data
+## 3.0 Adding a Drive That Already Has Data
 
-If your media drive is already formatted and populated — from a previous Plex install, a NAS, or another machine — **skip section 9.1 entirely**. Formatting destroys all existing data.
+If your media drive is already formatted and populated — from a previous Plex install, a NAS, or another machine — **skip section 3.1 entirely**. Formatting destroys all existing data.
 
 ### Step 1 — Identify the Drive
 
@@ -91,45 +91,15 @@ mount -a
 ls /mnt/media   # your media files should be visible here
 ```
 
-### Step 5 — Fix File Ownership (ext4 only)
+### Step 5 — Pass to Plex LXC and Add Library
 
-This is the most common silent failure when moving a drive between Linux systems. Plex in the LXC runs as user `plex` (uid `1000`). If the files were owned by a different uid on the old system, Plex will silently fail to read them.
-
-```bash
-ls -lan /mnt/media | head -20
-```
-
-If the uid shown is not `1000`, fix it — this takes a while on a large library:
-
-```bash
-chown -R 1000:1000 /mnt/media
-```
-
-For exFAT and NTFS drives, ownership is controlled by mount options, not file metadata. Use `uid=1000,gid=1000` in the fstab entry instead of running `chown`.
-
-### Step 6 — Pass to Plex LXC and Add Library
-
-Follow **section 9.5** to bind-mount `/mnt/media` into the Plex LXC, then add `/media` as a library location in the Plex web UI. Plex will scan and match your existing files against its metadata database — it does not move or re-download anything.
-
-> **Tip:** Plex matching works best with standard naming: `Movie Title (Year)/Movie Title (Year).mkv` and `Show Name/Season XX/Show Name - SXXEXX - Title.mkv`. If the library came from a working Plex install, the filenames are presumably already correct.
-
-### Optional — Migrate Plex Database
-
-If the drive came from an existing Plex Media Server and you want to preserve watch history, ratings, and playlists, copy the Plex data directory from the old machine:
-
-```bash
-# On the old machine — find the Plex data directory
-# Linux/LXC: /var/lib/plexmediaserver/Library/Application Support/Plex Media Server/
-# Copy it to the new Plex LXC at the same path
-```
-
-Without this, Plex re-scans the files and fetches metadata fresh — your media is all there, but watch history and custom artwork are lost.
+To pass the media drive to Plex and add your library, see [Plex LXC](06-plex-lxc.md).
 
 ---
 
-## 9.1 Format External Drives (New Drives Only)
+## 3.1 Format External Drives (New Drives Only)
 
-> **Skip this section if your drive already has data.** See section 9.0 above.
+> **Skip this section if your drive already has data.** See section 3.0 above.
 
 Connect both SSDs to the UM890 Pro's USB ports. In the Proxmox shell:
 
@@ -149,7 +119,7 @@ mkfs.ext4 -L media /dev/sdc
 
 ---
 
-## 9.2 Get Drive UUIDs
+## 3.2 Get Drive UUIDs
 
 Use UUIDs rather than device names (`/dev/sdb`) — device names can change between reboots, UUIDs never do:
 
@@ -162,7 +132,7 @@ Note the UUID for each drive.
 
 ---
 
-## 9.3 Mount on Proxmox Host
+## 3.3 Mount on Proxmox Host
 
 ```bash
 mkdir -p /mnt/models /mnt/media
@@ -193,7 +163,7 @@ df -h | grep mnt
 
 ---
 
-## 9.4 Pass Models Drive to Ollama VM
+## 3.4 Pass Models Drive to Ollama VM
 
 In Proxmox web UI — shut down the Ollama VM, then:
 
@@ -246,27 +216,7 @@ sudo systemctl restart ollama
 
 ---
 
-## 9.5 Pass Media Drive to Plex LXC
-
-In Proxmox host shell:
-
-```bash
-vim /etc/pve/lxc/201.conf
-```
-
-Add:
-
-```
-mp0: /mnt/media,mp=/media,backup=0
-```
-
-This bind-mounts `/mnt/media` on the Proxmox host into `/media` inside the Plex LXC.
-
-Restart the Plex LXC. In Plex, add `/media` as a library location.
-
----
-
-## 9.6 Handling Drive Disconnects
+## 3.5 Handling Drive Disconnects
 
 USB drives can disconnect unexpectedly. Configure graceful handling:
 
@@ -277,11 +227,11 @@ USB drives can disconnect unexpectedly. Configure graceful handling:
 OLLAMA_MODELS=~/.ollama/models ollama pull qwen3:8b-q4_K_M
 ```
 
-**Plex:** Plex handles missing media directories gracefully — it just shows those items as unavailable until the drive reconnects.
+To pass the media drive to Plex, see [Plex LXC](06-plex-lxc.md).
 
 ---
 
-## 9.7 Future Internal NVMe Expansion
+## 3.6 Future Internal NVMe Expansion
 
 When storage prices normalize, replacing external SSDs with internal NVMe drives is straightforward:
 
@@ -293,4 +243,4 @@ This is the natural upgrade path — no reinstallation required.
 
 ---
 
-[← Tailscale](08-tailscale-remote-access.md) | [Next: Web Search →](10-web-search.md)
+[← Proxmox Installation](02-proxmox-installation.md) | [Next: Docker & Homelab Services →](04-docker-homelab.md)

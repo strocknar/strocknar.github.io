@@ -1,8 +1,8 @@
 ---
 ---
-# 06 — Home Assistant Voice Stack
+# 10 — Home Assistant Voice Stack
 
-[← Ollama + Open WebUI](05-ollama-open-webui.md) | [Next: eGPU Setup →](07-egpu-setup.md)
+[← Ollama + Open WebUI](09-ollama-open-webui.md) | [Next: eGPU Setup →](11-egpu-setup.md)
 
 ---
 
@@ -24,7 +24,7 @@ All components run as HA add-ons within the HA OS VM. A Wyoming satellite handle
 
 ---
 
-## 6.1 Install Voice Add-ons
+## 10.1 Install Voice Add-ons
 
 In HA web UI: **Settings → Apps → Install App**
 
@@ -61,7 +61,7 @@ Install each of the following:
 
 ---
 
-## 6.1.5 Register Integrations
+## 10.1.5 Register Integrations
 
 The add-ons expose services via the **Wyoming Protocol**, but HA won't see them in Voice Assistants until you register the integrations. You also need the **Ollama** integration to use it as a conversation agent.
 
@@ -75,7 +75,7 @@ After adding, each service will appear under **Devices & Services → Wyoming**.
 
 ### Ollama (Conversation Agent)
 
-The Ollama integration (configured in [section 5.7](05-ollama-open-webui.md)) handles natural language commands that HA's built-in intent recognizer can't match.
+The Ollama integration (configured in [section 9.7](09-ollama-open-webui.md)) handles natural language commands that HA's built-in intent recognizer can't match.
 
 **How it works:**
 - HA first tries its built-in intent matcher ("turn on lights", "set timer", etc.)
@@ -103,7 +103,7 @@ After saving, Ollama will appear as **"Ollama Conversation"** in the conversatio
 
 ---
 
-## 6.2 Configure the Voice Pipeline
+## 10.2 Configure the Voice Pipeline
 
 In HA web UI: **Settings → Voice Assistants → Add Assistant**
 
@@ -137,7 +137,7 @@ questions, be brief (1-2 sentences).
 
 ---
 
-## 6.3 Test the Pipeline
+## 10.3 Test the Pipeline
 
 **Text test (works over HTTP):**
 
@@ -151,14 +151,14 @@ Browsers block microphone access on plain HTTP. The mic button will show a red e
 
 Options:
 - **HA Companion app** (Android/iOS) — handles mic natively, no HTTPS needed. Recommended for local testing.
-- **HTTPS via Tailscale** — once set up in [Section 8](08-tailscale-remote-access.md), your HA instance gets a valid HTTPS URL and browser mic works automatically.
+- **HTTPS via Tailscale** — once set up in [Section 12](12-tailscale-remote-access.md), your HA instance gets a valid HTTPS URL and browser mic works automatically.
 - **Chrome exception** — Chrome allows mic on `localhost` only; won't help for LAN IPs.
 
 ---
 
-## 6.4 Wyoming Satellite (Remote Microphone)
+## 10.4 Wyoming Satellite (Remote Microphone)
 
-> **Building satellite hardware?** See [14 — Voice Satellites](14-voice-satellites.md) for step-by-step setup of the HA Voice Preview Edition and Pi 3 A+ satellite builds.
+> **Building satellite hardware?** See [17 — Voice Satellites](17-voice-satellites.md) for step-by-step setup of the HA Voice Preview Edition and Pi 3 A+ satellite builds.
 
 A Wyoming satellite is a small device in another room that captures audio and forwards it to HA for processing. The satellite itself does minimal work — all STT, wake word, and TTS happen on the HA server.
 
@@ -188,7 +188,7 @@ Search "ESPHome voice satellite" in the HA community forums for current recommen
 
 ---
 
-## 6.5 Tune Wake Word Sensitivity
+## 10.5 Tune Wake Word Sensitivity
 
 If you get false triggers or missed wake words:
 
@@ -213,4 +213,4 @@ Phase 1 latency is acceptable for home automation commands. If STT latency is to
 
 ---
 
-[← Ollama + Open WebUI](05-ollama-open-webui.md) | [Next: eGPU Setup →](07-egpu-setup.md)
+[← Ollama + Open WebUI](09-ollama-open-webui.md) | [Next: eGPU Setup →](11-egpu-setup.md)
