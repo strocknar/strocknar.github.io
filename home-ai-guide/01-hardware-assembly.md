@@ -125,7 +125,7 @@ Save and exit BIOS (`F10`).
 
 ## Phase 3: eGPU Assembly (when ready)
 
-> Skip this phase initially. Complete [Proxmox](02-proxmox-installation.md) through [Ollama](05-ollama-open-webui.md) setup first, then return here.
+> Skip this phase initially. Complete [Proxmox](02-proxmox-installation.md) through [Ollama](09-ollama-open-webui.md) setup first, then return here.
 
 ### What You'll Need (Phase 2)
 
@@ -165,7 +165,7 @@ After boot, in Proxmox shell:
 lspci | grep -E "AMD|NVIDIA"
 ```
 
-Expected output should show both the AMD 780M iGPU and the NVIDIA RTX 3090 as separate PCI devices. Continue to [eGPU Setup](07-egpu-setup.md) to configure passthrough.
+Expected output should show both the AMD 780M iGPU and the NVIDIA RTX 3090 as separate PCI devices. Continue to [eGPU Setup](11-egpu-setup.md) to configure passthrough.
 
 ---
 
