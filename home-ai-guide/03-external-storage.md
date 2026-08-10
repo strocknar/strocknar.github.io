@@ -81,7 +81,7 @@ UUID=<uuid>  /mnt/media  ext4  defaults,nofail  0  2
 UUID=<uuid>  /mnt/media  exfat  defaults,nofail,uid=0,gid=0,umask=0022  0  0
 
 # NTFS
-UUID=<uuid>  /mnt/media  ntfs-3g  defaults,nofail,uid=0,gid=0,umask=0022  0  0
+UUID=<uuid>  /mnt/media  ntfs-3g  defaults,nofail,uid=0,gid=0,umask=0000  0  0
 ```
 
 > `nofail` is critical — without it, Proxmox will fail to boot if the drive isn't connected.

@@ -35,6 +35,11 @@ In Proxmox web UI: **Create CT**
 
 Start the LXC.
 
+> **Debian 13 / systemd 257:** If you see `WARN: Systemd 257 detected. You may need to enable nesting`, run this on the Proxmox host and restart the container:
+> ```bash
+> pct set 203 --features nesting=1
+> ```
+
 ---
 
 ## 7.2 Bind-Mount the Media Drive
@@ -123,6 +128,8 @@ smbpasswd -a mediauser
 ```
 
 Enter a password when prompted. This is the password you will use when connecting from your laptop.
+
+> **NTFS drives:** `chown` is a no-op on NTFS — filesystem permissions are set entirely by the fstab mount options on the Proxmox host. Write access requires `umask=0000` in the fstab entry (see [External Storage §3.0](03-external-storage.md)). If you can authenticate but not write, the mount options are the cause — not Samba configuration.
 
 ---
 

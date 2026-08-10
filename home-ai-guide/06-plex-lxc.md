@@ -25,6 +25,11 @@ Same process as the Docker LXC but:
 | Privileged | ✅ Yes |
 | Start at boot | ✅ Yes |
 
+> **Debian 13 / systemd 257:** If you see `WARN: Systemd 257 detected. You may need to enable nesting`, run this on the Proxmox host and restart the container:
+> ```bash
+> pct set 201 --features nesting=1
+> ```
+
 ---
 
 ## 6.2 Pass 780M iGPU to Plex LXC
@@ -111,7 +116,7 @@ If the uid shown is not `1000`, fix it — this takes a while on a large library
 chown -R 1000:1000 /mnt/media
 ```
 
-For exFAT and NTFS drives, ownership is controlled by mount options, not file metadata. Use `uid=1000,gid=1000` in the fstab entry instead of running `chown`.
+For exFAT and NTFS drives, ownership is controlled by mount options, not file metadata. `chown` is a no-op on these filesystems. If Plex cannot read the files, verify the fstab entry on the Proxmox host uses `umask=0000` — that makes the mount world-readable/writable for all containers sharing it.
 
 ---
 
