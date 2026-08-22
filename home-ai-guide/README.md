@@ -2,6 +2,12 @@
 
 A complete start-to-finish guide for building a local AI system with Home Assistant, local LLM inference, and a self-hosted homelab stack.
 
+{% include guide-toc.html toc=site.data.guide-toc %}
+
+[Start with Section 1 →](01-hardware-assembly.md)
+
+---
+
 ## Hardware
 
 ### Option A — Budget Start (UM890 Pro Refurb)
@@ -48,13 +54,11 @@ A complete start-to-finish guide for building a local AI system with Home Assist
 10. [Home Assistant Voice Stack](10-voice-stack.md)
 11. [eGPU Setup](11-egpu-setup.md)
 12. [Remote Access with Tailscale](12-tailscale-remote-access.md)
-13. [Web Search Integration](13-web-search.md)
-14. [Upgrading & Future Expansion](14-upgrading.md)
-15. [Local Image Generation (ComfyUI + FLUX)](15-image-generation.md)
-16. [Devices & Home Assistant Compatibility](16-devices.md)
-17. [Voice Satellites](17-voice-satellites.md)
-18. [Local Coding Assistant](18-coding-assistant.md)
-19. [Inference Backends](19-inference-backends.md)
+13. [Upgrading & Future Expansion](13-upgrading.md)
+14. [Devices & Home Assistant Compatibility](14-devices.md)
+15. [Voice Satellites](15-voice-satellites.md)
+
+Once your core build is running, continue with **[Home AI Customization](../home-ai-customization/)** for web search, image generation, a local coding assistant, and mobile agentic access.
 
 ## Architecture Overview
 
