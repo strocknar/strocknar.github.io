@@ -1,12 +1,12 @@
 ---
 ---
-# 17 — Voice Satellites
+# 15 — Voice Satellites
 
-[← Devices & HA Compatibility](16-devices.md) | [Next: Local Coding Assistant →](18-coding-assistant.md)
+[← Devices & HA Compatibility](14-devices.md)
 
 ---
 
-{% include guide-toc.html %}
+{% include guide-toc.html toc=site.data.guide-toc %}
 
 This section covers building satellite voice devices to replace Amazon Echo units. Satellites connect to the voice pipeline you configured in [section 10](10-voice-stack.md) — all STT, TTS, and wake word detection continue to run on the HA server. The satellite is a dumb audio pipe.
 
@@ -45,7 +45,7 @@ Two device types are covered. Build one of each as a prototype before committing
 
 ---
 
-## 17.1 Add the "computer" Wake Word
+## 15.1 Add the "computer" Wake Word
 
 The default wake word `ok_nabu` is replaced with `computer`, using a pre-trained community model. This applies to all satellites — do this once on the server before setting up any satellite hardware.
 
@@ -91,7 +91,7 @@ Save.
 
 ---
 
-## 17.2 Option A — HA Voice Preview Edition
+## 15.2 Option A — HA Voice Preview Edition
 
 ### Hardware
 
@@ -131,7 +131,7 @@ The hardware mute switch on the top of the device disconnects the microphone at 
 
 By default the Voice PE only handles voice. To make it a Music Assistant player, it requires the Sendspin Alpha firmware — a separate ESPHome build that adds the Sendspin client alongside the existing Wyoming satellite firmware.
 
-> Do this **after** section 17.3 is complete. The Voice PE needs MA's Sendspin server running before it can connect.
+> Do this **after** section 15.3 is complete. The Voice PE needs MA's Sendspin server running before it can connect.
 
 1. On a browser, navigate to the Voice PE Alpha firmware installer:
    `https://esphome.github.io/home-assistant-voice-pe-alpha/`
@@ -148,7 +148,7 @@ By default the Voice PE only handles voice. To make it a Music Assistant player,
 
 ---
 
-## 17.3 Server-Side Setup (Docker LXC — one-time)
+## 15.3 Server-Side Setup (Docker LXC — one-time)
 
 Complete this before setting up the Pi satellite or flashing the Voice PE.
 
@@ -225,7 +225,7 @@ HA now exposes each MA player as a `media_player` entity, enabling voice command
 
 ---
 
-## 17.4 Option B — Pi 3 A+ Satellite
+## 15.4 Option B — Pi 3 A+ Satellite
 
 ### Hardware
 
@@ -248,7 +248,7 @@ Wall outlet          ──── USB-C charger ──── Pi USB-C
 
 > Use the ReSpeaker HAT's 3.5mm output, not the Pi's built-in audio jack. The Pi's jack is PWM-based and produces audible noise. The ReSpeaker's WM8960 codec is significantly cleaner.
 
-### 17.4.1 Flash the OS
+### 15.4.1 Flash the OS
 
 1. Download [Raspberry Pi Imager](https://www.raspberrypi.com/software/)
 
@@ -268,7 +268,7 @@ Wall outlet          ──── USB-C charger ──── Pi USB-C
 ssh pi@satellite-bedroom-1.local
 ```
 
-### 17.4.2 Install ReSpeaker HAT Driver
+### 15.4.2 Install ReSpeaker HAT Driver
 
 ```bash
 sudo apt update && sudo apt upgrade -y
@@ -302,7 +302,7 @@ aplay test.wav
 
 You should hear your own voice played back. If the playback is silent, check that the HAT is fully seated on the GPIO header.
 
-### 17.4.3 Install wyoming-satellite
+### 15.4.3 Install wyoming-satellite
 
 ```bash
 sudo apt install -y python3-pip python3-venv
@@ -349,7 +349,7 @@ sudo systemctl status wyoming-satellite
 
 Expected: `Active: active (running)`
 
-### 17.4.4 Add to Home Assistant
+### 15.4.4 Add to Home Assistant
 
 In HA web UI: **Settings → Devices & Services → Add Integration → Wyoming Protocol**
 
@@ -364,7 +364,7 @@ Test: say **"computer, what time is it?"**
 
 The Pi's ReSpeaker LED ring lights up on wake word detection, and you hear Piper's TTS response through the Pebble V3.
 
-### 17.4.5 Install Sendspin Client
+### 15.4.5 Install Sendspin Client
 
 The Sendspin CLI provides an automated systemd installer that handles audio device selection and service registration interactively:
 
@@ -388,7 +388,7 @@ The client announces itself via mDNS. Within ~30 seconds, it appears as a player
 
 > Settings persist in `~/.config/sendspin/settings-daemon.json`. To rename the player or change the audio device later, edit that file and restart the service: `sudo systemctl restart sendspin`.
 
-### 17.4.6 Verify Music Assistant Player
+### 15.4.6 Verify Music Assistant Player
 
 In Music Assistant web UI (`http://<docker-lxc-ip>:8095`):
 
@@ -396,7 +396,7 @@ Go to **Players**. Within ~30 seconds of starting the Sendspin client, a new pla
 
 In HA: **Developer Tools → States** — search for `media_player`. A new entity for the bedroom satellite appears.
 
-### 17.4.7 Test Music Playback
+### 15.4.7 Test Music Playback
 
 1. In Music Assistant, browse to any YouTube Music track
 2. Click the player selector → choose `bedroom-satellite`
@@ -422,7 +422,7 @@ In HA voice: **"computer, play lullabies everywhere"** — MA groups all bedroom
 
 ---
 
-## 17.5 Latency Reference
+## 15.5 Latency Reference
 
 Voice pipeline latency is the same for both satellite types — all processing happens on the server.
 
@@ -435,7 +435,7 @@ Music playback start time (voice command to first audio): ~2–3 seconds on a st
 
 ---
 
-## 17.6 Fallback Behavior
+## 15.6 Fallback Behavior
 
 | Scenario | Result |
 |---|---|
@@ -446,7 +446,7 @@ Music playback start time (voice command to first audio): ~2–3 seconds on a st
 
 ---
 
-## 17.7 Troubleshooting
+## 15.7 Troubleshooting
 
 **Wake word not triggering**
 
@@ -491,6 +491,8 @@ Music playback start time (voice command to first audio): ~2–3 seconds on a st
 - Confirm MA's Sendspin provider is enabled and MA is running
 - Check the Voice PE's ESPHome logs in HA: **Settings → Devices & Services → [Voice PE] → Logs**
 
+> **Continuing your build?** Once your core homelab, Home Assistant, and voice setup are running, the next step is deeper AI customization — web search, image generation, a local coding assistant, and mobile agentic access. Continue with the [Home AI Customization guide →](../home-ai-customization/01-web-search.md).
+
 ---
 
-[← Devices & HA Compatibility](16-devices.md) | [Next: Local Coding Assistant →](18-coding-assistant.md)
+[← Devices & HA Compatibility](14-devices.md)

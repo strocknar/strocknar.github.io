@@ -1,12 +1,12 @@
 ---
 ---
-# 16 — Devices & Home Assistant Compatibility
+# 14 — Devices & Home Assistant Compatibility
 
-[← Image Generation](15-image-generation.md) | [Satellites →](17-voice-satellites.md)
+[← Upgrading](13-upgrading.md) | [Next: Voice Satellites →](15-voice-satellites.md)
 
 ---
 
-{% include guide-toc.html %}
+{% include guide-toc.html toc=site.data.guide-toc %}
 
 ## Required Hardware Purchase
 
@@ -154,4 +154,4 @@ Frigate integrates with HA natively — motion events, object detection alerts, 
 
 ---
 
-[← Image Generation](15-image-generation.md) | [Satellites →](17-voice-satellites.md)
+[← Upgrading](13-upgrading.md) | [Next: Voice Satellites →](15-voice-satellites.md)

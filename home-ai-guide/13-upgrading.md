@@ -1,12 +1,12 @@
 ---
 ---
-# 14 — Upgrading & Future Expansion
+# 13 — Upgrading & Future Expansion
 
-[← Web Search](13-web-search.md) | [Image Generation →](15-image-generation.md)
+[← Tailscale](12-tailscale-remote-access.md) | [Next: Devices →](14-devices.md)
 
 ---
 
-{% include guide-toc.html %}
+{% include guide-toc.html toc=site.data.guide-toc %}
 
 ## Upgrade Ladder
 
@@ -226,4 +226,4 @@ docker stop open-webui && docker rm open-webui
 
 ---
 
-[← Web Search](13-web-search.md) | [Image Generation →](15-image-generation.md)
+[← Tailscale](12-tailscale-remote-access.md) | [Next: Devices →](14-devices.md)

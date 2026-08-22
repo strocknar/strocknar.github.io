@@ -2,7 +2,7 @@
 ---
 # 12 — Remote Access with Tailscale
 
-[← eGPU Setup](11-egpu-setup.md) | [Next: Web Search →](13-web-search.md)
+[← eGPU Setup](11-egpu-setup.md) | [Next: Upgrading →](13-upgrading.md)
 
 ---
 
@@ -181,4 +181,4 @@ All services use the same URL whether you're on your home LAN, home WiFi, or con
 
 ---
 
-[← eGPU Setup](11-egpu-setup.md) | [Next: Web Search →](13-web-search.md)
+[← eGPU Setup](11-egpu-setup.md) | [Next: Upgrading →](13-upgrading.md)

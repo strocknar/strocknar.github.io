@@ -158,7 +158,7 @@ Options:
 
 ## 10.4 Wyoming Satellite (Remote Microphone)
 
-> **Building satellite hardware?** See [17 — Voice Satellites](17-voice-satellites.md) for step-by-step setup of the HA Voice Preview Edition and Pi 3 A+ satellite builds.
+> **Building satellite hardware?** See [15 — Voice Satellites](15-voice-satellites.md) for step-by-step setup of the HA Voice Preview Edition and Pi 3 A+ satellite builds.
 
 A Wyoming satellite is a small device in another room that captures audio and forwards it to HA for processing. The satellite itself does minimal work — all STT, wake word, and TTS happen on the HA server.
 
