@@ -10,14 +10,255 @@
 
 ## Overview
 
-You're away from your dev machine and want to trigger a repo change from your phone — fix a bug, update a config, or ask a question about a codebase — without opening a laptop. Two options, both reachable over the Tailscale connection from [Remote Access with Tailscale](../home-ai-guide/12-tailscale-remote-access.md):
+You're away from your dev machine and want to run the same brainstorm → plan → execute → push workflow you use day-to-day, from your phone, without opening a laptop. Both options below are reachable over the Tailscale connection from [Remote Access with Tailscale](../home-ai-guide/12-tailscale-remote-access.md):
 
-- **Option A — Open WebUI custom Tools:** give your existing mobile-friendly Open WebUI chat interface the ability to call a Python function, including one that commits and pushes to a repo
-- **Option B — OpenHands:** a continuous-loop coding agent that can be triggered entirely from the GitHub mobile app via an issue label or `@mention` — no need to open Open WebUI at all
+- **Option A — OpenCode Remote Access (Recommended):** a dedicated LXC running `opencode serve` + `opencode web`, giving you a real installable PWA chat interface backed by the actual Superpowers skills engine — brainstorming, planning, and execution all run exactly as they do on a workstation, just reachable from your phone.
+- **Option B — Open WebUI custom Tools:** your existing mobile-friendly Open WebUI chat interface, given the ability to call a Python function that commits and pushes to a repo. Lighter-weight, but no skills runtime — use this for simple one-off edits, not the full brainstorm/plan workflow.
 
 ---
 
-## 5.1 Option A — Open WebUI Custom Tools
+## 5.1 Option A — OpenCode Remote Access (Recommended)
+
+This runs the real Superpowers brainstorming/planning/execution workflow — the same skill files used on a workstation — on a persistent server, reachable from your phone as an installable PWA over Tailscale.
+
+### Architecture
+
+```
+Phone (Tailscale client)
+   |  HTTPS/WS over Tailscale (100.x.x.x)
+   v
+Proxmox CT 204 (new, unprivileged LXC, hostname: opencode)
+   |
+   +-- opencode-serve.service   (backend: sessions, model calls, tool/git execution)
+   |     - OPENCODE_SERVER_PASSWORD set
+   |     - Superpowers skills installed (.opencode/skills/, same as section 3.3)
+   |     - Model config in ~/.config/opencode/opencode.json, pointed at the
+   |       Ollama VM's OpenAI-compatible endpoint (same pattern as section 3.3)
+   |
+   +-- opencode-web.service    (PWA chat frontend; depends on opencode-serve)
+   |     - opencode web --hostname 0.0.0.0
+   |
+   +-- ~/.ssh/config + one deploy key per repo
+   |
+   +-- /repos/<reponame>/   (one clone per repo the agent may touch)
+```
+
+Model selection happens entirely in server-side config — the web UI is a thin client over the OpenCode HTTP API and has no separate model configuration of its own.
+
+### Create the OpenCode LXC (CT 204)
+
+In Proxmox web UI: **Create CT**
+
+| Setting | Value |
+|---|---|
+| CT ID | `204` |
+| Hostname | `opencode` |
+| Unprivileged container | ✅ Yes — no hardware passthrough needed; it only talks to the Ollama VM over the network |
+| Template | Debian 13 |
+| Disk | `16GB` — repo clones are text/config repos, tens of MB each; this leaves headroom for the OS, OpenCode binary, and multiple clones with git history. Resizable later via `pct resize` if needed. |
+| CPU | `1 core` |
+| RAM | `2048` MB |
+| Network — Bridge | `vmbr0` |
+| Network — IPv4 | Static, `<opencode-lxc-ip>/24` |
+| Network — Gateway | Your router IP |
+| DNS tab — DNS server | `<adguard-lxc-ip>` |
+| Start at boot | ✅ Yes |
+
+Start the LXC.
+
+> **Debian 13 / systemd 257:** If you see `WARN: Systemd 257 detected. You may need to enable nesting`, run this on the Proxmox host and restart the container:
+> ```bash
+> pct set 204 --features nesting=1
+> ```
+
+### Install OpenCode and Superpowers
+
+In the CT 204 console:
+
+```bash
+apt update && apt install -y git openssh-client curl
+
+curl -fsSL https://opencode.ai/install | bash
+```
+
+Install Superpowers the same way as the workstation setup in [Coding Assistant §3.3](03-coding-assistant.md#33-opencode):
+
+```
+Fetch and follow instructions from https://raw.githubusercontent.com/obra/superpowers/refs/heads/main/.opencode/INSTALL.md
+```
+
+### Create a dedicated system user
+
+```bash
+useradd -m -s /usr/sbin/nologin opencode
+```
+
+Both systemd services below run as this user, not root.
+
+### Configure the model backend
+
+Create `/home/opencode/.config/opencode/opencode.json` (owned by the `opencode` user):
+
+```json
+{
+  "$schema": "https://opencode.ai/config.json",
+  "provider": {
+    "ollama": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ollama (local)",
+      "options": {
+        "baseURL": "http://<ollama-vm-ip>:11434/v1"
+      },
+      "models": {
+        "qwen3-coder:30b-a3b-q4_K_M": {
+          "name": "Qwen3 Coder 30B"
+        }
+      }
+    }
+  },
+  "model": "ollama/qwen3-coder:30b-a3b-q4_K_M"
+}
+```
+
+Replace `<ollama-vm-ip>` with your Ollama VM's LAN IP, same as [Coding Assistant](03-coding-assistant.md#endpoint-reference).
+
+```bash
+chown -R opencode:opencode /home/opencode/.config
+```
+
+### Set up systemd services
+
+`opencode-serve` is the backend — it holds session state, calls the configured model, and executes tool calls including git operations against the cloned repos. Everything the brainstorming/planning/execution workflow does happens here.
+
+```bash
+vim /etc/systemd/system/opencode-serve.service
+```
+
+```ini
+[Unit]
+Description=OpenCode backend server
+After=network.target
+
+[Service]
+Environment="OPENCODE_SERVER_PASSWORD=<your-password>"
+ExecStart=/usr/local/bin/opencode serve
+Restart=on-failure
+User=opencode
+
+[Install]
+WantedBy=multi-user.target
+```
+
+`opencode-web` is the frontend — it serves the installable PWA chat UI your phone connects to. It's a thin client over `opencode-serve`'s API with no session logic of its own, which is why it depends on and starts after the backend.
+
+```bash
+vim /etc/systemd/system/opencode-web.service
+```
+
+```ini
+[Unit]
+Description=OpenCode PWA web UI
+After=opencode-serve.service
+Requires=opencode-serve.service
+
+[Service]
+ExecStart=/usr/local/bin/opencode web --hostname 0.0.0.0
+Restart=on-failure
+User=opencode
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Enable and start both:
+
+```bash
+systemctl daemon-reload
+systemctl enable --now opencode-serve opencode-web
+```
+
+Verify both are running:
+
+```bash
+systemctl status opencode-serve opencode-web
+```
+
+### Set up per-repo deploy keys
+
+Least-privilege pattern: one SSH deploy key per repo, so a compromise of CT 204 exposes write access only to the repos explicitly cloned there — not every repo you own.
+
+**On your workstation** (not CT 204), generate one key per repo you want the agent to access:
+
+```bash
+ssh-keygen -t ed25519 -f ~/deploy_key_<reponame> -N "" -C "opencode-deploy-<reponame>"
+```
+
+Add the **public** key to that repo's GitHub **Settings → Deploy keys → Add deploy key**, with **Write access** checked. Repeat per repo.
+
+**Copy each private key onto CT 204**, e.g.:
+
+```bash
+scp ~/deploy_key_<reponame> root@<opencode-lxc-ip>:/home/opencode/.ssh/deploy_key_<reponame>
+```
+
+**On CT 204**, create an SSH config alias per repo so git resolves the correct key without collisions:
+
+```bash
+vim /home/opencode/.ssh/config
+```
+
+```
+Host github.com-<reponame>
+  HostName github.com
+  User git
+  IdentityFile /home/opencode/.ssh/deploy_key_<reponame>
+  IdentitiesOnly yes
+```
+
+Repeat the `Host` block per repo. Then:
+
+```bash
+chown -R opencode:opencode /home/opencode/.ssh
+chmod 600 /home/opencode/.ssh/deploy_key_* /home/opencode/.ssh/config
+```
+
+### Clone each repo
+
+```bash
+sudo -u opencode mkdir -p /repos
+sudo -u opencode git clone git@github.com-<reponame>:<you>/<reponame>.git /repos/<reponame>
+```
+
+Repeat per repo, using the matching `Host` alias from the SSH config above in the clone URL.
+
+### Set the shared git identity
+
+One identity for all commits across all repos, matching the pattern used for the Open WebUI git tool in [5.2](#52-option-b--open-webui-custom-tools):
+
+```bash
+sudo -u opencode git config --global user.email "opencode@local"
+sudo -u opencode git config --global user.name "OpenCode Agent"
+sudo -u opencode sh -c "mkdir -p ~/.ssh && ssh-keyscan github.com >> ~/.ssh/known_hosts"
+```
+
+### Connect from your phone
+
+1. Confirm Tailscale is connected on your phone — see [Remote Access with Tailscale](../home-ai-guide/12-tailscale-remote-access.md).
+2. Visit `http://<opencode-lxc-tailscale-ip>:4096` in your phone's browser.
+3. Enter the `OPENCODE_SERVER_PASSWORD` you set above.
+4. Use "Add to Home Screen" — the OpenCode web UI ships a PWA manifest, so this installs as a standalone app icon with no browser chrome.
+
+Once connected, brainstorming, planning, and execution work exactly as they do through OpenCode on a workstation (see [Coding Assistant §3.3](03-coding-assistant.md#33-opencode)) — point a session at `/repos/<reponame>` and start a conversation.
+
+> **Security:** CT 204 is only reachable via Tailscale — `opencode web --hostname 0.0.0.0` binds all interfaces, but nothing is port-forwarded or publicly exposed. `OPENCODE_SERVER_PASSWORD` is defense-in-depth behind that perimeter. Both services run as the non-root `opencode` user.
+
+> **Verify during setup:** whether `opencode web` exposes an in-session model switcher (like the TUI's `/models`), and the actual default port `opencode web` binds (assumed `4096` above) — confirm against your installed version and adjust the URL if it differs.
+
+---
+
+## 5.2 Option B — Open WebUI Custom Tools
+
+A lighter-weight alternative to [5.1](#51-option-a--opencode-remote-access-recommended) for simple one-off file edits that don't need the full brainstorm/plan workflow.
 
 Open WebUI Tools are Python functions with docstrings. The docstring becomes the tool description the model sees; the function signature becomes its callable schema. Once added, the model can call the tool mid-conversation when it decides the tool is relevant to your request.
 
@@ -151,84 +392,6 @@ docker exec -it open-webui sh -c "
 From your phone, in an Open WebUI chat with this tool enabled: *"Update `src/config.yaml` in `/repos/reponame` to set `debug: false`, commit it as 'disable debug logging', and push."* The model calls `git_commit_and_push` with the file's new full content, not a diff — Open WebUI tools receive whole values, not patches, so the model must have first read the file's current content (e.g. via a companion `read_file` tool, or by you pasting it into the chat) to construct the new version correctly.
 
 > **Scope this key to one repo.** A deploy key with write access to a single repository limits the blast radius if the container is ever compromised — this is a materially different risk profile than mounting a personal SSH key or PAT with access to every repo you own.
-
----
-
-## 5.2 Option B — OpenHands (Continuous-Loop Agent)
-
-OpenHands is a self-hosted, continuous-loop coding agent: point it at a repo and an LLM backend, and it can read code, make edits, run commands, and open pull requests on its own — the strongest fit in this guide for "make a change while I'm not at my computer," because it can be triggered entirely from a GitHub comment on your phone.
-
-### Deploy via Docker
-
-On the Docker LXC (or any host with Docker):
-
-```bash
-docker run -d \
-  --name openhands \
-  --restart always \
-  -p 8000:3000 \
-  -v /var/run/docker.sock:/var/run/docker.sock \
-  -v ~/.openhands:/root/.openhands \
-  --add-host host.docker.internal:host-gateway \
-  ghcr.io/all-hands-ai/openhands:latest
-```
-
-Access at `http://<docker-lxc-ip>:8000` — reachable from your phone over Tailscale, same as the rest of this guide's services.
-
-### Connect to your local Ollama backend
-
-In OpenHands: **Settings → LLM → see advanced settings → enable Advanced**
-
-| Field | Value |
-|---|---|
-| Custom Model | `openai/qwen3-coder:30b-a3b-q4_K_M` |
-| Base URL | `http://<ollama-vm-ip>:11434/v1` |
-| API Key | `local-llm` (placeholder — Ollama ignores it) |
-
-### Context length precondition — check before enabling
-
-OpenHands requires `OLLAMA_CONTEXT_LENGTH` of at least 22000 to fit its system prompt and tool-calling overhead. Whether your Phase 2 setup has room for this depends on what's already loaded:
-
-`qwen3-coder:30b-a3b`'s architecture (48 layers, 4 KV heads, head_dim 128) puts its KV cache cost at 96KB/token (fp16) or 48KB/token (q8_0). At 22,000 tokens of context:
-
-| KV cache type | Cost at 22K context |
-|---|---|
-| fp16 (default) | ~2.1GB |
-| q8_0 | ~1.0GB |
-
-Your existing Phase 2 setup from [Coding Assistant](03-coding-assistant.md) runs `qwen3-coder:30b-a3b-q4_K_M` (21GB) + `qwen2.5-coder:3b` autocomplete (2GB) = 23GB — already close to the RTX 3090's 24GB ceiling before adding any KV cache for a 22K context window.
-
-| Configuration | Total VRAM | Fits in 24GB? |
-|---|---|---|
-| 21GB weights + 2GB autocomplete + 2.1GB fp16 KV | 25.1GB | ❌ No |
-| 21GB weights + 2GB autocomplete + 1.0GB q8_0 KV | 24.0GB | ⚠️ Zero headroom |
-| 21GB weights + 1.0GB q8_0 KV (autocomplete unloaded) | 22.0GB | ✅ Yes, ~2GB headroom |
-
-**Before running OpenHands sessions:**
-
-1. Set `OLLAMA_KV_CACHE_TYPE=q8_0` (see [Performance Tuning](03-coding-assistant.md#performance-tuning))
-2. Unload the autocomplete model — it isn't used by OpenHands anyway:
-   ```bash
-   ollama stop qwen2.5-coder:3b
-   ```
-3. Set `OLLAMA_CONTEXT_LENGTH=22000` in the Ollama systemd override alongside the flash-attention/KV-cache env vars
-
-Skipping step 2 while running an OpenHands session will exceed 24GB and either fail to load or spill to CPU — re-enable the autocomplete model afterward for normal Continue.dev/Cline use.
-
-### Trigger from your phone via GitHub
-
-Once connected, OpenHands can respond to GitHub activity without you opening its web UI at all:
-
-- **Label an issue `openhands`**, or open a comment starting with `@openhands` — OpenHands comments that it's working on it, then opens a pull request if it resolves the issue
-- **Mention `@openhands` in a PR comment** — ask follow-up questions, request changes, or get an explanation of what it did
-
-Both actions are standard GitHub features available in the GitHub mobile app — labeling an issue or leaving a comment from your phone is enough to kick off a fix, with no need to reach for a laptop or even open Open WebUI.
-
----
-
-## 5.3 Not Recommended: Devika
-
-Devika (a similar local-LLM-compatible coding agent) is not covered here — its own README states it is being superseded by a successor project ("Opcode") and self-describes as experimental with broken features. OpenHands is the more mature choice for this use case as of this writing.
 
 ---
 
