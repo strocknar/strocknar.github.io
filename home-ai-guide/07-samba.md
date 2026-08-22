@@ -6,7 +6,7 @@
 
 ---
 
-{% include guide-toc.html %}
+{% include guide-toc.html toc=site.data.guide-toc %}
 
 A dedicated LXC for SMB network shares gives you read/write access to your media from any device on the LAN — Windows, macOS, or Linux. Keeping Samba in its own container means adding future shares is just a new bind mount and a new config stanza, with no impact on Plex or other services.
 

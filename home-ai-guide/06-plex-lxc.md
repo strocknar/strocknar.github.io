@@ -6,7 +6,7 @@
 
 ---
 
-{% include guide-toc.html %}
+{% include guide-toc.html toc=site.data.guide-toc %}
 
 > **Prerequisite:** The media drive must be mounted on the Proxmox host before continuing. See [External Storage](03-external-storage.md).
 

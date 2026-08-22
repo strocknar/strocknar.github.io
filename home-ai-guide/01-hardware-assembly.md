@@ -6,7 +6,7 @@
 
 ---
 
-{% include guide-toc.html %}
+{% include guide-toc.html toc=site.data.guide-toc %}
 
 ## What You'll Need
 

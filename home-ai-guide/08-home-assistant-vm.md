@@ -6,7 +6,7 @@
 
 ---
 
-{% include guide-toc.html %}
+{% include guide-toc.html toc=site.data.guide-toc %}
 
 ## Why HA OS in a VM (Not Supervised)
 
