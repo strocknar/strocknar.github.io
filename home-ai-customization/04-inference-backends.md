@@ -107,11 +107,13 @@ huggingface-cli download \
   --port 8080 \
   --ctx-size 32768 \
   --n-gpu-layers 99 \
-  --flash-attn
+  --flash-attn auto \
+  -ctk q8_0 -ctv q8_0
 ```
 
 - `--n-gpu-layers 99`: offload all layers to GPU (99 is effectively "all")
-- `--flash-attn`: enables Flash Attention for faster inference
+- `--flash-attn auto`: enables Flash Attention automatically when supported (default behavior in current releases — no longer needs to be forced on)
+- `-ctk q8_0 -ctv q8_0`: quantize the K and V cache to 8-bit, halving KV cache VRAM usage with minimal quality impact
 - `--host 0.0.0.0`: listens on all interfaces (required for Open WebUI and Continue.dev)
 
 Verify the server is running:

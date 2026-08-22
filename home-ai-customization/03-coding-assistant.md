@@ -42,6 +42,52 @@ ollama pull qwen2.5-coder:3b
 
 ---
 
+## Performance Tuning
+
+Two settings meaningfully affect throughput and VRAM headroom on the RTX 3090, independent of which tool you wire up below.
+
+### Flash Attention + KV Cache Quantization (Ollama)
+
+Add to the Ollama systemd override (same block as `OLLAMA_HOST` in [section 9.3 of the core guide](../home-ai-guide/09-ollama-open-webui.md)):
+
+```bash
+sudo systemctl edit ollama
+```
+
+```ini
+[Service]
+Environment="OLLAMA_FLASH_ATTENTION=1"
+Environment="OLLAMA_KV_CACHE_TYPE=q8_0"
+```
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl restart ollama
+```
+
+`OLLAMA_FLASH_ATTENTION=1` is required for `OLLAMA_KV_CACHE_TYPE` to take effect — setting the cache type alone does nothing without it. `q8_0` halves KV cache VRAM usage with minimal quality impact for normal text generation.
+
+> **Not all models benefit equally.** Devstral Small 2 and DeepSeek-R1-Distill 14B are dense transformers whose KV cache grows linearly with context — `q8_0` saves real VRAM on these (up to ~2.5GB at 32K context on Devstral). Qwen 3.6 27B and Gemma 4 26B-A4B use hybrid attention architectures that keep KV cache small by design — quantizing it barely moves the needle for those two. See [Model Reference](06-model-reference.md) for the full VRAM-at-context breakdown.
+
+### Flash Attention + KV Cache Quantization (llama.cpp)
+
+llama.cpp server's `--flash-attn` flag now defaults to `auto` (enables itself automatically when supported) as of current releases — the `--flash-attn` boolean-only flag some older guides show is out of date. Add explicit KV cache quantization flags to the `llama-server` command from [Inference Backends](04-inference-backends.md):
+
+```bash
+./llama-cpp/llama-server \
+  --model ~/models/qwen3-coder-30b-a3b-instruct-q4_k_m.gguf \
+  --host 0.0.0.0 \
+  --port 8080 \
+  --ctx-size 32768 \
+  --n-gpu-layers 99 \
+  --flash-attn auto \
+  -ctk q8_0 -ctv q8_0
+```
+
+`-ctk` and `-ctv` set the K and V cache quantization independently — `q8_0` for both matches Ollama's `OLLAMA_KV_CACHE_TYPE=q8_0` behavior above.
+
+---
+
 ## Endpoint Reference
 
 Both tools below use the same Ollama endpoints. Your Ollama VM exposes:
@@ -202,6 +248,77 @@ opencode
 OpenCode auto-detects your project's language server (LSP) and wires it up. Select your model with `/models` inside the session.
 
 > **Multi-agent sessions:** OpenCode supports running parallel agent sessions. On Phase 2, this works well — two concurrent requests to `qwen3-coder:30b-a3b` are within what the RTX 3090 can serve, though throughput per session drops roughly in half.
+
+---
+
+## Extending Agent Capabilities via MCP
+
+The tools above give you a chat/autocomplete/agentic loop against a local model. MCP (Model Context Protocol) servers extend what that agent can *do* — pull live documentation, run project-specific workflows — without changing the model itself.
+
+### Context7 — Live Library Documentation
+
+Context7 is an MCP server that retrieves up-to-date, version-specific documentation and code examples for libraries, injecting them into the model's context to prevent hallucinated APIs. Setup:
+
+```bash
+npx ctx7 setup
+```
+
+This authenticates via OAuth and generates an API key. Alternatively, configure manually against `https://mcp.context7.com/mcp` with a bearer token header — the token is available from the Context7 dashboard.
+
+**Continue.dev** (`~/.continue/config.yaml`):
+
+```yaml
+mcpServers:
+  - name: Context7
+    type: streamable-http
+    url: https://mcp.context7.com/mcp
+    env:
+      BEARER_TOKEN: ${{ secrets.CONTEXT7_API_KEY }}
+```
+
+**Cline** (`cline_mcp_settings.json`):
+
+```json
+{
+  "mcpServers": {
+    "context7": {
+      "type": "streamableHttp",
+      "url": "https://mcp.context7.com/mcp",
+      "headers": { "Authorization": "Bearer <API_KEY>" },
+      "disabled": false,
+      "autoApprove": []
+    }
+  }
+}
+```
+
+**OpenCode** (`~/.config/opencode/opencode.json`):
+
+```json
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "context7": {
+      "type": "remote",
+      "url": "https://mcp.context7.com/mcp",
+      "headers": { "Authorization": "Bearer {env:CONTEXT7_API_KEY}" }
+    }
+  }
+}
+```
+
+### Superpowers — Skills/Workflow Framework (OpenCode)
+
+Superpowers is a skills/workflow framework (brainstorming → plan → TDD → review) — not a model or MCP server. It installs directly into OpenCode:
+
+Tell OpenCode:
+```
+Fetch and follow instructions from https://raw.githubusercontent.com/obra/superpowers/refs/heads/main/.opencode/INSTALL.md
+```
+
+This works because OpenCode ships a native Skills system — `SKILL.md` files with YAML frontmatter, discovered from `.claude/skills/`, `.agents/skills/`, and `.opencode/skills/` directories (project-local or global under `~/.config/opencode/skills/`). Superpowers' existing skill files are natively compatible with this discovery mechanism — no format translation needed.
+
+> **Continue.dev and Cline** have no equivalent native skills runtime as of this writing. Superpowers in this guide is an OpenCode-specific capability, not a ported one.
 
 ---
 
