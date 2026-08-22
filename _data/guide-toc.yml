@@ -22,17 +22,9 @@
   file: home-ai-guide/11-egpu-setup.md
 - title: Remote Access with Tailscale
   file: home-ai-guide/12-tailscale-remote-access.md
-- title: Web Search Integration
-  file: home-ai-guide/13-web-search.md
 - title: Upgrading & Future Expansion
-  file: home-ai-guide/14-upgrading.md
-- title: Local Image Generation (ComfyUI + FLUX)
-  file: home-ai-guide/15-image-generation.md
+  file: home-ai-guide/13-upgrading.md
 - title: Devices & Home Assistant Compatibility
-  file: home-ai-guide/16-devices.md
+  file: home-ai-guide/14-devices.md
 - title: Voice Satellites
-  file: home-ai-guide/17-voice-satellites.md
-- title: Coding Assistant
-  file: home-ai-guide/18-coding-assistant.md
-- title: Inference Backends
-  file: home-ai-guide/19-inference-backends.md
+  file: home-ai-guide/15-voice-satellites.md

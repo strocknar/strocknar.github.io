@@ -1,0 +1,12 @@
+- title: Web Search Integration
+  file: home-ai-customization/01-web-search.md
+- title: Local Image Generation (ComfyUI + FLUX)
+  file: home-ai-customization/02-image-generation.md
+- title: Local Coding Assistant
+  file: home-ai-customization/03-coding-assistant.md
+- title: Inference Backends
+  file: home-ai-customization/04-inference-backends.md
+- title: Mobile Agentic Access
+  file: home-ai-customization/05-mobile-agentic-access.md
+- title: Model Reference
+  file: home-ai-customization/06-model-reference.md

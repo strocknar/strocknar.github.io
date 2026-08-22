@@ -1,7 +1,7 @@
 <details>
 <summary>Table of Contents</summary>
 <ol>
-{% for entry in site.data.guide-toc %}
+{% for entry in include.toc %}
 {% assign entry_num = forloop.index %}
 {% if page.path == entry.file %}
   <li><strong>{{ entry.title }}</strong> &larr; you are here</li>
