@@ -1,12 +1,12 @@
 ---
 ---
-# 19 — Inference Backends
+# 04 — Inference Backends
 
-[← Coding Assistant](18-coding-assistant.md)
+[← Coding Assistant](03-coding-assistant.md) | [Next: Mobile Agentic Access →](05-mobile-agentic-access.md)
 
 ---
 
-{% include guide-toc.html %}
+{% include guide-toc.html toc=site.data.customization-toc %}
 
 ## Overview
 
@@ -62,7 +62,7 @@ Result: ~80–100 tok/s fully GPU-resident vs 8–9 minutes for a 32B dense mode
 
 ---
 
-## 19.1 llama.cpp Server Setup
+## 4.1 llama.cpp Server Setup
 
 ### Download
 
@@ -153,4 +153,6 @@ In VSCode settings:
 
 ---
 
-[← Coding Assistant](18-coding-assistant.md)
+> For current-generation model options beyond the MoE table above (Devstral Small 2, DeepSeek-R1-Distill 14B, Qwen 3.6 27B, Gemma 4 26B-A4B) with VRAM-at-context tables, see [Model Reference](06-model-reference.md).
+
+[← Coding Assistant](03-coding-assistant.md) | [Next: Mobile Agentic Access →](05-mobile-agentic-access.md)

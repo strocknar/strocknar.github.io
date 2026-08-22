@@ -1,12 +1,12 @@
 ---
 ---
-# 13 — Web Search Integration (SearXNG + Open WebUI)
+# 01 — Web Search Integration (SearXNG + Open WebUI)
 
-[← Tailscale](12-tailscale-remote-access.md) | [Next: Upgrading →](14-upgrading.md)
+[← Overview](README.md) | [Next: Image Generation →](02-image-generation.md)
 
 ---
 
-{% include guide-toc.html %}
+{% include guide-toc.html toc=site.data.customization-toc %}
 
 ## Architecture
 
@@ -24,7 +24,7 @@ Your prompts and search queries stay entirely on your network. SearXNG proxies s
 
 ---
 
-## 13.1 Deploy SearXNG
+## 1.1 Deploy SearXNG
 
 Add SearXNG to the Docker stack in the Docker LXC.
 
@@ -120,7 +120,7 @@ Try a search in the UI to confirm results appear.
 
 ---
 
-## 13.2 Connect SearXNG to Open WebUI
+## 1.2 Connect SearXNG to Open WebUI
 
 In Open WebUI: **avatar/username (bottom-left) → Admin Panel → Settings → Web Search**
 
@@ -146,7 +146,7 @@ Save.
 
 ---
 
-## 13.3 Using Web Search in Open WebUI
+## 1.3 Using Web Search in Open WebUI
 
 In the chat interface, click the **globe icon** (or use the `+` menu) to enable web search for a message. When enabled, Open WebUI will:
 
@@ -161,7 +161,7 @@ The model cites sources inline in its response.
 
 ---
 
-## 13.4 Web Search from Home Assistant
+## 1.4 Web Search from Home Assistant
 
 The Ollama conversation agent in HA can also use web search for queries it can't answer from its training data. This requires the `extended_openai_conversation` custom integration via HACS.
 
@@ -230,7 +230,7 @@ Update your system prompt to include something like: "You can search the web for
 
 ---
 
-## 13.5 Perplexica (Optional Alternative)
+## 1.5 Perplexica (Optional Alternative)
 
 Perplexica is a full Perplexity-style interface that combines search and LLM into a single purpose-built UI. If you prefer a dedicated research tool over Open WebUI's integrated search:
 
@@ -257,4 +257,4 @@ Perplexica and Open WebUI serve different use cases — Open WebUI is the better
 
 ---
 
-[← Tailscale](12-tailscale-remote-access.md) | [Next: Upgrading →](14-upgrading.md)
+[← Overview](README.md) | [Next: Image Generation →](02-image-generation.md)
