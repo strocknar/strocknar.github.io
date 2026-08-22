@@ -231,3 +231,5 @@ Both actions are standard GitHub features available in the GitHub mobile app —
 Devika (a similar local-LLM-compatible coding agent) is not covered here — its own README states it is being superseded by a successor project ("Opcode") and self-describes as experimental with broken features. OpenHands is the more mature choice for this use case as of this writing.
 
 ---
+
+[← Inference Backends](04-inference-backends.md) | [Next: Model Reference →](06-model-reference.md)
