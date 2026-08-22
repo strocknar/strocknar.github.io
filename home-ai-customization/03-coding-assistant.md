@@ -316,7 +316,7 @@ Tell OpenCode:
 Fetch and follow instructions from https://raw.githubusercontent.com/obra/superpowers/refs/heads/main/.opencode/INSTALL.md
 ```
 
-This works because OpenCode ships a native Skills system — `SKILL.md` files with YAML frontmatter, discovered from `.claude/skills/`, `.agents/skills/`, and `.opencode/skills/` directories (project-local or global under `~/.config/opencode/skills/`). Superpowers' existing skill files are natively compatible with this discovery mechanism — no format translation needed.
+This works because OpenCode ships a native plugin system that Superpowers registers against directly — no format translation needed for its existing skill files.
 
 > **Continue.dev and Cline** have no equivalent native skills runtime as of this writing. Superpowers in this guide is an OpenCode-specific capability, not a ported one.
 

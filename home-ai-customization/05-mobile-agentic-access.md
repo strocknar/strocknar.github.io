@@ -12,38 +12,37 @@
 
 You're away from your dev machine and want to run the same brainstorm → plan → execute → push workflow you use day-to-day, from your phone, without opening a laptop. Both options below are reachable over the Tailscale connection from [Remote Access with Tailscale](../home-ai-guide/12-tailscale-remote-access.md):
 
-- **Option A — OpenCode Remote Access (Recommended):** a dedicated LXC running `opencode serve` + `opencode web`, giving you a real installable PWA chat interface backed by the actual Superpowers skills engine — brainstorming, planning, and execution all run exactly as they do on a workstation, just reachable from your phone.
+- **Option A — OpenCode Remote Access (Recommended):** a dedicated LXC running `opencode serve` as a persistent backend — it serves the chat UI directly, no separate frontend process needed — backed by the actual Superpowers skills engine. Brainstorming, planning, and execution all run exactly as they do on a workstation, just reachable from your phone.
 - **Option B — Open WebUI custom Tools:** your existing mobile-friendly Open WebUI chat interface, given the ability to call a Python function that commits and pushes to a repo. Lighter-weight, but no skills runtime — use this for simple one-off edits, not the full brainstorm/plan workflow.
 
 ---
 
 ## 5.1 Option A — OpenCode Remote Access (Recommended)
 
-This runs the real Superpowers brainstorming/planning/execution workflow — the same skill files used on a workstation — on a persistent server, reachable from your phone as an installable PWA over Tailscale.
+This runs the real Superpowers brainstorming/planning/execution workflow — the same skill files used on a workstation — on a persistent server, reachable from your phone as a chat interface over Tailscale.
 
 ### Architecture
 
 ```
 Phone (Tailscale client)
-   |  HTTPS/WS over Tailscale (100.x.x.x)
+   |  HTTP(S) over Tailscale (100.x.x.x)
    v
 Proxmox CT 204 (new, unprivileged LXC, hostname: opencode)
    |
-   +-- opencode-serve.service   (backend: sessions, model calls, tool/git execution)
-   |     - OPENCODE_SERVER_PASSWORD set
-   |     - Superpowers skills installed (.opencode/skills/, same as section 3.3)
+   +-- opencode.service   (opencode serve — sessions, model calls, tool/git
+   |     execution, AND the chat UI itself; there is no separate frontend
+   |     process to run)
+   |     - OPENCODE_SERVER_PASSWORD set (HTTP Basic auth)
+   |     - Superpowers plugin installed, same as section 3.3
    |     - Model config in ~/.config/opencode/opencode.json, pointed at the
    |       Ollama VM's OpenAI-compatible endpoint (same pattern as section 3.3)
-   |
-   +-- opencode-web.service    (PWA chat frontend; depends on opencode-serve)
-   |     - opencode web --hostname 0.0.0.0
    |
    +-- ~/.ssh/config + one deploy key per repo
    |
    +-- /repos/<reponame>/   (one clone per repo the agent may touch)
 ```
 
-Model selection happens entirely in server-side config — the web UI is a thin client over the OpenCode HTTP API and has no separate model configuration of its own.
+Model selection happens entirely in server-side config — the chat UI is served directly by `opencode serve` and has no separate model configuration of its own.
 
 ### Create the OpenCode LXC (CT 204)
 
@@ -56,8 +55,8 @@ In Proxmox web UI: **Create CT**
 | Unprivileged container | ✅ Yes — no hardware passthrough needed; it only talks to the Ollama VM over the network |
 | Template | Debian 13 |
 | Disk | `16GB` — repo clones are text/config repos, tens of MB each; this leaves headroom for the OS, OpenCode binary, and multiple clones with git history. Resizable later via `pct resize` if needed. |
-| CPU | `1 core` |
-| RAM | `2048` MB |
+| CPU | `2 cores` — OpenCode's server bootstraps multiple language servers (TypeScript, Python, etc.) per session; 1 core makes these sluggish |
+| RAM | `4096` MB |
 | Network — Bridge | `vmbr0` |
 | Network — IPv4 | Static, `<opencode-lxc-ip>/24` |
 | Network — Gateway | Your router IP |
@@ -71,29 +70,31 @@ Start the LXC.
 > pct set 204 --features nesting=1
 > ```
 
-### Install OpenCode and Superpowers
-
-In the CT 204 console:
-
-```bash
-apt update && apt install -y git openssh-client curl
-
-curl -fsSL https://opencode.ai/install | bash
-```
-
-Install Superpowers the same way as the workstation setup in [Coding Assistant §3.3](03-coding-assistant.md#33-opencode):
-
-```
-Fetch and follow instructions from https://raw.githubusercontent.com/obra/superpowers/refs/heads/main/.opencode/INSTALL.md
-```
-
 ### Create a dedicated system user
 
 ```bash
 useradd -m -s /usr/sbin/nologin opencode
 ```
 
-Both systemd services below run as this user, not root.
+The systemd service below runs as this user, not root.
+
+### Install OpenCode and Superpowers
+
+In the CT 204 console:
+
+```bash
+apt update && apt install -y git openssh-client curl ca-certificates sudo
+
+curl -fsSL https://opencode.ai/install | bash
+```
+
+Install Superpowers the same way as the workstation setup in [Coding Assistant §3.3](03-coding-assistant.md#33-opencode) — tell OpenCode to fetch and follow the install instructions, which registers Superpowers as an OpenCode plugin (not a `.opencode/skills/` directory):
+
+```
+Fetch and follow instructions from https://raw.githubusercontent.com/obra/superpowers/refs/heads/main/.opencode/INSTALL.md
+```
+
+Run this as the `opencode` user (`sudo -H -u opencode opencode` to launch an interactive session) so the plugin installs into `/home/opencode/.config/opencode/`, matching the user the systemd service runs as.
 
 ### Configure the model backend
 
@@ -126,22 +127,32 @@ Replace `<ollama-vm-ip>` with your Ollama VM's LAN IP, same as [Coding Assistant
 chown -R opencode:opencode /home/opencode/.config
 ```
 
-### Set up systemd services
+### Set up the systemd service
 
-`opencode-serve` is the backend — it holds session state, calls the configured model, and executes tool calls including git operations against the cloned repos. Everything the brainstorming/planning/execution workflow does happens here.
+`opencode serve` is both the backend and the chat UI — it holds session state, calls the configured model, executes tool calls including git operations against the cloned repos, **and** serves the chat interface your phone connects to directly. There is no separate frontend process to run.
+
+Find the actual install path first — the install script may place the binary somewhere other than `/usr/local/bin`:
 
 ```bash
-vim /etc/systemd/system/opencode-serve.service
+which opencode
+```
+
+Use that path in `ExecStart` below.
+
+```bash
+vim /etc/systemd/system/opencode.service
 ```
 
 ```ini
 [Unit]
-Description=OpenCode backend server
-After=network.target
+Description=OpenCode remote agent server
+After=network-online.target
+Wants=network-online.target
 
 [Service]
+Environment="HOME=/home/opencode"
 Environment="OPENCODE_SERVER_PASSWORD=<your-password>"
-ExecStart=/usr/local/bin/opencode serve
+ExecStart=<opencode-binary-path> serve --hostname 0.0.0.0 --port 4096
 Restart=on-failure
 User=opencode
 
@@ -149,38 +160,25 @@ User=opencode
 WantedBy=multi-user.target
 ```
 
-`opencode-web` is the frontend — it serves the installable PWA chat UI your phone connects to. It's a thin client over `opencode-serve`'s API with no session logic of its own, which is why it depends on and starts after the backend.
+`After=network-online.target` (not the weaker `network.target`) matters here — the Superpowers plugin install fetches over the network on first start, and `network.target` doesn't guarantee a routable address yet.
+
+The password lives in plaintext in this unit file — restrict its permissions:
 
 ```bash
-vim /etc/systemd/system/opencode-web.service
+chmod 600 /etc/systemd/system/opencode.service
 ```
 
-```ini
-[Unit]
-Description=OpenCode PWA web UI
-After=opencode-serve.service
-Requires=opencode-serve.service
-
-[Service]
-ExecStart=/usr/local/bin/opencode web --hostname 0.0.0.0
-Restart=on-failure
-User=opencode
-
-[Install]
-WantedBy=multi-user.target
-```
-
-Enable and start both:
+Enable and start it:
 
 ```bash
 systemctl daemon-reload
-systemctl enable --now opencode-serve opencode-web
+systemctl enable --now opencode
 ```
 
-Verify both are running:
+Verify it's running:
 
 ```bash
-systemctl status opencode-serve opencode-web
+systemctl status opencode
 ```
 
 ### Set up per-repo deploy keys
@@ -219,14 +217,19 @@ Repeat the `Host` block per repo. Then:
 
 ```bash
 chown -R opencode:opencode /home/opencode/.ssh
+chmod 700 /home/opencode/.ssh
 chmod 600 /home/opencode/.ssh/deploy_key_* /home/opencode/.ssh/config
 ```
 
+`chmod 700` on the directory itself matters — OpenSSH's `StrictModes` rejects a group/other-writable `~/.ssh`, and `useradd -m` typically creates the home directory `0755`.
+
 ### Clone each repo
 
+Use `sudo -H` (not bare `sudo -u`) so `git`'s config and SSH lookups resolve against the `opencode` user's home directory, not root's:
+
 ```bash
-sudo -u opencode mkdir -p /repos
-sudo -u opencode git clone git@github.com-<reponame>:<you>/<reponame>.git /repos/<reponame>
+sudo -H -u opencode mkdir -p /repos
+sudo -H -u opencode git clone git@github.com-<reponame>:<you>/<reponame>.git /repos/<reponame>
 ```
 
 Repeat per repo, using the matching `Host` alias from the SSH config above in the clone URL.
@@ -236,23 +239,25 @@ Repeat per repo, using the matching `Host` alias from the SSH config above in th
 One identity for all commits across all repos, matching the pattern used for the Open WebUI git tool in [5.2](#52-option-b--open-webui-custom-tools):
 
 ```bash
-sudo -u opencode git config --global user.email "opencode@local"
-sudo -u opencode git config --global user.name "OpenCode Agent"
-sudo -u opencode sh -c "mkdir -p ~/.ssh && ssh-keyscan github.com >> ~/.ssh/known_hosts"
+sudo -H -u opencode git config --global user.email "opencode@local"
+sudo -H -u opencode git config --global user.name "OpenCode Agent"
+sudo -H -u opencode sh -c "mkdir -p ~/.ssh && ssh-keyscan github.com >> ~/.ssh/known_hosts"
 ```
+
+> Without `-H`, `sudo` preserves the invoking (root) user's `$HOME` on Debian's default `sudoers` config — these commands would silently write to `/root/.gitconfig` instead of the `opencode` user's, and later commits would fail with "Please tell me who you are."
 
 ### Connect from your phone
 
 1. Confirm Tailscale is connected on your phone — see [Remote Access with Tailscale](../home-ai-guide/12-tailscale-remote-access.md).
 2. Visit `http://<opencode-lxc-tailscale-ip>:4096` in your phone's browser.
-3. Enter the `OPENCODE_SERVER_PASSWORD` you set above.
-4. Use "Add to Home Screen" — the OpenCode web UI ships a PWA manifest, so this installs as a standalone app icon with no browser chrome.
+3. Your browser shows a standard HTTP Basic auth prompt. Enter **any non-empty username** (e.g. `opencode`) and the `OPENCODE_SERVER_PASSWORD` you set above as the password — a blank username is rejected.
+4. Use "Add to Home Screen" for quicker access — whether this installs as a standalone app (no browser chrome) depends on your browser and OpenCode version; confirm once connected.
 
 Once connected, brainstorming, planning, and execution work exactly as they do through OpenCode on a workstation (see [Coding Assistant §3.3](03-coding-assistant.md#33-opencode)) — point a session at `/repos/<reponame>` and start a conversation.
 
-> **Security:** CT 204 is only reachable via Tailscale — `opencode web --hostname 0.0.0.0` binds all interfaces, but nothing is port-forwarded or publicly exposed. `OPENCODE_SERVER_PASSWORD` is defense-in-depth behind that perimeter. Both services run as the non-root `opencode` user.
+**Switching models:** the chat UI reads its model list from the server config. To change the default, edit `model` in `/home/opencode/.config/opencode/opencode.json` and run `systemctl restart opencode`. Any model you want selectable must also be listed under `provider.ollama.models` in that file.
 
-> **Verify during setup:** whether `opencode web` exposes an in-session model switcher (like the TUI's `/models`), and the actual default port `opencode web` binds (assumed `4096` above) — confirm against your installed version and adjust the URL if it differs.
+> **Security:** `--hostname 0.0.0.0` binds *all* network interfaces on CT 204 — Tailscale **and** your LAN, not Tailscale alone. Nothing is port-forwarded, so it's not reachable from the internet, but any device on your LAN can reach port 4096; the `OPENCODE_SERVER_PASSWORD` (HTTP Basic auth) is the only thing standing between them and an agent that can run shell commands and push to every repo cloned under `/repos`. Treat access to this port as equivalent to shell access on CT 204 — use a long, random password, not a memorable one. If you want to restrict this to Tailscale only, install Tailscale inside CT 204 and bind its address instead of `0.0.0.0`.
 
 ---
 
@@ -290,7 +295,7 @@ Two things the model relies on to use this correctly:
 - The class must be named `Tools`.
 - Every method's docstring is what the model reads to decide whether and how to call it — write it as if explaining the function to someone who cannot see the code, including what each parameter means.
 
-Save the tool, then enable it per-model in **Workspace → Models → [your model] → Tools**, or globally per-chat via the tools icon in the chat input bar.
+Save the tool, then enable it per-model in **Workspace → Models → \[your model\] → Tools**, or globally per-chat via the tools icon in the chat input bar.
 
 ---
 
