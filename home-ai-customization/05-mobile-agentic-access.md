@@ -80,12 +80,16 @@ The systemd service below runs as this user, not root.
 
 ### Install OpenCode and Superpowers
 
-In the CT 204 console:
+In the CT 204 console, install system packages as root:
 
 ```bash
 apt update && apt install -y git openssh-client curl ca-certificates sudo
+```
 
-curl -fsSL https://opencode.ai/install | bash
+Install OpenCode itself as the `opencode` user, not root — the installer writes its binary path and `PATH` update into the invoking user's `$HOME/.bashrc`. Running it as root would put the binary on root's `PATH` only, leaving the `opencode` user with no `opencode` command:
+
+```bash
+sudo -H -u opencode bash -c 'curl -fsSL https://opencode.ai/install | bash'
 ```
 
 Install Superpowers the same way as the workstation setup in [Coding Assistant §3.3](03-coding-assistant.md#33-opencode) — tell OpenCode to fetch and follow the install instructions, which registers Superpowers as an OpenCode plugin (not a `.opencode/skills/` directory):
@@ -131,10 +135,10 @@ chown -R opencode:opencode /home/opencode/.config
 
 `opencode serve` is both the backend and the chat UI — it holds session state, calls the configured model, executes tool calls including git operations against the cloned repos, **and** serves the chat interface your phone connects to directly. There is no separate frontend process to run.
 
-Find the actual install path first — the install script may place the binary somewhere other than `/usr/local/bin`:
+Find the actual install path first — the install script may place the binary somewhere other than `/usr/local/bin`, and it was installed as the `opencode` user above, not root:
 
 ```bash
-which opencode
+sudo -H -u opencode which opencode
 ```
 
 Use that path in `ExecStart` below.
