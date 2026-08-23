@@ -34,7 +34,7 @@ Proxmox CT 204 (new, unprivileged LXC, hostname: opencode)
    |     process to run)
    |     - OPENCODE_SERVER_PASSWORD set (HTTP Basic auth)
    |     - Superpowers plugin installed, same as section 3.3
-   |     - Model config in ~/.config/opencode/opencode.json, pointed at the
+   |     - Model config in ~/.config/opencode/opencode.jsonc, pointed at the
    |       Ollama VM's OpenAI-compatible endpoint (same pattern as section 3.3)
    |
    +-- ~/.ssh/config + one deploy key per repo
@@ -90,23 +90,36 @@ Install OpenCode itself as the `opencode` user, not root — the installer write
 
 ```bash
 sudo -H -u opencode bash -c 'curl -fsSL https://opencode.ai/install | bash'
+sudo -H -u opencode bash -c 'grep -qxF "export PATH=\"/home/opencode/.opencode/bin:\$PATH\"" /home/opencode/.bashrc || echo "export PATH=\"/home/opencode/.opencode/bin:\$PATH\"" >> /home/opencode/.bashrc'
 ```
 
 Install Superpowers the same way as the workstation setup in [Coding Assistant §3.3](03-coding-assistant.md#33-opencode) — tell OpenCode to fetch and follow the install instructions, which registers Superpowers as an OpenCode plugin (not a `.opencode/skills/` directory):
+
+Run this as the `opencode` user so the plugin installs into `/home/opencode/.config/opencode/`, matching the user the systemd service runs as. `cd` into a directory `opencode` can access first:
+
+```bash
+cd /home/opencode
+sudo -H -u opencode /home/opencode/.opencode/bin/opencode
+```
+
+Then ask opencode to install superpowers:
 
 ```
 Fetch and follow instructions from https://raw.githubusercontent.com/obra/superpowers/refs/heads/main/.opencode/INSTALL.md
 ```
 
-Run this as the `opencode` user (`sudo -H -u opencode opencode` to launch an interactive session) so the plugin installs into `/home/opencode/.config/opencode/`, matching the user the systemd service runs as.
-
 ### Configure the model backend
 
-Create `/home/opencode/.config/opencode/opencode.json` (owned by the `opencode` user):
+The Superpowers install step above already created `/home/opencode/.config/opencode/opencode.jsonc` with a `plugin` key. OpenCode's global config loader picks exactly one file from that directory — `opencode.jsonc` if it exists, else `opencode.json`, else `config.json` — it does **not** merge multiple global config files together. Add the provider/model config into the *same* `opencode.jsonc` rather than creating a separate `opencode.json`, or the model config will be silently ignored:
+
+```bash
+sudo -H -u opencode vim /home/opencode/.config/opencode/opencode.jsonc
+```
 
 ```json
 {
   "$schema": "https://opencode.ai/config.json",
+  "plugin": ["superpowers@git+https://github.com/obra/superpowers.git"],
   "provider": {
     "ollama": {
       "npm": "@ai-sdk/openai-compatible",
@@ -117,6 +130,18 @@ Create `/home/opencode/.config/opencode/opencode.json` (owned by the `opencode` 
       "models": {
         "qwen3-coder:30b-a3b-q4_K_M": {
           "name": "Qwen3 Coder 30B"
+        },
+        "devstral-small-2:24b-instruct-2512-q4_K_M": {
+          "name": "Devstral Small 2 24B"
+        },
+        "deepseek-r1:14b-qwen-distill-q4_K_M": {
+          "name": "DeepSeek-R1-Distill 14B"
+        },
+        "qwen3.6:27b-q4_K_M": {
+          "name": "Qwen 3.6 27B"
+        },
+        "gemma4:26b-a4b-it-q4_K_M": {
+          "name": "Gemma 4 26B-A4B"
         }
       }
     }
@@ -124,6 +149,8 @@ Create `/home/opencode/.config/opencode/opencode.json` (owned by the `opencode` 
   "model": "ollama/qwen3-coder:30b-a3b-q4_K_M"
 }
 ```
+
+Keep the `plugin` line exactly as the installer wrote it — this edit only adds the `provider` and `model` keys alongside it. Every model listed under `provider.ollama.models` becomes selectable in the chat UI's `/models` picker — the top-level `model` field only sets which one loads by default at startup. The four alternates above are covered in [Model Reference](06-model-reference.md); pull whichever ones you plan to use on the Ollama VM first (`ollama pull <tag>`), or trim this list to just the models you've actually pulled.
 
 Replace `<ollama-vm-ip>` with your Ollama VM's LAN IP, same as [Coding Assistant](03-coding-assistant.md#endpoint-reference).
 
@@ -135,13 +162,11 @@ chown -R opencode:opencode /home/opencode/.config
 
 `opencode serve` is both the backend and the chat UI — it holds session state, calls the configured model, executes tool calls including git operations against the cloned repos, **and** serves the chat interface your phone connects to directly. There is no separate frontend process to run.
 
-Find the actual install path first — the install script may place the binary somewhere other than `/usr/local/bin`, and it was installed as the `opencode` user above, not root:
+The install script places the binary at `/home/opencode/.opencode/bin/opencode` — use that path in `ExecStart` below. `which` won't confirm this for you: Debian's default `~/.bashrc` starts with an interactive-only guard (`case $- in *i*) ;; *) return;; esac`) that returns before the `PATH` line added above ever runs, for both a bare `sudo -u opencode which opencode` and a non-interactive login shell like `bash -lc`. Check the file exists at the known path directly instead:
 
 ```bash
-sudo -H -u opencode which opencode
+sudo -H -u opencode test -x /home/opencode/.opencode/bin/opencode && echo "found"
 ```
-
-Use that path in `ExecStart` below.
 
 ```bash
 vim /etc/systemd/system/opencode.service
@@ -155,8 +180,8 @@ Wants=network-online.target
 
 [Service]
 Environment="HOME=/home/opencode"
-Environment="OPENCODE_SERVER_PASSWORD=<your-password>"
-ExecStart=<opencode-binary-path> serve --hostname 0.0.0.0 --port 4096
+Environment='OPENCODE_SERVER_PASSWORD=<your-password>'
+ExecStart=/home/opencode/.opencode/bin/opencode serve --hostname 0.0.0.0 --port 4096
 Restart=on-failure
 User=opencode
 
@@ -259,9 +284,11 @@ sudo -H -u opencode sh -c "mkdir -p ~/.ssh && ssh-keyscan github.com >> ~/.ssh/k
 
 Once connected, brainstorming, planning, and execution work exactly as they do through OpenCode on a workstation (see [Coding Assistant §3.3](03-coding-assistant.md#33-opencode)) — point a session at `/repos/<reponame>` and start a conversation.
 
-**Switching models:** the chat UI reads its model list from the server config. To change the default, edit `model` in `/home/opencode/.config/opencode/opencode.json` and run `systemctl restart opencode`. Any model you want selectable must also be listed under `provider.ollama.models` in that file.
+**Switching models:** the chat UI reads its model list from the server config. To change the default, edit `model` in `/home/opencode/.config/opencode/opencode.jsonc` and run `systemctl restart opencode`. Any model you want selectable must also be listed under `provider.ollama.models` in that file.
 
 > **Security:** `--hostname 0.0.0.0` binds *all* network interfaces on CT 204 — Tailscale **and** your LAN, not Tailscale alone. Nothing is port-forwarded, so it's not reachable from the internet, but any device on your LAN can reach port 4096; the `OPENCODE_SERVER_PASSWORD` (HTTP Basic auth) is the only thing standing between them and an agent that can run shell commands and push to every repo cloned under `/repos`. Treat access to this port as equivalent to shell access on CT 204 — use a long, random password, not a memorable one. If you want to restrict this to Tailscale only, install Tailscale inside CT 204 and bind its address instead of `0.0.0.0`.
+>
+> **Password characters:** HTTP Basic auth itself accepts any character in the password. The unit file is the actual constraint: `Environment=` values undergo systemd specifier expansion, so a literal `%` must be written as `%%` or the service fails to start. The single-quoted form above (`Environment='OPENCODE_SERVER_PASSWORD=...'`) takes the value verbatim with no backslash-escaping — safe for most generated passwords, but it can't contain a literal single quote (`'`). Easiest: generate a password from `[A-Za-z0-9]` only (e.g. `openssl rand -base64 24 | tr -dc 'A-Za-z0-9' | head -c 24`), which avoids both issues entirely.
 
 ---
 
