@@ -9,3 +9,4 @@ crash.log
 
 # Ansible runtime-generated inventory (contains live IPs)
 ansible/inventory/hosts.ini
+.playwright-mcp/
