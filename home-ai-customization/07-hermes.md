@@ -25,12 +25,18 @@ After=network.target
 [Service]
 Type=simple
 User=root
-# Set your preferred working directory (usually where your hermes configurations live)
 WorkingDirectory=/root/.hermes
-# Environment variables for custom hosting options
+
+# NETWORK BIND PARAMETERS
 Environment=HOST=0.0.0.0
 Environment=PORT=3000
-# Update the binary path below if yours differs
+
+# MANDATORY AUTH CONFIGURATION (Satisfies the 0.0.0.0 gate)
+Environment=HERMES_DASHBOARD_BASIC_AUTH_USERNAME=admin
+Environment=HERMES_DASHBOARD_BASIC_AUTH_PASSWORD=password
+# Secret ensures your web session tokens persist across systemd service restarts
+Environment=HERMES_DASHBOARD_BASIC_AUTH_SECRET=generate_any_random_string_here
+
 ExecStart=/usr/local/bin/hermes dashboard --host 0.0.0.0 --port 3000
 Restart=always
 RestartSec=5
@@ -51,6 +57,10 @@ sudo systemctl enable hermes-dashboard.service
 
 # Start the dashboard service right now
 sudo systemctl start hermes-dashboard.service
+
+# check logs
+sudo journalctl -u hermes-dashboard.service -n 20
+
 ```
 
 ## Check
