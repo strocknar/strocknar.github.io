@@ -68,3 +68,29 @@ sudo journalctl -u hermes-dashboard.service -n 20
 Navigate to http://<YOUR-HERMES-TAILSCALE-IP>:3000
 
 Add to NPM
+
+## Attach to OpenCode
+
+```bash
+vim ~/.hermes/config.yaml
+```
+
+Scroll down to the tools: or mcp_servers: section. If it doesn't exist, append the OpenCode block to enable delegation:
+
+```yaml
+tools:
+  opencode:
+    enabled: true
+    executable_path: "/usr/local/bin/opencode" # Adjust if 'which opencode' outputs differently
+    default_workspace: "/root/projects"       # The baseline path to your code repos
+```
+
+Open your Hermes Dashboard on your phone (http://<YOUR-HERMES-TAILSCALE-IP>:3000).
+
+Log in using the Basic Auth credentials you established in your systemd file.
+
+Tap the Menu icon and navigate to the Skills tab.
+
+Look under the Autonomous AI Agents category for OpenCode CLI.
+
+Click Enable / Install. 
