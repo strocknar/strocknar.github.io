@@ -8,7 +8,6 @@ Install on opencode server
 curl -fsSL https://hermes-agent.nousresearch.com/install.sh | bash
 ```
 
-```ini
 Run through the config
 Select Custom for the backend and point to http://<ollam-ip>:11434/v1
 Use searxng for the search
@@ -18,6 +17,7 @@ most everything else is just defaults (but use your best judgment)
 
 sudo vim /etc/systemd/system/hermes-dashboard.service
 
+```ini
 [Unit]
 Description=Hermes Agent Web Dashboard
 After=network.target
