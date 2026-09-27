@@ -57,6 +57,7 @@ A complete start-to-finish guide for building a local AI system with Home Assist
 13. [Upgrading & Future Expansion](13-upgrading.md)
 14. [Devices & Home Assistant Compatibility](14-devices.md)
 15. [Voice Satellites](15-voice-satellites.md)
+16. [Vaultwarden Password Manager](16-vaultwarden.md)
 
 Once your core build is running, continue with **[Home AI Customization](../home-ai-customization/)** for web search, image generation, a local coding assistant, and mobile agentic access.
 
