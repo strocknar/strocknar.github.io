@@ -61,6 +61,8 @@ A complete start-to-finish guide for building a local AI system with Home Assist
 
 Once your core build is running, continue with **[Home AI Customization](../home-ai-customization/)** for web search, image generation, a local coding assistant, and mobile agentic access.
 
+Running Workspace or Gmail as your mail provider? The [Light De-Google guide](../light-de-google/) covers moving email to your own domain with PurelyMail, migrating Drive/Photos without downloading everything, and switching to Vaultwarden (section 16 above) for passwords.
+
 ## Architecture Overview
 
 ```

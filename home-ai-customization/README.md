@@ -18,3 +18,5 @@ A continuation of the [Home AI Guide](../home-ai-guide/) — once your core home
 4. [Inference Backends](04-inference-backends.md)
 5. [Mobile Agentic Access](05-mobile-agentic-access.md)
 6. [Model Reference](06-model-reference.md)
+
+Not on this stack yet because Google still holds your mail and files? Start with the [Light De-Google guide](../light-de-google/) to break that dependency first.
