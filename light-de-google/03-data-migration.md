@@ -8,18 +8,18 @@ Everything migrates to the generic Gmail account; the paths below are ordered so
 
 1. **Google Drive — server-side copy (primary)** — Share top-level Drive folders with the generic Gmail account, then in the shared view select-all and "Make a copy" or move into the new account's own Drive. Copies happen inside Google — zero local bandwidth.
    > **Note:** If bulk copy hits limits, perform the operation per-folder.
-   > **Alternative:** Use MultCloud for automated Drive $\rightarrow$ Drive transfer (verify current free-tier limits for your volume).
+   > **Alternative:** Use MultCloud for automated Drive → Drive transfer (verify current free-tier limits for your volume).
 
 2. **Google Photos — Partner Sharing (primary)** — From the old account, enable partner sharing with the generic Gmail; on the receiving side, save copies in bulk.
    > **Caveats:** Verify the quality setting of saved copies; storage is counted on the receiving account.
    > **Alternative:** Use MultCloud Google Photos transfer.
 
 3. **Contacts & Calendar — Takeout (tiny, download is fine)** — Use Google Takeout to export these small datasets.
-   1. Google Takeout $\rightarrow$ select only Contacts + Calendar.
+   1. Google Takeout → select only Contacts + Calendar.
    2. Download the resulting archive.
    3. Import `.vcf` into Google Contacts and `.ics` into Google Calendar on the generic account.
 
-4. **Docs/Sheets/Slides — Takeout export** — Export specialized Google formats to standard office formats (Docs $\rightarrow$ .docx/.odt, Sheets $\rightarrow$ .xlsx, Slides $\rightarrow$ .pptx).
+4. **Docs/Sheets/Slides — Takeout export** — Export specialized Google formats to standard office formats (Docs → .docx/.odt, Sheets → .xlsx, Slides → .pptx).
    > **Limitations:** Comments, revision history, and some embedded features do not survive export.
    > **Homelab Note:** If the new consumer of these files is your homelab, note they will land in the migrated Drive copy.
 
