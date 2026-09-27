@@ -16,9 +16,10 @@
 ### 2. Notify Contacts
 Use the following template to inform your contacts of the change.
 
-**Subject:** Important - Updated Communication Address
+```text
+Subject: Important - Updated Communication Address
 
-**Body:**
+Body:
 Please update your contact information with our new communication address.
 
 I have completed my transition from Google Workspace and am now using Spark Mail with PurelyMail for email services.
@@ -27,6 +28,7 @@ My new working address is:
 [Your Email Address]
 
 You can continue to reach me using the same methods, but please update your contacts. My old Google Workspace address will remain functional (forwarded) for the next 3 months.
+```
 
 ### 3. Update Business Services
 Ensure the following services are updated with your new address:
