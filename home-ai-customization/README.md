@@ -1,3 +1,5 @@
+---
+---
 # Home AI Customization
 
 {% include guide-toc.html toc=site.data.customization-toc %}
@@ -19,3 +21,5 @@ A continuation of the [Home AI Guide](../home-ai-guide/) — once your core home
 5. [Mobile Agentic Access](05-mobile-agentic-access.md)
 6. [Model Reference](06-model-reference.md)
 7. [Hermes Agent Integration](07-hermes.md)
+
+Not on this stack yet because Google still holds your mail and files? Start with the [Light De-Google guide](../light-de-google/) to break that dependency first.

@@ -4,6 +4,7 @@
 
 - [Homelab AI and Home Assistant Setup](home-ai-guide/)
 - [Home AI Customization](home-ai-customization/)
+- [Light De-Google Guide](light-de-google/)
 
 # Development
 

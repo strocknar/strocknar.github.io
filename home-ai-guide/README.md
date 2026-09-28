@@ -1,3 +1,5 @@
+---
+---
 # Home AI & Homelab Build Guide
 
 A complete start-to-finish guide for building a local AI system with Home Assistant, local LLM inference, and a self-hosted homelab stack.
@@ -57,8 +59,11 @@ A complete start-to-finish guide for building a local AI system with Home Assist
 13. [Upgrading & Future Expansion](13-upgrading.md)
 14. [Devices & Home Assistant Compatibility](14-devices.md)
 15. [Voice Satellites](15-voice-satellites.md)
+16. [Vaultwarden Password Manager](16-vaultwarden.md)
 
 Once your core build is running, continue with **[Home AI Customization](../home-ai-customization/)** for web search, image generation, a local coding assistant, and mobile agentic access.
+
+Running Workspace or Gmail as your mail provider? The [Light De-Google guide](../light-de-google/) covers moving email to your own domain with PurelyMail, migrating Drive/Photos without downloading everything, and switching to Vaultwarden (section 16 above) for passwords.
 
 ## Architecture Overview
 
