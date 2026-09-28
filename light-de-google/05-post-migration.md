@@ -41,7 +41,7 @@ Ensure the following services are updated with your new address:
 ### 4. Verification Checklist
 Verify everything before proceeding to cancellation:
 - [ ] **Email:** test mail both directions works (mirrors §2 deliverability check)
-- [ ] **Historical mail:** imported Workspace mailbox counts match expectations (§2 step 6)
+- [ ] **Historical mail:** imported Workspace mailbox counts match expectations (§2 step 7)
 - [ ] **Data:** §3 track steps completed — Track A: Drive/Photos copies present, contacts/calendar imported, quota checked · Track B: §3 verification checklist passed
 - [ ] **Credentials:** Vaultwarden autofill works on every device
 - [ ] **Notes:** Keep collaborator copies in place
@@ -61,7 +61,7 @@ The Google account is deleted at cancellation; your email address is not — it 
    - **Re-link to the generic Gmail's Google account** — for services that insist on Google sign-in and offer no password option.
    - **New account** — last resort; migrate data out if the service holds any.
 3. **Google Voice** (if the Workspace account holds a number): Workspace Voice numbers are org-owned — free them via the Admin console (transfer the number out) or unlock and port it to a carrier before cancellation. Call history and voicemails never transfer, and a number on a deleted account is unrecoverable.
-4. **Gmail filters:** the §3 transfer carries labels but not filters. Export filters as XML (Gmail desktop → Settings → **Filters and Blocked Addresses** → select → Export) and re-import them in the archive account (**Import filters**).
+4. **Gmail filters:** the §2 transfer carries labels but not filters. Export filters as XML (Gmail desktop → Settings → **Filters and Blocked Addresses** → select → Export) and re-import them in the archive account (**Import filters**).
 
 ### 6. Cancellation
 Once verification is complete:
@@ -69,7 +69,7 @@ Once verification is complete:
 2. **Export final data** via Google Takeout if any last-minute changes occurred.
 3. **Cancel Workspace** via Admin Console → Billing.
 
-> **Note:** Once cancelled, Workspace mailboxes are gone — anything not already imported (§2 step 6) is unrecoverable. Your custom-domain mail keeps flowing: the Route53 MX records point at PurelyMail, and the catch-all forward is independent of Workspace.
+> **Note:** Once cancelled, Workspace mailboxes are gone — anything not already imported (§2 step 7) is unrecoverable. Your custom-domain mail keeps flowing: the Route53 MX records point at PurelyMail, and the catch-all forward is independent of Workspace.
 
 ---
 

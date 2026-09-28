@@ -31,7 +31,7 @@ The Workspace mailbox does **not** survive cancellation — its contents vanish 
 
 - **Zero extra tools:** Google Takeout (select Mail → exports `.mbox` archives) → Thunderbird's built-in Import → optionally drag the imported folders onto the Gmail archive's IMAP folders to make them server-side. Thunderbird is already this guide's required client.
 - **Phone-only (no desktop, no homelab):** move every message into the inbox (`-in:inbox` → select all → Move to Inbox) and run Google's [Transfer tool](https://takeout.google.com/transfer) to the new Gmail — full steps in §2 step 7.
-- **Fast path (homelab):** `imapsync` (app passwords on both accounts; resumable). Command in §2 step 6.
+- **Fast path (homelab):** `imapsync` (app passwords on both accounts; resumable). Command in §2 step 7.
 - **Legacy:** Gmail's "Check mail from other accounts" (POP fetch) is being removed — readers who enabled it before Q1 2026 can use it until January 2027; new setups cannot.
 
 ## What "light" buys you — and what it doesn't
@@ -50,7 +50,7 @@ The Workspace mailbox does **not** survive cancellation — its contents vanish 
 | Drive files | **Track A:** Transfer tool run in §2 copies Drive + owned Photos · **Track B:** rclone server-side → homelab |
 | Photos | **Track A:** comes with the §2 transfer; Partner Sharing for partner-shared + auto-save (§3) · **Track B:** Takeout → `immich-go` → Immich |
 | Contacts / Calendar | **Track A:** export `.vcf`/`.ics` → import to Gmail · **Track B:** Takeout → Nextcloud + DAVx⁵ |
-| Docs/Sheets/Slides | Move with your track's Drive step — stay native, no export needed; Takeout office export only if you want offline copies (§3) |
+| Docs/Sheets/Slides | Move with the §2 transfer (Track A) or your track's rclone step (§3) — stay native, no export needed; Takeout office export only if you want offline copies (§3) |
 | Keep | Collaborator share → re-link account (§4) |
 | "Sign in with Google" logins | Password auth with the same custom-domain address — it survives via PurelyMail (§5, Retire Google Sign-In) |
 | Shared Drives | Not in the Transfer tool — rclone or admin Data export (§3) |
