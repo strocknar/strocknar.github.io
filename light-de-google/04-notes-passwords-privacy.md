@@ -1,8 +1,10 @@
 ---
 ---
-# Notes, Passwords & Privacy
+# 04 — Notes, Passwords & Privacy
 
 {% include guide-toc.html toc=site.data.de-google-toc %}
+
+[← Data Migration](03-data-migration) | [Next: Post-Migration & Cancellation →](05-post-migration)
 
 1. **Google Keep** — Notes live in the account that created them and do not follow an email change.
    - Path: in each important note → Collaborator → add generic Gmail (the account then holds its own copy); add the generic account to the Keep app on Android and switch.
@@ -21,3 +23,7 @@
    - Install DuckDuckGo Private Browser (Play Store / duckduckgo.com).
    - Enable App Tracking Protection (Android).
    - Optional: make it the default browser app.
+
+---
+
+[← Data Migration](03-data-migration) | [Next: Post-Migration & Cancellation →](05-post-migration)

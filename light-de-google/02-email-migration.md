@@ -1,8 +1,10 @@
 ---
 ---
-# Email Migration
+# 02 — Email Migration
 
 {% include guide-toc.html toc=site.data.de-google-toc %}
+
+[← Overview & Strategy](01-overview) | [Next: Data Migration →](03-data-migration)
 
 1. **Set up the generic Gmail account** — create `yourname.forward@gmail.com`, enable 2FA.
    > **Note:** This account is now load-bearing — protect it accordingly.
@@ -36,3 +38,7 @@
 ## Deliverability Verification
 
 Send test mail from Spark (via PurelyMail SMTP) to an external address (e.g., a friend's Gmail or [mail-tester.com](https://www.mail-tester.com)), check headers show `spf=pass dkim=pass dmarc=pass`; send a test to the custom-domain address and confirm it arrives in Spark.
+
+---
+
+[← Overview & Strategy](01-overview) | [Next: Data Migration →](03-data-migration)

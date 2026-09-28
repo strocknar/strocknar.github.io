@@ -1,8 +1,10 @@
 ---
 ---
-# Data Migration
+# 03 — Data Migration
 
 {% include guide-toc.html toc=site.data.de-google-toc %}
+
+[← Email Migration](02-email-migration) | [Next: Notes, Passwords & Privacy →](04-notes-passwords-privacy)
 
 Everything migrates to the generic Gmail account; the paths below are ordered so hundreds of GB never touch your local connection — download-free paths first, rclone as the fallback.
 
@@ -37,3 +39,7 @@ rclone copy gsrc: gdst: --drive-root-folder-id root --progress -v
 
 > **WARNING:** This transfers at line rate through the homelab's connection — fine for tens of GB, expensive for hundreds. Prefer the no-download paths above.
 > **Note:** `rclone sync` deletes files at the destination if they aren't at the source; use `copy` until you have verified the migration.
+
+---
+
+[← Email Migration](02-email-migration) | [Next: Notes, Passwords & Privacy →](04-notes-passwords-privacy)

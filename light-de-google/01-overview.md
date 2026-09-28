@@ -1,8 +1,10 @@
 ---
 ---
-# Overview & Strategy
+# 01 — Overview & Strategy
 
 {% include guide-toc.html toc=site.data.de-google-toc %}
+
+[← Overview](README) | [Next: Email Migration →](02-email-migration)
 
 ## What you're eliminating vs. keeping
 
@@ -51,3 +53,7 @@ Google Workspace ──routes──▶ generic Gmail ──forwards──▶ Pur
 2. **Data second**.
 3. **Credentials/notes third**.
 4. **Cancellation last** (30-day soak).
+
+---
+
+[← Overview](README) | [Next: Email Migration →](02-email-migration)

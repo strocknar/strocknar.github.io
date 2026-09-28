@@ -1,8 +1,10 @@
 ---
 ---
-# Post-Migration & Cancellation
+# 05 — Post-Migration & Cancellation
 
 {% include guide-toc.html toc=site.data.de-google-toc %}
+
+[← Notes, Passwords & Privacy](04-notes-passwords-privacy)
 
 ### 1. Spark Configuration Checklist
 1. Gmail (OAuth) + PurelyMail (IMAP) accounts added
@@ -51,3 +53,9 @@ Once verification is complete, follow these steps to decommission Google Workspa
 3. **Cancel Workspace** via Admin Console → Billing.
 
 > **Note:** Once cancelled, Workspace mailboxes are gone → the forwarding rule dies with them; only the custom-domain MX records (now at PurelyMail) keep mail flowing.
+
+---
+
+[← Notes, Passwords & Privacy](04-notes-passwords-privacy)
+
+> **Done de-Googling?** Self-host the rest of the stack — inference, home automation, media — with the [Home AI Guide →](../home-ai-guide/).
