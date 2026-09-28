@@ -17,8 +17,8 @@
                 ┌─ sends via ─▶ PurelyMail SMTP (DKIM)
 Thunderbird ────┤
                 └─ reads IMAP ◀─ PurelyMail MX ──catch-all forward──▶ Gmail archive
-                                                                     ▲
-Workspace (transition only) ──POP fetch/imapsync──▶ historical mail ─┘
+                                                                          ▲
+Workspace (transition only) ──Takeout+import/imapsync──▶ historical mail ─┘
 ```
 
 PurelyMail (a few dollars per year) is pass-through MX + outbound SMTP — mail is forwarded on arrival and not stored there. The free Gmail account is the archive: inbound mail forwards to it, historical Workspace mail imports into it, and Thunderbird reads it via OAuth alongside PurelyMail via IMAP. Purelymail routing rules are permanent redirects — mail is sent on to the destination instead of being delivered to a local mailbox, so nothing accumulates in Purelymail. Purelymail publishes no hard storage limits (soft limits apply to unusually heavy usage).
