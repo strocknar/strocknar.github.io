@@ -1,5 +1,4 @@
 ---
-layout: default
 ---
 # Light De-Google Guide
 
@@ -42,4 +41,4 @@ Google Workspace ──routes──▶ generic Gmail ──forwards──▶ Pur
 - PurelyMail account
 - [Vaultwarden server](../home-ai-guide/16-vaultwarden) (if following the passwords path)
 
-Once email and data are off Workspace, continue with **[Home AI Guide](../home-ai-guide/README.html)** for the self-hosted stack that replaces Google services.
+Once email and data are off Workspace, continue with **[Home AI Guide](../home-ai-guide/)** for the self-hosted stack that replaces Google services.

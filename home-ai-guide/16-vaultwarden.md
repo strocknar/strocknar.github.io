@@ -19,7 +19,7 @@ Deploy the container on the Docker homelab LXC (from [section 04](04-docker-home
 ```yaml
 services:
   vaultwarden:
-    image: vaultwarden/server:latest
+    image: ghcr.io/dani-garcia/vaultwarden:latest
     container_name: vaultwarden
     restart: unless-stopped
     environment:
@@ -30,6 +30,7 @@ services:
     ports:
       - 8222:80
 ```
+> The image moved to ghcr.io — verify the current image and tag at https://github.com/dani-garcia/vaultwarden.
 
 ---
 

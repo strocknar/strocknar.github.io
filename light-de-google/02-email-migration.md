@@ -10,18 +10,18 @@
 2. **Create the PurelyMail account** — sign up at [purelymail.com](https://purelymail.com), add your custom domain (or their subdomain).
    > **Android:** do this in Chrome; the dashboard is desktop-oriented but works on mobile.
 
-3. **Workspace routing rule** — Admin Console $\rightarrow$ Apps $\rightarrow$ Google Workspace $\rightarrow$ Gmail $\rightarrow$ Routing; rule "PurelyMail Forward" $\rightarrow$ send to `yourname.forward@gmail.com`, apply to selected users/domain.
+3. **Workspace routing rule** — Admin Console → Apps → Google Workspace → Gmail → Routing; rule "PurelyMail Forward" → send to `yourname.forward@gmail.com`, apply to selected users/domain.
    > **Android:** navigate admin.google.com in Chrome; menu paths may differ slightly on mobile — use desktop if available.
 
-4. **Gmail-side forwarding** — generic Gmail $\rightarrow$ Settings $\rightarrow$ See all settings $\rightarrow$ Forwarding and POP/IMAP $\rightarrow$ add + verify the PurelyMail address $\rightarrow$ "Forward a copy".
+4. **Gmail-side forwarding** — generic Gmail → Settings → See all settings → Forwarding and POP/IMAP → add + verify the PurelyMail address → "Forward a copy".
 
 5. **Spark Mail setup** — install ([sparkmailapp.com](https://sparkmailapp.com) / App Store / Google Play), create Spark account (Apple/Google sign-in) — this is the "Email for Sync". Add primary Gmail via **OAuth** (no app password). Add PurelyMail as "Other Mail" with an **app password** (not the main password): IMAP `imap.purelymail.com:993` SSL/TLS, SMTP `smtp.purelymail.com:465` SSL/TLS.
 
-6. **Send-through routing** — Spark $\rightarrow$ Settings $\rightarrow$ Accounts $\rightarrow$ PurelyMail account set as send-through when the from-address matches your domain.
+6. **Send-through routing** — Spark → Settings → Accounts → PurelyMail account set as send-through when the from-address matches your domain.
 
    **Verified Flow:**
-   - **Receiving:** Workspace $\rightarrow$ Gmail (forwarding) $\rightarrow$ Spark (OAuth read)
-   - **Sending:** Spark $\rightarrow$ PurelyMail SMTP $\rightarrow$ recipients
+   - **Receiving:** Workspace → Gmail (forwarding) → Spark (OAuth read)
+   - **Sending:** Spark → PurelyMail SMTP → recipients
 
 ## DNS Configuration
 
@@ -29,7 +29,8 @@
 
 - **MX:** PurelyMail incoming servers ([link docs](https://purelymail.com/docs))
 - **SPF:** include `include:purelymail.com`
-- **DKIM:** key generated in PurelyMail dashboard $\rightarrow$ TXT record
+> Confirm current records against https://purelymail.com/docs — provider requirements change.
+- **DKIM:** key generated in PurelyMail dashboard → TXT record
 - **DMARC:** `v=DMARC1; p=none;` minimum
 
 ## Deliverability Verification
