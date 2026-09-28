@@ -6,30 +6,29 @@
 
 [← Notes, Passwords & Privacy](04-notes-passwords-privacy)
 
-### 1. Spark Configuration Checklist
-1. Gmail (OAuth) + PurelyMail (IMAP) accounts added
-2. Unified Inbox on
-3. Smart Inbox classification
-4. Per-account signatures (Settings → Signatures → + New Signature, assign per account)
-5. Smart notifications + quiet hours
-6. Gatekeeper enabled
-7. Default account set
+### 1. Thunderbird Configuration Checklist
+1. Gmail (OAuth) + PurelyMail (IMAP, app password) accounts added on every device
+2. Unified inbox enabled
+3. Per-identity signatures (Account Settings → signature text, per identity; custom-domain identity default)
+4. Drafts save to the server Drafts folder on every device
+5. Read-state sync verified: message read on the phone shows read on desktop
+6. Notification settings configured per device (quiet hours, per-account alerts)
+7. Test send from the custom-domain identity passes the §2 deliverability check
 
 ### 2. Notify Contacts
 Use the following template to inform your contacts of the change.
 
 ```text
-Subject: Important - Updated Communication Address
+Subject: Updated contact information
 
-Body:
-Please update your contact information with our new communication address.
+Please note my preferred contact address:
 
-I have completed my transition from Google Workspace and am now using Spark Mail with PurelyMail for email services.
-
-My new working address is:
 [Your Email Address]
 
-You can continue to reach me using the same methods, but please update your contacts. My old Google Workspace address will remain functional (forwarded) for the next 3 months.
+I have moved my email off Google Workspace. This address is unaffected by
+the change and will keep working indefinitely — there is no cutoff date.
+If you have an older address for me on a different domain, please replace
+it with the one above.
 ```
 
 ### 3. Update Business Services
@@ -40,19 +39,21 @@ Ensure the following services are updated with your new address:
 - [ ] Website contact forms
 
 ### 4. Verification Checklist
-Verify the migration is fully operational before proceeding to cancellation:
-- [ ] **Email:** Test mail both directions works (mirrors §2 deliverability check)
-- [ ] **Data:** Drive/Photos present on the generic account (mirrors §3 paths)
+Verify everything before proceeding to cancellation:
+- [ ] **Email:** test mail both directions works (mirrors §2 deliverability check)
+- [ ] **Historical mail:** imported Workspace mailbox counts match expectations (§2 step 6)
+- [ ] **Data:** Track A (Gmail sink) or Track B (homelab) verification checklist passed
 - [ ] **Credentials:** Vaultwarden autofill works on every device
 - [ ] **Notes:** Keep collaborator copies in place
+- [ ] **Quota:** Gmail archive storage comfortably below limit (a full quota bounces inbound mail)
 
 ### 5. Cancellation
-Once verification is complete, follow these steps to decommission Google Workspace:
-1. **Wait 30 days** after the final verification check.
+Once verification is complete:
+1. **Wait 30 days** after the final verification check, re-checking weekly that the catch-all forward shows no bounces.
 2. **Export final data** via Google Takeout if any last-minute changes occurred.
 3. **Cancel Workspace** via Admin Console → Billing.
 
-> **Note:** Once cancelled, Workspace mailboxes are gone → the forwarding rule dies with them; only the custom-domain MX records (now at PurelyMail) keep mail flowing.
+> **Note:** Once cancelled, Workspace mailboxes are gone — anything not already imported (§2 step 6) is unrecoverable. Your custom-domain mail keeps flowing: the Route53 MX records point at PurelyMail, and the catch-all forward is independent of Workspace.
 
 ---
 
