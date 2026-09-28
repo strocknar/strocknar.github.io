@@ -12,7 +12,7 @@
 
 2. **Create the catch-all forwarding rule** — PurelyMail dashboard → **Routing rules** page in the account management portal → for **each domain**, one catch-all rule forwarding everything to `yourname.archive@gmail.com`. Routing rules match all incoming mail for the domain regardless of whether a corresponding user account exists, so no per-address mailboxes are needed.
 
-3. **Gmail archive prep** — generic Gmail → Settings → Accounts and Import → "Send mail as" → add **one entry per domain address** you send from; SMTP `smtp.purelymail.com:465`, authenticate with a PurelyMail **app password** (not the main password). Repeat per address. Now the archive is fully functional — replies from any domain work even from Gmail web.
+3. **Gmail archive prep** — the archive is **read-side only**: the catch-all forward fills it, and Thunderbird does all the sending (step 7). Gmail's "Send mail as" feature for third-party addresses (a custom domain on PurelyMail SMTP is exactly that) is being removed in January 2027 — don't build on it. Do prep the account itself: enable 2-Step Verification and create an app password at [myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords) — the `imapsync` fast path in step 6 requires it.
 
 4. **Verify forwarding BEFORE touching DNS** — send a test message to your PurelyMail **subdomain address** (`you@yourname.purelymail.com`). The custom domain's MX still points at Workspace, so a test to the custom domain cannot reach PurelyMail yet. Confirm the test lands in Gmail.
 
