@@ -31,6 +31,7 @@
    > **Rollback:** MX changes are reversible within the record TTL — a botched cutover loses nothing.
 
 6. **Import historical Workspace mail** — the Workspace mailbox dies at cancellation; anything not imported is gone forever. Start this early; it runs in the background.
+   > **Phone-only readers (Track A):** skip this step — use the inbox-move + Transfer path in §3 Track A (steps 2–4) instead; no desktop needed.
    - **Zero extra tools:** Google Takeout → select only **Mail** → download the `.mbox` archives → Thunderbird: Tools → Import → Mail files → import each `.mbox`. Drag the imported folders onto the Gmail archive account's folders to copy the mail server-side (slow for large mailboxes; hands-off once started).
    - **Legacy:** Gmail's "Check mail from other accounts" (POP fetch) is being removed — new users after Q1 2026 can't enable it, and existing users lose it in January 2027. Don't rely on it for new setups.
    - **Fast path:** `imapsync` on the homelab. Requires 2FA + app passwords on **both** accounts: turn on 2-Step Verification, then create a 16-digit app password at [myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords) — app passwords require 2SV, and on Google Workspace the option can be disabled by your admin. Resumable by default — safe to re-run:

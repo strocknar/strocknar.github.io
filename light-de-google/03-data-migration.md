@@ -12,30 +12,56 @@ Pick a track below; both use server-side moves wherever possible so bulk data ne
 
 ## Choose your track
 
-- **Track A — Gmail sink:** no homelab, or you want to keep Google Photos' polish. Everything lands in the free account's 15GB. Simplest path; requires quota vigilance.
+- **Track A — Gmail sink:** no homelab, or you want to keep Google Photos' polish. Written for an Android phone only — no desktop required. Everything lands in the free account's 15GB. Simplest path; requires quota vigilance.
 - **Track B — Homelab exit:** data leaves Google entirely — files to Nextcloud, photos to Immich, contacts/calendar to Nextcloud CalDAV/CardDAV. More work; assumes a running homelab.
 
 The tracks are independent — run A now and B later if you want.
 
 ## Track A — Gmail sink (no homelab)
 
-1. **Google Drive — server-side copy (primary)** — Share top-level Drive folders with the generic Gmail account, then in the shared view select-all and "Make a copy" or move into the new account's own Drive. Copies happen inside Google — zero local bandwidth.
-   > **Alternative (automatable):** rclone with two Drive remotes (config in Track B step 1):
-   ```bash
-   rclone copy gsrc: gdst: --server-side-across-configs --progress -v
-   ```
-   > **Note:** If bulk copy hits limits, perform the operation per-folder.
+This track is written for someone with **only an Android phone** — every step happens in Chrome or a Google app on the phone, and nothing is downloaded except two tiny files (`.vcf`, `.ics`). Desktop readers can follow the same steps in a desktop browser.
 
-2. **Google Photos — Partner Sharing (primary)** — From the old account, enable partner sharing with the generic Gmail; on the receiving side, save copies in bulk.
-   > **Caveats:** Verify the quality setting of saved copies; storage counts on the receiving account.
-   > **Alternative:** Use MultCloud Google Photos transfer.
+1. **Create the free Gmail account** — Chrome → [accounts.google.com/SignUp](https://accounts.google.com/SignUp). Pick a name you can live with: this becomes the permanent archive for mail, files, photos, and contacts. Save the credentials in your password manager (§4).
 
-3. **Docs/Sheets/Slides — Takeout export** — Export specialized Google formats to standard office formats (Docs → .docx/.odt, Sheets → .xlsx, Slides → .pptx).
-   > **Limitations:** Comments, revision history, and some embedded features do not survive export.
+2. **Clear the inbox of the old account (mail prep)** — Google's transfer tool (step 3) copies **inbox mail only**, so archived mail must move into the inbox first. In Chrome, open [mail.google.com](https://mail.google.com) signed in to the **old** account, open the ⋮ browser menu → tick **Desktop site**, then:
+   1. In the search bar type `-in:inbox` and press Enter.
+   2. Click **Select all conversations that match this search** above the results.
+   3. Click **Move to Inbox**.
+   > **Why this works:** in Gmail the inbox is just a label — "moving to inbox" costs no space and makes every message transferable. SPAM and Trash are excluded, which is what you want.
+   > Large mailboxes take a while to process; the screen may sit on "Working…" for several minutes.
 
-4. **Contacts & Calendar — Takeout → import into Gmail** — Google Takeout → select only Contacts + Calendar → download → import `.vcf` into Google Contacts and `.ics` into Google Calendar on the generic account. (Track A accepts Google tethering by design.)
+3. **Run Google's transfer — mail + Drive, server-side** — Chrome → [takeout.google.com/transfer](https://takeout.google.com/transfer) signed in to the **old** account:
+   1. Enter the new Gmail address → **Get confirmation code**. Open the code email from the **new** account (switch accounts in Chrome or use an incognito window), copy the code, paste it → **Verify**.
+   2. **Check quota before starting:** the transfer copies your **entire My Drive** plus the inbox into the new account's 15GB pool. If the old account's usage ([one.google.com/storage](https://one.google.com/storage)) won't fit in the new account's free space, either delete what you don't need or add a [Google One plan](https://one.google.com/about/plans) to the **new** account first — a full quota fails the transfer (and later bounces your mail, step 9).
+   3. **Start transfer.** It runs server-side inside Google — up to a week for large accounts; you can cancel within the first 3 hours.
+   > **What transfers:** all My Drive files (ownership moves; Docs/Sheets/Slides stay in Google format with comments intact) + inbox mail, which arrives under a label named `Imported <date>` — labels themselves don't transfer.
+   > **What doesn't:** Photos, Calendar, Contacts — steps 5–7 handle those.
 
-5. **Quota check — this track's failure mode** — the mail archive, Drive, and Photos all share one 15GB pool. When it fills, inbound mail forwarding **bounces back to the sender — new mail never arrives**, not just uploads. Check [one.google.com/storage](https://one.google.com/storage) and set a recurring reminder. Near the ceiling: a cheap Google One tier, or move to Track B.
+4. **Restore the new inbox** — when the "transfer complete" email arrives in the new account: [mail.google.com](https://mail.google.com) → Desktop site on → search `in:inbox` → **Select all conversations that match this search** → **Archive**. The inbox is empty and usable; everything lives under the `Imported` label.
+
+5. **Google Photos — Partner Sharing** — the transfer skips Photos.
+   1. In the Photos app on the **old** account: Photos settings → **Partner sharing** → share with the new Gmail address. Choose **All photos** so nothing is left behind.
+   2. Accept the invite from the **new** account and enable **Auto save to library**, so photos copied from now on land in your library automatically.
+   3. Existing photos: open the partner's shared view in the **new** account, long-press to start selecting, tap **Save to library** per batch — there is no one-tap save-all.
+   > **Huge libraries:** batch-saving thousands of photos is painful. Instead, request a Google Takeout export of **Photos only** with delivery **Add to Drive** ([takeout.google.com](https://takeout.google.com)) **before** step 3 — the export lands in the old account's Drive as a `Takeout` folder, and step 3's transfer copies it to the new Drive. You get every original as files (not browsable in Photos), and can still run the partner-sharing save afterwards for the polished copy.
+
+6. **Contacts — export `.vcf`, then import** — the transfer tool's contact handling isn't documented; don't rely on it.
+   1. Chrome, **old** account → [contacts.google.com](https://contacts.google.com) → **Export** (left menu) → **Google vCard** → **Export** — the `.vcf` downloads to the phone.
+   2. Switch Chrome to the **new** account → [contacts.google.com](https://contacts.google.com) → **Import** → pick the `.vcf` from Downloads.
+
+7. **Calendar — export `.ics`, then import** — Calendar is not part of the transfer.
+   1. Chrome, **old** account → [calendar.google.com](https://calendar.google.com) with **Desktop site** on → gear ⚙ → **Settings** → **Import & export** → **Export** — a `.zip` downloads.
+   2. Open **Files by Google** → Downloads → extract the zip; note the `.ics` inside.
+   3. **New** account → [calendar.google.com](https://calendar.google.com) → gear ⚙ → **Settings** → **Import & export** → **Import** → select the extracted `.ics`.
+
+8. **Verify the copy before touching the source**
+   - [ ] Transfer confirmation email received; Drive files open in the new account
+   - [ ] Mail: the `Imported` label's message count matches the old account's All Mail count
+   - [ ] Photos: photo count in the new account's Photos app matches the old
+   - [ ] Contacts: count matches the `.vcf` export
+   - [ ] Calendar: spot-check a recurring event and a past event
+
+9. **Quota check — this track's failure mode** — mail, Drive, and Photos share the new account's single 15GB pool. When it fills, **inbound mail bounces back to the sender — new mail never arrives**, not just uploads. Check [one.google.com/storage](https://one.google.com/storage) and set a recurring reminder. Near the ceiling: a [Google One plan](https://one.google.com/about/plans), or move to Track B.
 
 ## Track B — Homelab exit
 
