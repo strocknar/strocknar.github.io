@@ -4,7 +4,7 @@
 
 {% include guide-toc.html toc=site.data.de-google-toc %}
 
-[← Overview](README) | [Next: Email Migration →](02-email-migration)
+[← Overview](./) | [Next: Email Migration →](02-email-migration)
 
 ## What you're eliminating vs. keeping
 
@@ -79,4 +79,4 @@ The Workspace mailbox does **not** survive cancellation — its contents vanish 
 
 ---
 
-[← Overview](README) | [Next: Email Migration →](02-email-migration)
+[← Overview](./) | [Next: Email Migration →](02-email-migration)
