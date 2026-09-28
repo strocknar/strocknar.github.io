@@ -35,7 +35,7 @@ The tracks are independent — run A now and B later if you want.
 
 4. **Contacts & Calendar — Takeout → import into Gmail** — Google Takeout → select only Contacts + Calendar → download → import `.vcf` into Google Contacts and `.ics` into Google Calendar on the generic account. (Track A accepts Google tethering by design.)
 
-5. **Quota check — this track's failure mode** — the mail archive, Drive, and Photos all share one 15GB pool. When it fills, inbound mail forwarding **bounces — new mail is silently lost**, not just uploads. Check [one.google.com/storage](https://one.google.com/storage) and set a recurring reminder. Near the ceiling: a cheap Google One tier, or move to Track B.
+5. **Quota check — this track's failure mode** — the mail archive, Drive, and Photos all share one 15GB pool. When it fills, inbound mail forwarding **bounces back to the sender — new mail never arrives**, not just uploads. Check [one.google.com/storage](https://one.google.com/storage) and set a recurring reminder. Near the ceiling: a cheap Google One tier, or move to Track B.
 
 ## Track B — Homelab exit
 
@@ -56,6 +56,15 @@ The tracks are independent — run A now and B later if you want.
    rclone check gsrc: nc:Documents/migrated           # verify before deleting anything
    ```
    > **WARNING:** never `rclone sync` until verified — sync deletes destination files missing at the source.
+   >
+   > Once `rclone check` passes, drain the intermediate copy — otherwise the full dataset stays in the mail-archive account's 15GB pool:
+   ```bash
+   rclone delete gdst: --rmdirs
+   ```
+   > Only safe once `rclone check` passes. If the archive account's Drive holds anything else you want to keep, delete only the migrated folders instead:
+   ```bash
+   rclone delete gdst:<folder> --rmdirs
+   ```
 
 3. **Photos — Takeout → immich-go → Immich (primary path)**
    1. Google Takeout → select only Photos → download the archive (or ship it to Drive and rclone it down).
@@ -64,7 +73,7 @@ The tracks are independent — run A now and B later if you want.
    immich-go upload from-google-photos --server=<IMMICH-URL> --api-key=<KEY> /path/to/takeout-*.zip
    ```
    It matches each photo to its Takeout JSON sidecar to restore the original capture date, description, location, and album membership.
-   3. Verify: Immich photo count matches the Google Photos count (Google Photos → Settings shows your storage/item counts; spot-check a few albums).
+   3. Verify: Immich photo count matches the Google Photos count (check your photo count via Google Photos or the Google One storage manager; spot-check a few albums).
    > If you want Google Photos as the working copy meanwhile, also run the Track A partner-sharing path — but the Takeout archive is the migration source either way.
 
 4. **Contacts & Calendar — Takeout → Nextcloud + DAVx⁵ (untethers Android)**

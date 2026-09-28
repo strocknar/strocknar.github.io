@@ -42,7 +42,7 @@ Ensure the following services are updated with your new address:
 Verify everything before proceeding to cancellation:
 - [ ] **Email:** test mail both directions works (mirrors §2 deliverability check)
 - [ ] **Historical mail:** imported Workspace mailbox counts match expectations (§2 step 6)
-- [ ] **Data:** Track A (Gmail sink) or Track B (homelab) verification checklist passed
+- [ ] **Data:** §3 track steps completed — Track A: Drive/Photos copies present, contacts/calendar imported, quota checked · Track B: §3 verification checklist passed
 - [ ] **Credentials:** Vaultwarden autofill works on every device
 - [ ] **Notes:** Keep collaborator copies in place
 - [ ] **Quota:** Gmail archive storage comfortably below limit (a full quota bounces inbound mail)

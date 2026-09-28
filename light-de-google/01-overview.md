@@ -21,7 +21,7 @@ Thunderbird ────┤
 Workspace (transition only) ──Takeout+import/imapsync──▶ historical mail ─┘
 ```
 
-PurelyMail (a few dollars per year) is pass-through MX + outbound SMTP — mail is forwarded on arrival and not stored there. The free Gmail account is the archive: inbound mail forwards to it, historical Workspace mail imports into it, and Thunderbird reads it via OAuth alongside PurelyMail via IMAP. Purelymail routing rules are permanent redirects — mail is sent on to the destination instead of being delivered to a local mailbox, so nothing accumulates in Purelymail. Purelymail publishes no hard storage limits (soft limits apply to unusually heavy usage).
+PurelyMail is pass-through MX + outbound SMTP — mail is forwarded on arrival and not stored there. The free Gmail account is the archive: inbound mail forwards to it, historical Workspace mail imports into it, and Thunderbird reads it via OAuth alongside PurelyMail via IMAP. Purelymail routing rules are permanent redirects — mail is sent on to the destination instead of being delivered to a local mailbox, so nothing accumulates in Purelymail. Purelymail publishes no hard storage limits (soft limits apply to unusually heavy usage).
 
 This scales to **multiple custom domains**: each domain's MX points at PurelyMail, each domain gets a catch-all rule forwarding to the same Gmail archive, and Thunderbird holds one identity per address — replying to a message addressed to `you@domainB.com` automatically sends from that address.
 
