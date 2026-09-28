@@ -48,10 +48,13 @@ The Workspace mailbox does **not** survive cancellation — its contents vanish 
 | Mail client | Thunderbird, all devices ([why not Spark?](02-email-migration#why-not-spark)) |
 | Historical Workspace mail | Desktop: Takeout + Thunderbird import · Homelab: `imapsync` · Phone-only: inbox-move + Transfer tool (§3 Track A) |
 | Drive files | **Track A:** Transfer tool copies Drive + inbox to the new Gmail · **Track B:** rclone server-side → homelab |
-| Photos | **Track A:** Partner Sharing → save copies · **Track B:** Takeout → `immich-go` → Immich |
+| Photos | **Track A:** Transfer tool copies owned photos; Partner Sharing for partner-shared + auto-save (§3) · **Track B:** Takeout → `immich-go` → Immich |
 | Contacts / Calendar | **Track A:** export `.vcf`/`.ics` → import to Gmail · **Track B:** Takeout → Nextcloud + DAVx⁵ |
 | Docs/Sheets/Slides | Move with your track's Drive step — stay native, no export needed; Takeout office export only if you want offline copies (§3) |
 | Keep | Collaborator share → re-link account (§4) |
+| "Sign in with Google" logins | Password auth with the same custom-domain address — it survives via PurelyMail (§5 step 5) |
+| Shared Drives | Not in the Transfer tool — rclone or admin Data export (§3) |
+| Chrome sync (bookmarks/tabs) | Sign Chrome into the generic Gmail account (§4) |
 | Chrome Passwords | Vaultwarden (self-hosted; see [home-ai-guide §16](../home-ai-guide/16-vaultwarden)) |
 | Google Search / Chrome | DuckDuckGo (search + Private Browser) |
 
@@ -76,7 +79,8 @@ The Workspace mailbox does **not** survive cancellation — its contents vanish 
 3. **Historical mail import** — must complete before cancellation.
 4. **Data migration** — Track A or Track B (§3).
 5. **Credentials/notes third.**
-6. **Cancellation last** (30-day soak).
+6. **Retire Google sign-in** — password + custom-domain address at every third-party service that used "Sign in with Google"; port Voice, export filters (§5 step 5).
+7. **Cancellation last** (30-day soak).
 
 ---
 
