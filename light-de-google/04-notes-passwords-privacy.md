@@ -10,6 +10,8 @@
    - Path: in each important note → Collaborator → add generic Gmail (the account then holds its own copy); add the generic account to the Keep app on Android and switch.
    > **Note:** No bulk native transfer exists; sharing is the practical path.
    > **Caveat:** Takeout's Keep export is JSON backup only — not re-importable.
+   - Track B destination: once the collaborator copies exist in the generic account, move notes into Nextcloud Notes (manual — no bulk Keep export is re-importable anywhere).
+   > Contacts and calendar destinations depend on your §3 track: Track A imports them to Gmail; Track B moves them to Nextcloud + DAVx⁵ instead ([see §3, Track B step 4](03-data-migration)).
 
 2. **Vaultwarden (replaces Chrome Password Manager)** — If you don't have a vault yet, [build it first](../home-ai-guide/16-vaultwarden).
    - Migration:
