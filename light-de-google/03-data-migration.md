@@ -31,15 +31,17 @@ This track is written for someone with **only an Android phone** — every step 
    > Large mailboxes take a while to process; the screen may sit on "Working…" for several minutes.
 
 3. **Run Google's transfer — mail + Drive, server-side** — Chrome → [takeout.google.com/transfer](https://takeout.google.com/transfer) signed in to the **old** account:
+   > **Eligibility:** Google's docs describe this tool as Education-only; in practice it also works on paid Workspace accounts (this guide ran it on one). If the tool refuses your account, fall back to the Takeout + Thunderbird import path in §2 step 6 for mail.
    1. Enter the new Gmail address → **Get confirmation code**. Open the code email from the **new** account (switch accounts in Chrome or use an incognito window), copy the code, paste it → **Verify**.
    2. **Check quota before starting:** the transfer copies your **entire My Drive** plus the inbox into the new account's 15GB pool. If the old account's usage ([one.google.com/storage](https://one.google.com/storage)) won't fit in the new account's free space, either delete what you don't need or add a [Google One plan](https://one.google.com/about/plans) to the **new** account first — a full quota fails the transfer (and later bounces your mail, step 9).
    3. **Start transfer.** It runs server-side inside Google — up to a week for large accounts; you can cancel within the first 3 hours.
-   > **What transfers:** all My Drive files (ownership moves; Docs/Sheets/Slides stay in Google format with comments intact) + inbox mail, which arrives under a label named `Imported <date>` — labels themselves don't transfer.
-   > **What doesn't:** Photos, Calendar, Contacts — steps 5–7 handle those.
+   > **What transfers:** all My Drive files (ownership moves; Docs/Sheets/Slides stay in Google format with comments intact), your owned Google Photos (added 2026 — albums come along), and inbox mail, which arrives with its labels intact plus an `Imported <date>` marker label.
+   > **What doesn't:** Calendar, Contacts — steps 6–7 handle those.
+   > **What the transfer skips — Shared Drives and sharing edges.** The transfer copies **My Drive only**. Shared Drives are not transferred and are deleted at cancellation — copy their contents into your own My Drive before the transfer, copy them out with rclone (Track B, step 2), or ask the Workspace admin for a Data export. Files **owned by other people** stay with their owners — copy out anything you rely on before cancellation. Reverse direction: files this account **owns and shares outward** keep working until cancellation, then every share link breaks — recipients need copies of anything they want to keep.
 
 4. **Restore the new inbox** — when the "transfer complete" email arrives in the new account: [mail.google.com](https://mail.google.com) → Desktop site on → search `in:inbox` → **Select all conversations that match this search** → **Archive**. The inbox is empty and usable; everything lives under the `Imported` label.
 
-5. **Google Photos — Partner Sharing** — the transfer skips Photos.
+5. **Google Photos — Partner Sharing (optional)** — the transfer copies photos you own into the new account's Photos library, so for owned photos this step is now optional. Run it anyway if you have partner-shared photos you don't own, or want Auto-save to keep copying new shots going forward.
    1. In the Photos app on the **old** account: Photos settings → **Partner sharing** → share with the new Gmail address. Choose **All photos** so nothing is left behind.
    2. Accept the invite from the **new** account and enable **Auto save to library**, so photos copied from now on land in your library automatically.
    3. Existing photos: open the partner's shared view in the **new** account, long-press to start selecting, tap **Save to library** per batch — there is no one-tap save-all.
@@ -91,6 +93,8 @@ This track is written for someone with **only an Android phone** — every step 
    ```bash
    rclone delete gdst:<folder> --rmdirs
    ```
+
+   > **Shared Drives:** a My Drive remote cannot see them. In `rclone config`, create one Drive remote per Shared Drive — answer "y" at the "Configure this as a Shared Drive (Team Drive)?" prompt (config field `team_drive`) — then copy each to `nc:` exactly as above. The Workspace admin can also produce a Data export covering shared drives.
 
 3. **Photos — Takeout → immich-go → Immich (primary path)**
    1. Google Takeout → select only Photos → download the archive (or ship it to Drive and rclone it down).
