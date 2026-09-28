@@ -45,7 +45,7 @@ The Workspace mailbox does **not** survive cancellation — its contents vanish 
 |---|---|
 | Workspace email | PurelyMail MX → catch-all forward → Gmail archive (any number of domains); send via PurelyMail SMTP |
 | Mail client | Thunderbird, all devices ([why not Spark?](02-email-migration#why-not-spark)) |
-| Historical Workspace mail | Gmail POP fetch or `imapsync` → Gmail archive |
+| Historical Workspace mail | Takeout + Thunderbird import, or `imapsync` → Gmail archive |
 | Drive files | **Track A:** server-side copy to Gmail sink · **Track B:** rclone server-side → homelab |
 | Photos | **Track A:** Partner Sharing → save copies · **Track B:** Takeout → `immich-go` → Immich |
 | Contacts / Calendar | **Track A:** Takeout → import to Gmail · **Track B:** Takeout → Nextcloud + DAVx⁵ |
