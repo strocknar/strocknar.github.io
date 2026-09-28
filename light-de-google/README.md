@@ -29,7 +29,7 @@ Workspace (transition only) ──Takeout+import/imapsync──▶ historical ma
 
 | Task | Duration | Difficulty |
 |---|---|---|
-| PurelyMail + DNS Cutover | 1–2 h | Low |
+| Archive account + PurelyMail + DNS Cutover | 1–2 h | Low |
 | Thunderbird Setup | 1–2 h | Low |
 | Historical Mail Import | 1–2 days (background) | Medium |
 | Data Migration (Track A or B) | 1–2 weeks | Medium |

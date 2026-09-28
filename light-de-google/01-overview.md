@@ -30,7 +30,7 @@ This scales to **multiple custom domains**: each domain's MX points at PurelyMai
 The Workspace mailbox does **not** survive cancellation — its contents vanish when the subscription ends. Import historical mail **before** cancelling:
 
 - **Zero extra tools:** Google Takeout (select Mail → exports `.mbox` archives) → Thunderbird's built-in Import → optionally drag the imported folders onto the Gmail archive's IMAP folders to make them server-side. Thunderbird is already this guide's required client.
-- **Phone-only (no desktop, no homelab):** move every message into the inbox (`-in:inbox` → select all → Move to Inbox) and run Google's [Transfer tool](https://takeout.google.com/transfer) to the new Gmail — full steps in §3 Track A (steps 2–4).
+- **Phone-only (no desktop, no homelab):** move every message into the inbox (`-in:inbox` → select all → Move to Inbox) and run Google's [Transfer tool](https://takeout.google.com/transfer) to the new Gmail — full steps in §2 step 7.
 - **Fast path (homelab):** `imapsync` (app passwords on both accounts; resumable). Command in §2 step 6.
 - **Legacy:** Gmail's "Check mail from other accounts" (POP fetch) is being removed — readers who enabled it before Q1 2026 can use it until January 2027; new setups cannot.
 
@@ -46,9 +46,9 @@ The Workspace mailbox does **not** survive cancellation — its contents vanish 
 |---|---|
 | Workspace email | PurelyMail MX → catch-all forward → Gmail archive (any number of domains); send via PurelyMail SMTP |
 | Mail client | Thunderbird, all devices ([why not Spark?](02-email-migration#why-not-spark)) |
-| Historical Workspace mail | Desktop: Takeout + Thunderbird import · Homelab: `imapsync` · Phone-only: inbox-move + Transfer tool (§3 Track A) |
-| Drive files | **Track A:** Transfer tool copies Drive + inbox to the new Gmail · **Track B:** rclone server-side → homelab |
-| Photos | **Track A:** Transfer tool copies owned photos; Partner Sharing for partner-shared + auto-save (§3) · **Track B:** Takeout → `immich-go` → Immich |
+| Historical Workspace mail | Desktop: Takeout + Thunderbird import · Homelab: `imapsync` · Phone-only: inbox-move + Transfer tool (§2 step 7) |
+| Drive files | **Track A:** Transfer tool run in §2 copies Drive + owned Photos · **Track B:** rclone server-side → homelab |
+| Photos | **Track A:** comes with the §2 transfer; Partner Sharing for partner-shared + auto-save (§3) · **Track B:** Takeout → `immich-go` → Immich |
 | Contacts / Calendar | **Track A:** export `.vcf`/`.ics` → import to Gmail · **Track B:** Takeout → Nextcloud + DAVx⁵ |
 | Docs/Sheets/Slides | Move with your track's Drive step — stay native, no export needed; Takeout office export only if you want offline copies (§3) |
 | Keep | Collaborator share → re-link account (§4) |
@@ -62,7 +62,7 @@ The Workspace mailbox does **not** survive cancellation — its contents vanish 
 
 | Task | Duration | Difficulty |
 |---|---|---|
-| PurelyMail + DNS Cutover | 1–2 h | Low |
+| Archive account + PurelyMail + DNS Cutover | 1–2 h | Low |
 | Thunderbird Setup | 1–2 h | Low |
 | Historical Mail Import | 1–2 days (background) | Medium |
 | Data Migration (Track A or B) | 1–2 weeks | Medium |
