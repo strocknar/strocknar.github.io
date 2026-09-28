@@ -46,8 +46,24 @@ Verify everything before proceeding to cancellation:
 - [ ] **Credentials:** Vaultwarden autofill works on every device
 - [ ] **Notes:** Keep collaborator copies in place
 - [ ] **Quota:** Gmail archive storage comfortably below limit (a full quota bounces inbound mail)
+- [ ] **Sign-ins:** no third-party service still authenticates via the Workspace Google account (§5 step 5)
+- [ ] **Recovery:** the generic Gmail's recovery email is set to the custom-domain address (§4)
+- [ ] **Authenticator/passkeys:** migrated off the Workspace account (§4)
+- [ ] **Chrome sync:** bookmarks/tabs confirmed synced under the generic account (§4)
 
-### 5. Cancellation
+### 5. Retire Google Sign-In
+
+The Google account is deleted at cancellation; your email address is not — it keeps working via PurelyMail. Any third-party service you log into with **"Sign in with Google"** against the Workspace account loses its login even though the address it displays still exists. Fix each one now:
+
+1. **Enumerate:** [myaccount.google.com](https://myaccount.google.com) → **Security** → third-party connections page (label varies; currently "Your connections to third-party apps & services"). This lists all OAuth grants, not just sign-ins — revoke anything you don't recognize while you're here.
+2. **For each service you sign into with Google, in order of preference:**
+   - **Password login, same address** — set a password and keep the custom-domain address as the login ID. Works precisely because the address survives; nothing about your account at that service changes.
+   - **Re-link to the generic Gmail's Google account** — for services that insist on Google sign-in and offer no password option.
+   - **New account** — last resort; migrate data out if the service holds any.
+3. **Google Voice** (if the Workspace account holds a number): Workspace Voice numbers are org-owned — free them via the Admin console (transfer the number out) or unlock and port it to a carrier before cancellation. Call history and voicemails never transfer, and a number on a deleted account is unrecoverable.
+4. **Gmail filters:** the §3 transfer carries labels but not filters. Export filters as XML (Gmail desktop → Settings → **Filters and Blocked Addresses** → select → Export) and re-import them in the archive account (**Import filters**).
+
+### 6. Cancellation
 Once verification is complete:
 1. **Wait 30 days** after the final verification check, re-checking weekly that the catch-all forward shows no bounces.
 2. **Export final data** via Google Takeout if any last-minute changes occurred.
