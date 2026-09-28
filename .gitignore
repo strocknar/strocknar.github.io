@@ -9,7 +9,8 @@ crash.log
 
 # Ansible runtime-generated inventory (contains live IPs)
 ansible/inventory/hosts.ini
-.playwright-mcp/_site/
+.playwright-mcp/
+_site/
 .jekyll-cache/
 jekyll.log
 jekyll.pid
