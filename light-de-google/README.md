@@ -34,6 +34,7 @@ Workspace (transition only) ──Takeout+import/imapsync──▶ historical ma
 | Historical Mail Import | 1–2 days (background) | Medium |
 | Data Migration (Track A or B) | 1–2 weeks | Medium |
 | Notes, Passwords & Privacy | 1–2 h | Low |
+| Retire Google Sign-In | 1–3 h | Low |
 | Transition Period | 1–3 months | Low |
 | Final Cancellation | 1 day | Low |
 
