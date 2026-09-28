@@ -6,11 +6,11 @@
 
 [← Data Migration](03-data-migration) | [Next: Post-Migration & Cancellation →](05-post-migration)
 
-1. **Google Keep** — Notes live in the account that created them and do not follow an email change.
-   - Path: in each important note → Collaborator → add generic Gmail (the account then holds its own copy); add the generic account to the Keep app on Android and switch.
-   > **Note:** No bulk native transfer exists; sharing is the practical path.
+1. **Google Keep** — Notes live in the account that created them and do not follow an email change. There is **no bulk native transfer**: Keep isn't part of Google's Transfer tool, Takeout's export is JSON backup only (not re-importable into Keep), and there is no admin ownership transfer for Keep (unlike Drive files).
+   - Path: multi-select notes → Collaborator → add the generic Gmail; add the generic account to the Keep app on Android and switch.
+   > **WARNING — shared notes are not copies.** A shared note stays **owned by the original account**: Google's own docs state that deleting a note you own deletes it for everyone. If the Workspace account dies without owned copies existing, every shared note dies with it. **Required follow-up:** from the generic account, open each shared note → ⋮ → **Make a copy** — only the copy is owned by the archive account and survives cancellation. This step is per-note; no bulk copy exists, so budget time if you have many notes.
    > **Caveat:** Takeout's Keep export is JSON backup only — not re-importable.
-   - Track B destination: once the collaborator copies exist in the generic account, move notes into Nextcloud Notes (manual — no bulk Keep export is re-importable anywhere).
+   - Track B destination: once owned copies exist in the generic account, move notes into Nextcloud Notes. No official bulk conversion exists; Nextcloud Notes is a folder of markdown files, so community Takeout-JSON→markdown converters can bulk-ingest them — unofficial, so review the tool before trusting it with your notes.
 
 > Contacts and calendar destinations depend on your §3 track: Track A imports them to Gmail; Track B moves them to Nextcloud + DAVx⁵ instead ([see §3, Track B step 4](03-data-migration)).
 
