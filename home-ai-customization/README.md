@@ -1,3 +1,5 @@
+---
+---
 # Home AI Customization
 
 {% include guide-toc.html toc=site.data.customization-toc %}

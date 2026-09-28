@@ -29,7 +29,7 @@ Google Workspace ──routes──▶ generic Gmail ──forwards──▶ Pur
 | Contacts / Calendar | Takeout `.vcf`/`.ics` → import to Gmail |
 | Docs/Sheets/Slides | Takeout export (formats + limitations in §3) |
 | Keep | Collaborator share → re-link account |
-| Chrome Passwords | Vaultwarden (self-hosted; see [home-ai-guide §16](../home-ai-guide/16-vaultwarden.md)) |
+| Chrome Passwords | Vaultwarden (self-hosted; see [home-ai-guide §16](../home-ai-guide/16-vaultwarden)) |
 | Google Search / Chrome | DuckDuckGo (search + Private Browser) |
 
 ## Effort & Timeline

@@ -1,3 +1,5 @@
+---
+---
 # Home AI & Homelab Build Guide
 
 A complete start-to-finish guide for building a local AI system with Home Assistant, local LLM inference, and a self-hosted homelab stack.

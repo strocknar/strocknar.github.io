@@ -7,7 +7,7 @@ A pragmatic, partial exit from Google: leave Google Workspace and stop paying fo
 
 {% include guide-toc.html toc=site.data.de-google-toc %}
 
-[Start with Section 1 →](01-overview.md)
+[Start with Section 1 →](01-overview)
 
 ---
 
@@ -40,6 +40,6 @@ Google Workspace ──routes──▶ generic Gmail ──forwards──▶ Pur
 
 - Custom domain
 - PurelyMail account
-- [Vaultwarden server](../home-ai-guide/16-vaultwarden.md) (if following the passwords path)
+- [Vaultwarden server](../home-ai-guide/16-vaultwarden) (if following the passwords path)
 
-Once email and data are off Workspace, continue with **[Home AI Guide](../home-ai-guide/)** for the self-hosted stack that replaces Google services.
+Once email and data are off Workspace, continue with **[Home AI Guide](../home-ai-guide/README.html)** for the self-hosted stack that replaces Google services.

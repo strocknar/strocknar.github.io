@@ -9,7 +9,7 @@
    > **Note:** No bulk native transfer exists; sharing is the practical path.
    > **Caveat:** Takeout's Keep export is JSON backup only — not re-importable.
 
-2. **Vaultwarden (replaces Chrome Password Manager)** — If you don't have a vault yet, [build it first](../home-ai-guide/16-vaultwarden.md).
+2. **Vaultwarden (replaces Chrome Password Manager)** — If you don't have a vault yet, [build it first](../home-ai-guide/16-vaultwarden).
    - Migration:
      1. Export from Chrome (`chrome://password-manager/settings` → Export passwords → CSV; Android: Chrome → Settings → Password Manager → ⋮ → Export).
      2. Import in the web vault (Tools → Import → format "Chrome").

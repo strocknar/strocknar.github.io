@@ -2,7 +2,7 @@
 ---
 # Vaultwarden Password Manager
 
-[← Voice Satellites](15-voice-satellites.md)
+[← Voice Satellites](15-voice-satellites)
 
 ---
 
@@ -14,7 +14,7 @@ Self-hosted, Bitwarden-compatible password server on the Docker homelab LXC. Rep
 
 ## 16.1 Deploy the Container
 
-Deploy the container on the Docker homelab LXC (from [section 04](04-docker-homelab.md)):
+Deploy the container on the Docker homelab LXC (from [section 04](04-docker-homelab)):
 
 ```yaml
 services:
@@ -46,7 +46,7 @@ Configure a proxy host in Nginx Proxy Manager: `vaultwarden.<your-domain>` → `
 
 ## 16.3 Tailscale-only Option
 
-Instead of a public proxy host, you can expose the service only via the Tailscale network. See [Remote Access with Tailscale](12-tailscale-remote-access.md) for details.
+Instead of a public proxy host, you can expose the service only via the Tailscale network. See [Remote Access with Tailscale](12-tailscale-remote-access) for details.
 
 ---
 
@@ -73,4 +73,4 @@ After importing your passwords and creating your account, disable public signups
 
 ---
 
-[← Voice Satellites](15-voice-satellites.md)
+[← Voice Satellites](15-voice-satellites)
