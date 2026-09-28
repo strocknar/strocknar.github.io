@@ -1,4 +1,5 @@
 ---
+permalink: /home-ai-guide/
 ---
 # Home AI & Homelab Build Guide
 

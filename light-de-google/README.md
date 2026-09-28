@@ -1,4 +1,5 @@
 ---
+permalink: /light-de-google/
 ---
 # Light De-Google Guide
 

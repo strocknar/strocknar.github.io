@@ -1,4 +1,5 @@
 ---
+permalink: /home-ai-customization/
 ---
 # Home AI Customization
 
