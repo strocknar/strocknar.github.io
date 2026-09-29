@@ -46,6 +46,31 @@ Result: ~80–100 tok/s fully GPU-resident vs 8–9 minutes for a 32B dense mode
 
 ---
 
+## Context Length Configuration
+
+Ollama defaults to a **32,768-token context window** regardless of what the model supports. A 256K-context model like `qwen3-coder:30b-a3b` or Gemma 4 runs in a 32K box out of the box — and nothing warns you. Set the window explicitly in the systemd override:
+
+```bash
+sudo systemctl edit ollama
+```
+
+```ini
+[Service]
+Environment="OLLAMA_CONTEXT_LENGTH=65536"
+```
+
+```bash
+sudo systemctl daemon-reload && sudo systemctl restart ollama
+```
+
+**Why 64K and not the model maximum:** `OLLAMA_CONTEXT_LENGTH` is global, so it must fit the *worst* model you run, not the best. The hybrid-attention models (Qwen 3.6, Gemma 4) barely grow their KV cache with context — Gemma 4 at 128K is only ~21.3GB. But `qwen3-coder:30b-a3b` uses full attention on all layers: ~22.4GB at 64K (fits, ~2GB headroom on a headless 24GB card) and ~25.6GB at 128K (does not fit). 64K is the largest window every model can hold fully on GPU. Verify after loading a model: `ollama ps` must show `100% GPU` and `nvidia-smi` should stay under ~23GB.
+
+**How a full context window fails:** as agent conversations accumulate history, each turn leaves less room for output. The failure signature in `journalctl -u ollama -f` is a request whose prompt nearly equals the window (`task.n_tokens = 32649, n_ctx_slot = 32768`) followed by `stop processing: n_tokens = 32767, truncated = 1` — generation cut off at the ceiling mid-sentence. Clients render this variously as truncated answers, "reasoning consumed the entire budget," or generic provider errors. Raising the window buys runway, not immortality: clients with unbounded conversation growth will re-hit any window size eventually (see the Hermes note in [Agent Integration](07-hermes.md)).
+
+For llama.cpp server, the equivalent is `--ctx-size` (see the setup below) — the same 32K default trap applies.
+
+---
+
 ## Backend Comparison: Ollama vs llama.cpp Server
 
 | | Ollama | llama.cpp server |
@@ -105,7 +130,7 @@ huggingface-cli download \
   --model ~/models/qwen3-coder-30b-a3b-instruct-q4_k_m.gguf \
   --host 0.0.0.0 \
   --port 8080 \
-  --ctx-size 32768 \
+  --ctx-size 65536 \
   --n-gpu-layers 99 \
   --flash-attn auto \
   -ctk q8_0 -ctv q8_0

@@ -45,6 +45,21 @@ KV cache size is computed per-model from `2 × layers × kv_heads × head_dim ×
 
 **Hybrid-attention models barely move.** Qwen 3.6 and Gemma 4's architectures keep KV cache small by design — the gap between fp16 and q8_0 is under 1GB even at 32K context. Quantizing their KV cache is not worth the (small) quality tradeoff.
 
+### Going Beyond 32K
+
+The same math extended to the window sizes worth considering on a 24GB card (q8_0 KV; hybrid models interpolate near-linearly since only their full-attention layers scale with context):
+
+| Model | @64K (q8_0) | @128K (q8_0) | @256K (q8_0) |
+|---|---|---|---|
+| Devstral Small 2 24B (dense) | ~18.2GB | ~20.9GB | ~26.2GB ✗ |
+| DeepSeek-R1-Distill 14B (dense) | ~15.1GB | ~17.9GB | ~23.5GB ✗ |
+| Qwen 3.6 27B (hybrid linear/full) | ~19.0GB | ~20.0GB | ~22.5GB ⚠ |
+| Gemma 4 26B-A4B (hybrid sliding/full, MoE) | ~19.9GB | ~21.3GB | ~24.1GB ✗ |
+
+**The constraint is `qwen3-coder:30b-a3b`, not these four.** It uses full attention on all layers, so its KV cache scales linearly: ~22.4GB at 64K (fits with ~2GB headroom on a headless card) and ~25.6GB at 128K (does not fit). Since `OLLAMA_CONTEXT_LENGTH` is a global default, 64K is the largest window every model in this guide can hold fully on GPU — see [Inference Backends § Context Length Configuration](04-inference-backends.md).
+
+Values above are computed estimates (~±1GB); verify with `nvidia-smi` after loading each model at the new window size.
+
 ---
 
 ## VRAM Budget on a 24GB RTX 3090

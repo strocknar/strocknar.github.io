@@ -29,6 +29,8 @@ Run through the config:
 - Use searxng for the search
 - Most everything else is just defaults (but use your best judgment)
 
+> **Known issue: conversations fill the context window.** Hermes accumulates conversation history without trimming it. On Ollama's default 32K window, an agent conversation in daily use grows to fill the window within days; from then on every turn gets cut off at the ceiling (`truncated = 1` in the Ollama logs), which Hermes reports as "reasoning consumed the entire budget" or a generic provider error. Set `OLLAMA_CONTEXT_LENGTH=65536` on the Ollama server (see [Inference Backends § Context Length Configuration](04-inference-backends.md)) — and expect to need conversation trimming eventually regardless of window size.
+
 ---
 
 ## Web Dashboard
