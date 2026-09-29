@@ -69,6 +69,28 @@ sudo systemctl daemon-reload && sudo systemctl restart ollama
 
 For llama.cpp server, the equivalent is `--ctx-size` (see the setup below) — the same 32K default trap applies.
 
+### Per-Model Context (Advanced)
+
+A single global window must fit the worst model you run — but the models have wildly different KV economics. The hybrid-attention models (Qwen 3.6, Gemma 4) could run 128K+ comfortably while `qwen3-coder:30b-a3b` cannot. To give an individual model a larger window, bake `num_ctx` into a derived tag:
+
+```bash
+cat > /tmp/gemma-128k.modelfile <<'EOF'
+FROM gemma4:26b-a4b-it-q4_K_M
+PARAMETER num_ctx 131072
+EOF
+ollama create gemma4:26b-a4b-128k -f /tmp/gemma-128k.modelfile
+```
+
+Point clients (Open WebUI, Hermes, Continue.dev) at the new tag. Precedence, highest to lowest: per-request `options.num_ctx` > Modelfile `PARAMETER num_ctx` > the `OLLAMA_CONTEXT_LENGTH` server default — so the global setting remains the floor for any model without a custom tag.
+
+Caveats:
+
+- Derived tags are frozen copies — after `ollama pull` updates the base model, re-run `ollama create` to pick up the new version.
+- Every client must select the new tag; the original tag keeps the global window size.
+- Verify each model after loading: `ollama ps` should show the expected CONTEXT value and `100% GPU`, and `nvidia-smi` should stay under ~23GB.
+
+This adds moving parts (tag maintenance, client reconfiguration) for a problem that is often better solved client-side — unbounded conversation growth in agent tools outpaces any window size. Prefer the global setting plus client-side history trimming unless you specifically need one model at a larger window than the worst-case model allows.
+
 ---
 
 ## Backend Comparison: Ollama vs llama.cpp Server
