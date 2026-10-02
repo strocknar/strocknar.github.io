@@ -29,9 +29,9 @@ This scales to **multiple custom domains**: each domain's MX points at PurelyMai
 
 The Workspace mailbox does **not** survive cancellation — its contents vanish when the subscription ends. Import historical mail **before** cancelling:
 
-- **Zero extra tools:** Google Takeout (select Mail &rarr; exports `.mbox` archives) &rarr; Thunderbird's built-in Import &rarr; optionally drag the imported folders onto the Gmail archive's IMAP folders to make them server-side. Thunderbird is already this guide's required client.
-- **Phone-only (no desktop, no homelab):** move every message into the inbox (`-in:inbox` &rarr; select all &rarr; Move to Inbox). Note: Google's [Transfer tool](https://takeout.google.com/transfer) is restricted to Education accounts. For standard accounts, use the "Shared Folder" or "Standard Takeout" methods described in §3.
-- **Fast path (homelab):** `imapsync` (app passwords on both accounts; resumable). Command in §2 step 7.
+- **Zero extra tools (desktop):** Google Takeout (select Mail &rarr; exports `.mbox` archives) &rarr; Thunderbird's built-in Import &rarr; optionally drag the imported folders onto the Gmail archive's IMAP folders to make them server-side. Thunderbird is already this guide's required client.
+- **Phone-only (no desktop, no homelab):** forward important mail to your custom-domain address (the §2 catch-all lands it in the archive) and export the rest as a Takeout `.mbox` backup — see §3 Track A step 1.
+- **Fast path (homelab):** `imapsync` (app passwords on both accounts; resumable). Command in §3, Track B step 1.
 - **Legacy:** Gmail's "Check mail from other accounts" (POP fetch) is being removed — readers who enabled it before Q1 2026 can use it until January 2027; new setups cannot.
 
 ## What "light" buys you — and what it doesn't
@@ -45,17 +45,19 @@ The Workspace mailbox does **not** survive cancellation — its contents vanish 
 | Google Service | Alternative |
 |---|---|
 | Workspace email | PurelyMail MX &rarr; catch-all forward &rarr; Gmail archive (any number of domains); send via PurelyMail SMTP |
-| Mail client | Thunderbird, all devices ([why not Spark?](02-email-migration#why-not-spark)) |
-| Historical Workspace mail | Desktop: Takeout + Thunderbird import · Homelab: `imapsync` · Phone-only: inbox-move + Transfer tool (§2 step 7) |
-| Drive files | **Track A:** Transfer tool run in §2 copies Drive + owned Photos · **Track B:** rclone server-side &rarr; homelab |
-| Photos | **Track A:** comes with the §2 transfer; Partner Sharing for partner-shared + auto-save (§3) · **Track B:** Takeout &rarr; `immich-go` &rarr; Immich |
+| Mail client | Thunderbird, all devices ([why not Spark?](02-workspace-prework#why-not-spark)) |
+| Historical Workspace mail | Desktop: Takeout + Thunderbird import · Homelab: `imapsync` (§3 Track B) · Phone-only: forward keepers + Takeout mbox backup (§3 Track A) |
+| Drive files | **Track A:** Shared Folder method (§3 Track A) · **Track B:** rclone server-side &rarr; homelab |
+| Photos | **Track A:** Partner Sharing (§3 Track A) · **Track B:** Takeout &rarr; `immich-go` &rarr; Immich |
 | Contacts / Calendar | **Track A:** export `.vcf`/`.ics` &rarr; import to Gmail · **Track B:** Takeout &rarr; Nextcloud + DAVx⁵ |
 | Docs/Sheets/Slides | Move with the §2 transfer (Track A) or your track's rclone step (§3) — stay native, no export needed; Takeout office export only if you want offline copies (§3) |
-| Keep | Collaborator share &rarr; re-link account (§4) |
-| "Sign in with Google" logins | Password auth with the same custom-domain address — it survives via PurelyMail (§5, Retire Google Sign-In) |
+| Keep | Collaborator share &rarr; re-link account (§3, Notes section) |
+| "Sign in with Google" logins | Password auth with the same custom-domain address — it survives via PurelyMail (§4, Retire Google Sign-In) |
 | Shared Drives | Not in the Transfer tool — rclone or admin Data export (§3) |
 | Chrome sync (bookmarks/tabs) | Sign Chrome into the generic Gmail account (§4) |
 | Chrome Passwords | Vaultwarden (self-hosted; see [home-ai-guide §16](../home-ai-guide/16-vaultwarden)) |
+| Voice number | Port/unlock before cancellation (§3, Other Google Services) |
+| Drive app-data (WhatsApp etc.) | In-app chat transfer before cancellation (§3, Other Google Services) |
 | Google Search / Chrome | DuckDuckGo (search + Private Browser) |
 
 ## Effort & Timeline
@@ -79,7 +81,7 @@ The Workspace mailbox does **not** survive cancellation — its contents vanish 
 3. **Historical mail import** — must complete before cancellation.
 4. **Data migration** — Track A or Track B (§3).
 5. **Credentials/notes third.**
-6. **Retire Google sign-in** — password + custom-domain address at every third-party service that used "Sign in with Google"; port Voice, export filters (§5, Retire Google Sign-In).
+6. **Retire Google sign-in** — password + custom-domain address at every third-party service that used "Sign in with Google"; port Voice, export filters (§4, Retire Google Sign-In).
 7. **Cancellation last** (30-day soak).
 
 ---
