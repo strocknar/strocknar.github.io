@@ -48,25 +48,14 @@ Verify everything before proceeding to cancellation:
 - [ ] **Credentials:** Vaultwarden autofill works on every device
 - [ ] **Notes:** Keep collaborator copies in place
 - [ ] **Quota:** Gmail archive storage comfortably below limit (a full quota bounces inbound mail)
-- [ ] **Sign-ins:** no third-party service still authenticates via the Workspace Google account (§4 below, Retire Google Sign-In)
-- [ ] **Recovery:** the generic Gmail's recovery email is set to the custom-domain address (§4)
-- [ ] **Authenticator/passkeys:** migrated off the Workspace account (§4)
-- [ ] **Chrome sync:** bookmarks/tabs confirmed synced under the generic account (§4)
+- [ ] **Sign-ins:** no third-party service still authenticates via the Workspace Google account (§3, Retire Google Sign-In)
+- [ ] **Recovery:** the generic Gmail's recovery email is set to the custom-domain address (§3)
+- [ ] **Authenticator/passkeys:** migrated off the Workspace account (§3)
+- [ ] **Chrome sync:** bookmarks/tabs confirmed synced under the generic account (§3)
 - [ ] **Voice:** number ported, transferred, or explicitly abandoned (§3, Other Google Services)
 - [ ] **App-data:** WhatsApp/Signal chat backups transferred in-app (§3, Other Google Services)
 
-### 5. Retire Google Sign-In
-The Google account is deleted at cancellation; your email address is not — it keeps working via PurelyMail. Any third-party service you log into with **"Sign in with Google"** against the Workspace account loses its login even though the address it displays still exists. Fix each one now:
-
-1. **Enumerate:** [myaccount.google.com](https://myaccount.google.com) &rarr; **Security** &rarr; third-party connections page (label varies, currently "Your connections to third-party apps & services"). This lists all OAuth grants, revoke anything you don't recognize while you're here.
-2. **For each service you sign into with Google, in order of preference:**
-   - **Password login, same address** — set a password and keep the custom-domain address as the login ID. Works precisely because the address survives; nothing about your account at that service changes.
-   - **Re-link to the generic Gmail's Google account** — for services that insist on Google sign-in and offer no password option.
-   - **New account** — last resort, migrate data out if the service holds any.
-3. **Gmail filters:** labels move with the §3 mail import, but filters do not. Export filters as XML (Gmail desktop &rarr; Settings &rarr; **Filters and Blocked Addresses** &rarr; select &rarr; Export) and re-import them in the archive account (**Import filters**)
-4. **Google Voice:** if the Workspace account holds a Voice number, port or free it **before** cancellation — see §3, Other Google Services. (Moved there because it's data movement, not sign-in retirement.)
-
-### 6. Cancellation
+### 5. Cancellation
 Once verification is complete:
 1. **Wait 30 days** after the final verification check, re-checking weekly that the catch-all forward shows no bounces.
 2. **Export final data** via Google Takeout if any last-minute changes occurred.

@@ -153,6 +153,18 @@ A Voice number on a deleted Google account is **gone for good**, and call histor
 | Fit, Timeline, My Activity, Chat | No | Archive-only; export for the record |
 | Chrome sync, Passwords | Covered above | See Vaultwarden and Chrome sync sections |
 
+## Retire Google Sign-In
+
+The Google account is deleted at cancellation; your email address is not — it keeps working via PurelyMail. Any third-party service you log into with **"Sign in with Google"** against the Workspace account loses its login even though the address it displays still exists. Fix each one now:
+
+1. **Enumerate:** [myaccount.google.com](https://myaccount.google.com) &rarr; **Security** &rarr; third-party connections page (label varies, currently "Your connections to third-party apps & services"). This lists all OAuth grants, revoke anything you don't recognize while you're here.
+2. **For each service you sign into with Google, in order of preference:**
+   - **Password login, same address** — set a password and keep the custom-domain address as the login ID. Works precisely because the address survives; nothing about your account at that service changes.
+   - **Re-link to the generic Gmail's Google account** — for services that insist on Google sign-in and offer no password option.
+   - **New account** — last resort, migrate data out if the service holds any.
+3. **Gmail filters:** labels move with the mail import earlier in this section, but filters do not. Export filters as XML (Gmail desktop &rarr; Settings &rarr; **Filters and Blocked Addresses** &rarr; select &rarr; Export) and re-import them in the archive account (**Import filters**)
+4. **Google Voice:** if the Workspace account holds a Voice number, port or free it **before** cancellation — see Other Google Services above.
+
 ---
 
 [&larr; Workspace Prework](./02-workspace-prework) | [Next: Cutover & Post-migration &rarr;](04-cutover-and-post-migration)

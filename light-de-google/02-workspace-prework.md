@@ -9,7 +9,7 @@
 This section covers everything you need to set up your new infrastructure *before* touching your existing Google Workspace configuration. The goal is to ensure your new email handler (PurelyMail) and archive (Gmail) are ready to receive mail and that your mail client (Thunderbird) is configured.
 
 ## 1. Create the free Gmail archive account
-Chrome &rarr; [accounts.google.com/SignUp](https://accounts.google.com/SignUp). Pick a name you can live with: this becomes the permanent archive for mail, files, and photos. Save the credentials in your password manager (§4).
+Chrome &rarr; [accounts.google.com/SignUp](https://accounts.google.com/SignUp). Pick a name you can live with: this becomes the permanent archive for mail, files, and photos. Save the credentials in your password manager (§3).
 
 ## 2. Create the PurelyMail account
 Sign up at [purelymail.com](https://purelymail.com), add **each** custom domain you want on this inbox.

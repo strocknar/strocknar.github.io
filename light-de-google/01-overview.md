@@ -52,9 +52,9 @@ The Workspace mailbox does **not** survive cancellation — its contents vanish 
 | Contacts / Calendar | **Track A:** export `.vcf`/`.ics` &rarr; import to Gmail · **Track B:** Takeout &rarr; Nextcloud + DAVx⁵ |
 | Docs/Sheets/Slides | Share/copy via the Track A folder method (§3) or your track's rclone step (§3) — stay native, no export needed; Takeout office export only if you want offline copies (§3) |
 | Keep | Collaborator share &rarr; re-link account (§3, Notes section) |
-| "Sign in with Google" logins | Password auth with the same custom-domain address — it survives via PurelyMail (§4, Retire Google Sign-In) |
+| "Sign in with Google" logins | Password auth with the same custom-domain address — it survives via PurelyMail (§3, Retire Google Sign-In) |
 | Shared Drives | Not in the Transfer tool — rclone or admin Data export (§3) |
-| Chrome sync (bookmarks/tabs) | Sign Chrome into the generic Gmail account (§4) |
+| Chrome sync (bookmarks/tabs) | Sign Chrome into the generic Gmail account (§3) |
 | Chrome Passwords | Vaultwarden (self-hosted; see [home-ai-guide §16](../home-ai-guide/16-vaultwarden)) |
 | Voice number | Port/unlock before cancellation (§3, Other Google Services) |
 | Drive app-data (WhatsApp etc.) | In-app chat transfer before cancellation (§3, Other Google Services) |
@@ -81,7 +81,7 @@ The Workspace mailbox does **not** survive cancellation — its contents vanish 
 3. **Historical mail import** — must complete before cancellation.
 4. **Data migration** — Track A or Track B (§3).
 5. **Credentials/notes third.**
-6. **Retire Google sign-in** — password + custom-domain address at every third-party service that used "Sign in with Google"; port Voice, export filters (§4, Retire Google Sign-In).
+6. **Retire Google sign-in** — password + custom-domain address at every third-party service that used "Sign in with Google"; port Voice, export filters (§3, Retire Google Sign-In).
 7. **Cancellation last** (30-day soak).
 
 ---
