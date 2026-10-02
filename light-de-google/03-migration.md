@@ -54,14 +54,22 @@ Finish Track A by working through **Notes, Passwords & Privacy** and **Other Goo
 
 > **Prerequisites:** a running homelab ([home-ai-guide](../home-ai-guide/)). This section covers the *migration*; Immich/Nextcloud installs are documented by their projects.
 
-1. **Configure rclone remotes**
+1. **Historical mail — `imapsync` fast path.** Requires 2FA + app passwords on **both** accounts: turn on 2-Step Verification, then create a 16-digit app password at [myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords) — app passwords require 2SV, and on Google Workspace the option can be disabled by your admin. Resumable by default — safe to re-run:
+   ```bash
+   imapsync --gmail1 --host1 imap.gmail.com --user1 you@yourdomain.com \
+            --password1 "WORKSPACE-APP-PASSWORD" \
+            --gmail2 --host2 imap.gmail.com --user2 yourname.archive@gmail.com \
+            --password2 "GMAIL-APP-PASSWORD"
+   ```
+   Alternative: Takeout → Mail → `.mbox` → desktop Thunderbird import → drag onto the archive account's IMAP folders (slow for large mailboxes; hands-off once started).
+2. **Configure rclone remotes**
    ```bash
    rclone config
    #   gsrc -> drive   (OAuth as the OLD account)
    #   gdst -> drive   (OAuth as the generic Gmail account)
    #   nc   -> webdav  (homelab Nextcloud/WebDAV)
    ```
-2. **Drive files — server-side inside Google, then to the homelab**
+3. **Drive files — server-side inside Google, then to the homelab**
    ```bash
    rclone copy gsrc: gdst: --server-side-across-configs --progress -v   # inside Google
    rclone copy gdst: nc:Documents/migrated --progress -v
@@ -72,19 +80,20 @@ Finish Track A by working through **Notes, Passwords & Privacy** and **Other Goo
    ```bash
    rclone delete gdst: --rmdirs
    ```
-3. **Photos — Takeout &rarr; immich-go &rarr; Immich (primary path)**
+4. **Photos — Takeout &rarr; immich-go &rarr; Immich (primary path)**
    1. Google Takeout &rarr; select only Photos &rarr; download the archive (or ship it to Drive and rclone it down).
    2. Upload with [immich-go](https://github.com/simulot/immich-go) — it parses Takeout's folder structure and JSON metadata sidecars, preserving albums, timestamps, and naming quirks that a naive upload loses.
    3. Verify: Immich photo count matches the Google Photos count.
-4. **Contacts & Calendar — Takeout &rarr; Nextcloud + DAVx⁵ (untethers Android)**
+5. **Contacts & Calendar — Takeout &rarr; Nextcloud + DAVx⁵ (untethers Android)**
    1. Google Takeout &rarr; Contacts + Calendar &rarr; download.
    2. Import `.vcf` in Nextcloud Contacts; `.ics` in Nextcloud Calendar.
    3. Android: install [DAVx⁵](https://www.davx5.com/) from F-Droid &rarr; add the Nextcloud account &rarr; sync contacts and calendar natively, no Google account involved.
-5. **Family access** — family members using the homelab photo library need either shared Tailscale access ([home-ai-guide](../home-ai-guide/12-tailscale-remote-access)) or a public route with proper authentication — a larger blast radius, covered separately.
-6. **Verification checklist**
+6. **Family access** — family members using the homelab photo library need either shared Tailscale access ([home-ai-guide](../home-ai-guide/12-tailscale-remote-access)) or a public route with proper authentication — a larger blast radius, covered separately.
+7. **Verification checklist**
    - [ ] `rclone size` source vs. destination totals match
    - [ ] Immich photo count matches Google Photos
    - [ ] Nextcloud contact count matches `.vcf` entries; calendar events present
+   - [ ] Historical mail: `imapsync` transfer counts match the Workspace mailbox
 
 ## 3. Notes, Passwords & Privacy
 
