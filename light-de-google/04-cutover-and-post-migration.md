@@ -4,14 +4,14 @@
 
 {% include guide-toc.html toc=site.data.de-google-toc %}
 
-[← Migration](./03-migration)
+[&larr; Migration](./03-migration)
 
 This section covers the final steps: verifying your new setup, notifying contacts, and the final destruction of the Google Workspace account.
 
 ### 1. Thunderbird Configuration Checklist
 1. Gmail (OAuth) + PurelyMail (IMAP, app password) accounts added on every device
 2. Unified inbox enabled
-3. Per-identity signatures (Account Settings → signature text, per identity; custom-domain identity default)
+3. Per-identity signatures (Account Settings &rarr; signature text, per identity; custom-domain identity default)
 4. Drafts save to the server Drafts folder on every device
 5. Read-state sync verified: message read on the phone shows read on the desktop
 6. Notification settings configured per device (quiet hours, per-account alerts)
@@ -56,22 +56,22 @@ Verify everything before proceeding to cancellation:
 ### 5. Retire Google Sign-In
 The Google account is deleted at cancellation; your email address is not — it keeps working via PurelyMail. Any third-party service you log into with **"Sign in with Google"** against the Workspace account loses its login even though the address it displays still exists. Fix each one now:
 
-1. **Enumerate:** [myaccount.google.com](https://myaccount.google.com) → **Security** → third-party connections page (label varies, currently "Your connections to third-party apps & services"). This lists all OAuth grants, revoke anything you don't recognize while you're here.
+1. **Enumerate:** [myaccount.google.com](https://myaccount.google.com) &rarr; **Security** &rarr; third-party connections page (label varies, currently "Your connections to third-party apps & services"). This lists all OAuth grants, revoke anything you don't recognize while you're here.
 2. **For each service you sign into with Google, in order of preference:**
    - **Password login, same address** — set a password and keep the custom-domain address as the login ID. Works precisely because the address survives; nothing about your account at that service changes.
    - **Re-link to the generic Gmail's Google account** — for services that insist on Google sign-in and offer no password option.
    - **New account** — last resort, migrate data out if the service holds any.
 3. **Google Voice** (if the Workspace account holds a number): Workspace Voice numbers are org-owned — free them via the Admin console (transfer the number out) or unlock and port it to a carrier before cancellation. Call history and voicemails never transfer, and a number on a deleted account is unrecoverable.
-4. **Gmail filters:** the §2 transfer carries labels but not filters. Export filters as XML (Gmail desktop → Settings → **Filters and Blocked Addresses** → select → Export) and re-import them in the archive account (**Import filters**)
+4. **Gmail filters:** the §2 transfer carries labels but not filters. Export filters as XML (Gmail desktop &rarr; Settings &rarr; **Filters and Blocked Addresses** &rarr; select &rarr; Export) and re-import them in the archive account (**Import filters**)
 
 ### 6. Cancellation
 Once verification is complete:
 1. **Wait 30 days** after the final verification check, re-checking weekly that the catch-all forward shows no bounces.
 2. **Export final data** via Google Takeout if any last-minute changes occurred.
-3. **Cancel Workspace** via Admin Console → Billing.
+3. **Cancel Workspace** via Admin Console &rarr; Billing.
 
 > **Note:** Once cancelled, Workspace mailboxes are gone — anything not already imported (§2 step 7) is unrecoverable. Your custom-domain mail keeps flowing: the Route53 MX records point at PurelyMail, and the catch-all forward is independent of Workspace.
 
 ---
 
-[← Migration](./03-migration)
+[&larr; Migration](./03-migration)

@@ -7,7 +7,7 @@ A pragmatic, partial exit from Google: leave Google Workspace and stop paying fo
 
 {% include guide-toc.html toc=site.data.de-google-toc %}
 
-[Start with Section 1 →](01-overview)
+[Start with Section 1 &rarr;](01-overview)
 
 ---
 

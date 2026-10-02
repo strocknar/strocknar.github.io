@@ -4,7 +4,7 @@
 
 {% include guide-toc.html toc=site.data.de-google-toc %}
 
-[← Overview](./) | [Next: Prework →](02-workspace-prework)
+[&larr; Overview](./) | [Next: Prework &rarr;](02-workspace-prework)
 
 ## What you're eliminating vs. keeping
 
@@ -29,8 +29,8 @@ This scales to **multiple custom domains**: each domain's MX points at PurelyMai
 
 The Workspace mailbox does **not** survive cancellation — its contents vanish when the subscription ends. Import historical mail **before** cancelling:
 
-- **Zero extra tools:** Google Takeout (select Mail → exports `.mbox` archives) → Thunderbird's built-in Import → optionally drag the imported folders onto the Gmail archive's IMAP folders to make them server-side. Thunderbird is already this guide's required client.
-- **Phone-only (no desktop, no homelab):** move every message into the inbox (`-in:inbox` → select all → Move to Inbox). Note: Google's [Transfer tool](https://takeout.google.com/transfer) is restricted to Education accounts. For standard accounts, use the "Shared Folder" or "Standard Takeout" methods described in §3.
+- **Zero extra tools:** Google Takeout (select Mail &rarr; exports `.mbox` archives) &rarr; Thunderbird's built-in Import &rarr; optionally drag the imported folders onto the Gmail archive's IMAP folders to make them server-side. Thunderbird is already this guide's required client.
+- **Phone-only (no desktop, no homelab):** move every message into the inbox (`-in:inbox` &rarr; select all &rarr; Move to Inbox). Note: Google's [Transfer tool](https://takeout.google.com/transfer) is restricted to Education accounts. For standard accounts, use the "Shared Folder" or "Standard Takeout" methods described in §3.
 - **Fast path (homelab):** `imapsync` (app passwords on both accounts; resumable). Command in §2 step 7.
 - **Legacy:** Gmail's "Check mail from other accounts" (POP fetch) is being removed — readers who enabled it before Q1 2026 can use it until January 2027; new setups cannot.
 
@@ -44,14 +44,14 @@ The Workspace mailbox does **not** survive cancellation — its contents vanish 
 
 | Google Service | Alternative |
 |---|---|
-| Workspace email | PurelyMail MX → catch-all forward → Gmail archive (any number of domains); send via PurelyMail SMTP |
+| Workspace email | PurelyMail MX &rarr; catch-all forward &rarr; Gmail archive (any number of domains); send via PurelyMail SMTP |
 | Mail client | Thunderbird, all devices ([why not Spark?](02-email-migration#why-not-spark)) |
 | Historical Workspace mail | Desktop: Takeout + Thunderbird import · Homelab: `imapsync` · Phone-only: inbox-move + Transfer tool (§2 step 7) |
-| Drive files | **Track A:** Transfer tool run in §2 copies Drive + owned Photos · **Track B:** rclone server-side → homelab |
-| Photos | **Track A:** comes with the §2 transfer; Partner Sharing for partner-shared + auto-save (§3) · **Track B:** Takeout → `immich-go` → Immich |
-| Contacts / Calendar | **Track A:** export `.vcf`/`.ics` → import to Gmail · **Track B:** Takeout → Nextcloud + DAVx⁵ |
+| Drive files | **Track A:** Transfer tool run in §2 copies Drive + owned Photos · **Track B:** rclone server-side &rarr; homelab |
+| Photos | **Track A:** comes with the §2 transfer; Partner Sharing for partner-shared + auto-save (§3) · **Track B:** Takeout &rarr; `immich-go` &rarr; Immich |
+| Contacts / Calendar | **Track A:** export `.vcf`/`.ics` &rarr; import to Gmail · **Track B:** Takeout &rarr; Nextcloud + DAVx⁵ |
 | Docs/Sheets/Slides | Move with the §2 transfer (Track A) or your track's rclone step (§3) — stay native, no export needed; Takeout office export only if you want offline copies (§3) |
-| Keep | Collaborator share → re-link account (§4) |
+| Keep | Collaborator share &rarr; re-link account (§4) |
 | "Sign in with Google" logins | Password auth with the same custom-domain address — it survives via PurelyMail (§5, Retire Google Sign-In) |
 | Shared Drives | Not in the Transfer tool — rclone or admin Data export (§3) |
 | Chrome sync (bookmarks/tabs) | Sign Chrome into the generic Gmail account (§4) |
@@ -84,4 +84,4 @@ The Workspace mailbox does **not** survive cancellation — its contents vanish 
 
 ---
 
-[← Overview](./) | [Next: Prework →](02-workspace-prework)
+[&larr; Overview](./) | [Next: Prework &rarr;](02-workspace-prework)
