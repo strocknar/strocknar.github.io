@@ -48,7 +48,7 @@ Verify everything before proceeding to cancellation:
 - [ ] **Credentials:** Vaultwarden autofill works on every device
 - [ ] **Notes:** Keep collaborator copies in place
 - [ ] **Quota:** Gmail archive storage comfortably below limit (a full quota bounces inbound mail)
-- [ ] **Sign-ins:** no third-party service still authenticates via the Workspace Google account (§5, Retire Google Sign-in)
+- [ ] **Sign-ins:** no third-party service still authenticates via the Workspace Google account (§4 below, Retire Google Sign-In)
 - [ ] **Recovery:** the generic Gmail's recovery email is set to the custom-domain address (§4)
 - [ ] **Authenticator/passkeys:** migrated off the Workspace account (§4)
 - [ ] **Chrome sync:** bookmarks/tabs confirmed synced under the generic account (§4)
