@@ -13,7 +13,7 @@ A pragmatic, partial exit from Google: leave Google Workspace and stop paying fo
 
 ## The "Light" Approach
 
-The goal is to kill the Google Workspace subscription and stop using Google as your mail handler, while keeping a free Gmail account as the permanent archive and consolidated data destination. PurelyMail feeds any number of custom domains into the same archive — one unified inbox, replying from whichever address received the mail. This avoids the total friction of a "hard" exit while removing the monthly bill and reducing Google's hold on your identity. Data migration offers two tracks: a Gmail sink (no homelab needed) or a full homelab exit (Nextcloud, Immich, DAVx⁵) — see [§3](03-data-migration).
+The goal is to kill the Google Workspace subscription and stop using Google as your mail handler, while keeping a free Gmail account as the permanent archive and consolidated data destination. PurelyMail feeds any number of custom domains into the same archive — one unified inbox, replying from whichever address received the mail. This avoids the total friction of a "hard" exit while removing the monthly bill and reducing Google's hold on your identity. Data migration offers two tracks: a Gmail sink (no homelab needed) or a full homelab exit (Nextcloud, Immich, DAVx⁵) — [...see [§3](03-migration).]
 
 ## Email Flow
 
