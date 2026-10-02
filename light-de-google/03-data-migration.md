@@ -25,11 +25,32 @@ This track is written for someone with **only an Android phone** — every step 
    - [ ] Photos: photo count in the new account's Photos app matches the old
    - [ ] Drive: spot-check transferred files open in the new account
 
-2. **Google Photos — Partner Sharing (optional)** — the transfer copies photos you own into the new account's Photos library, so for owned photos this step is now optional. Run it anyway if you have partner-shared photos you don't own, or want Auto-save to keep copying new shots going forward.
-   1. In the Photos app on the **old** account: Photos settings → **Partner sharing** → share with the new Gmail address. Choose **All photos** so nothing is left behind.
-   2. Accept the invite from the **new** account and enable **Auto save to library**, so photos copied from now on land in your library automatically.
-   3. Existing photos: open the partner's shared view in the **new** account, long-press to start selecting, tap **Save to library** per batch — there is no one-tap save-all.
-   > **Huge libraries:** batch-saving thousands of photos is painful. Instead, request a Google Takeout export of **Photos only** with delivery **Add to Drive** ([takeout.google.com](https://takeout.google.com)) **before** running the §2 Transfer path — the export lands in the old account's Drive as a `Takeout` folder, and the §2 transfer copies it to the new Drive. You get every original as files (not browsable in Photos), and can still run the partner-sharing save afterwards for the polished copy.
+2. **Google Photos — Partner Sharing (optional)** — . The easiest method is **Google Photos Partner Sharing**, followed by a separate backup with **Google Takeout**.
+
+### Option 1: Transfer within Google Photos
+
+    1. Sign in to your Workspace account at [photos.google.com](https://photos.google.com).
+    2. Open **Settings → Sharing → Partner sharing**.
+    3. Choose **All photos** and select your personal Gmail account.
+    4. Send the invitation.
+    5. Sign in to the personal Gmail account and accept the invitation.
+    6. In the personal account, go to **Settings → Sharing → Partner sharing**.
+    7. Under **Save to your account**, choose **All photos** and click **Done**.
+
+**Important:** Partner Sharing may not preserve every organizational detail exactly as it was—such as some albums, edits, or metadata. Check important albums and dates manually.
+
+### Option 2: Make an independent backup with Google Takeout
+
+For maximum safety:
+
+    1. While signed in to the Workspace account, go to [takeout.google.com](https://takeout.google.com).
+    2. Click **Deselect all**, then select **Google Photos**.
+    3. Choose **Export once**.
+    4. Select either:
+       - **Send download link via email**, to download the files to your computer or external drive; or
+       - **Add to Google Drive**, if you have enough space in another location.
+    5. Create the export and download all parts.
+    6. Afterward, you can upload the files to the personal Gmail account using Google Photos’ **Import** option.
 
 3. **Contacts — export `.vcf`, then import** — the transfer tool's contact handling isn't documented; don't rely on it.
    1. Chrome, **old** account → [contacts.google.com](https://contacts.google.com) → **Export** (left menu) → **Google vCard** → **Export** — the `.vcf` downloads to the phone.
