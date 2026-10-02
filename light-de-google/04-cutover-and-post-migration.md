@@ -43,7 +43,7 @@ Ensure the following services are updated with your new address:
 ### 4. Verification Checklist
 Verify everything before proceeding to cancellation:
 - [ ] **Email:** test mail both directions works (mirrors §2 deliverability check)
-- [ ] **Historical mail:** imported Workspace mailbox counts match expectations (§2 step 7)
+- [ ] **Historical mail:** imported Workspace mailbox counts match expectations (§3, Track B step 1 — or Track A forward/mbox)
 - [ ] **Data:** §3 track steps completed — Track A: Drive/Photos copies present, contacts/calendar imported, quota checked · Track B: §3 verification checklist passed
 - [ ] **Credentials:** Vaultwarden autofill works on every device
 - [ ] **Notes:** Keep collaborator copies in place
@@ -52,6 +52,8 @@ Verify everything before proceeding to cancellation:
 - [ ] **Recovery:** the generic Gmail's recovery email is set to the custom-domain address (§4)
 - [ ] **Authenticator/passkeys:** migrated off the Workspace account (§4)
 - [ ] **Chrome sync:** bookmarks/tabs confirmed synced under the generic account (§4)
+- [ ] **Voice:** number ported, transferred, or explicitly abandoned (§3, Other Google Services)
+- [ ] **App-data:** WhatsApp/Signal chat backups transferred in-app (§3, Other Google Services)
 
 ### 5. Retire Google Sign-In
 The Google account is deleted at cancellation; your email address is not — it keeps working via PurelyMail. Any third-party service you log into with **"Sign in with Google"** against the Workspace account loses its login even though the address it displays still exists. Fix each one now:
@@ -61,8 +63,8 @@ The Google account is deleted at cancellation; your email address is not — it 
    - **Password login, same address** — set a password and keep the custom-domain address as the login ID. Works precisely because the address survives; nothing about your account at that service changes.
    - **Re-link to the generic Gmail's Google account** — for services that insist on Google sign-in and offer no password option.
    - **New account** — last resort, migrate data out if the service holds any.
-3. **Google Voice** (if the Workspace account holds a number): Workspace Voice numbers are org-owned — free them via the Admin console (transfer the number out) or unlock and port it to a carrier before cancellation. Call history and voicemails never transfer, and a number on a deleted account is unrecoverable.
-4. **Gmail filters:** the §2 transfer carries labels but not filters. Export filters as XML (Gmail desktop &rarr; Settings &rarr; **Filters and Blocked Addresses** &rarr; select &rarr; Export) and re-import them in the archive account (**Import filters**)
+3. **Gmail filters:** the §2 transfer carries labels but not filters. Export filters as XML (Gmail desktop &rarr; Settings &rarr; **Filters and Blocked Addresses** &rarr; select &rarr; Export) and re-import them in the archive account (**Import filters**)
+4. **Google Voice:** if the Workspace account holds a Voice number, port or free it **before** cancellation — see §3, Other Google Services. (Moved there because it's data movement, not sign-in retirement.)
 
 ### 6. Cancellation
 Once verification is complete:
@@ -70,7 +72,7 @@ Once verification is complete:
 2. **Export final data** via Google Takeout if any last-minute changes occurred.
 3. **Cancel Workspace** via Admin Console &rarr; Billing.
 
-> **Note:** Once cancelled, Workspace mailboxes are gone — anything not already imported (§2 step 7) is unrecoverable. Your custom-domain mail keeps flowing: the Route53 MX records point at PurelyMail, and the catch-all forward is independent of Workspace.
+> **Note:** Once cancelled, Workspace mailboxes are gone — anything not already imported (§3 historical mail steps) is unrecoverable. Your custom-domain mail keeps flowing: the Route53 MX records point at PurelyMail, and the catch-all forward is independent of Workspace.
 
 ---
 
