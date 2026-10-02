@@ -95,37 +95,63 @@ Finish Track A by working through **Notes, Passwords & Privacy** and **Other Goo
    - [ ] Nextcloud contact count matches `.vcf` entries; calendar events present
    - [ ] Historical mail: `imapsync` transfer counts match the Workspace mailbox
 
-## 3. Notes, Passwords & Privacy
+## Notes, Passwords & Privacy
 
-### 1. Google Keep
-Notes live in the account that created them and do not follow an email change. There is **no bulk native transfer**: Keep isn't part and of Google's Transfer tool, Takeout's export is JSON backup only — not re-importable.
+### Google Keep
+Notes live in the account that created them and do not follow an email change. There is **no bulk native transfer**: Keep isn't part of Google's Transfer tool, Takeout's export is JSON backup only — not re-importable.
 - Path: multi-select notes &rarr; Collaborator &rarr; add the generic Gmail; add the generic account to the Keep app on Android and switch.
 - **WARNING — shared notes are not copies.** A shared note stays **owned by the original account**: Google's own docs state that deleting a note you own deletes it for everyone. If the Workspace account dies without owned copies existing, every shared note dies with it. **Required follow-up:** from the generic account, open each shared note &rarr; ⋮ &rarr; **Make a copy** — only the copy is owned by the archive account and survives cancellation. This step is per-note; no bulk copy exists, so budget time if you have many notes.
 - **Track B destination:** once owned copies exist in the generic account, move notes into Nextcloud Notes. No official bulk conversion exists; Nextcloud Notes is a folder of markdown files, so community Takeout-JSON&rarr;markdown converters can bulk-ingest them — unofficial, so review the tool before trusting it with your notes.
 
-### 2. Vaultwarden (replaces Chrome Password Manager)
+### Vaultwarden (replaces Chrome Password Manager)
 If you don't have a vault yet, [build it first](../home-ai-guide/16-vaultwarden).
 - Migration:
-  1. Export from Chrome (`chrome://password-<0xA0>manager/settings` &rarr; Export passwords &rarr; CSV; Android: Chrome &rarr; Settings &rarr; Password Manager &rarr; ⋮ &rarr; Export).
+  1. Export from Chrome (`chrome://password-manager/settings` &rarr; Export passwords &rarr; CSV; Android: Chrome &rarr; Settings &rarr; Password Manager &rarr; ⋮ &rarr; Export).
   2. Import in the web vault (Tools &rarr; Import &rarr; format "Chrome").
   3. Verify one login per device **before** deleting Chrome's copies.
   4. Delete the exported CSV and clear browser downloads — it is plaintext credentials.
 - Android autofill: Settings &rarr; Passwords & accounts &rarr; Autofill service &rarr; Bitwarden.
 
-### 3. 2FA & passkeys
+### 2FA & passkeys
 The Google account being deleted is an authentication anchor in three ways:
 - **Google Authenticator** syncs its codes to the signed-in Google account — the one being deleted. Before cancellation, either re-point individual codes at the generic Gmail account (swipe a code &rarr; Edit &rarr; change the Google Account it's saved to) or export everything (⋮ &rarr; Transfer codes &rarr; Export codes) and re-import on the other side.
 - **Passkeys** stored in the Workspace account's Google Password Manager die with the account. Inventory them at [g.co/passkeys](https://g.co/passkeys) and re-enroll each service on the generic account or a hardware key before cancellation.
-- **Recovery contacts need no sweep.** A recovery email at your custom domain keeps working after cancellation — reset codes land in the Gmail archive, readable in Thunderbird. Two caveats: the archive must stay under quota (a full quota bounces recovery mail like every/every other message — [§3 step 5](03-data-migration)) and the **generic Gmail's** recovery email to your custom-domain address — the one recovery pointer guaranteed to outlive everything Google.
+- **Recovery contacts need no sweep.** A recovery email at your custom domain keeps working after cancellation — reset codes land in the Gmail archive, readable in Thunderbird. Two caveats: the archive must stay under quota (a full quota bounces recovery mail like every/every other message — [Track A quota check](#track-a--gmail-sink-no-homelab)) and the **generic Gmail's** recovery email to your custom-domain address — the one recovery pointer guaranteed to outlive everything Google.
 - **Family access** — see §4.
 
-### 4. Chrome sync (everything passwords weren't)
+### Chrome sync (everything passwords weren't)
 Bookmarks, history, open tabs, and autofill entries ride Chrome sync, not the password CSV you exported for Vaultwarden. On every device, sign Chrome into the <strong>generic Gmail account</strong> (profile icon &rarr; Turn on sync) and confirm bookmarks and tabs appear **before** the Workspace account loses access.
 
-### 5. DuckDuckGo (search & browser)
+### DuckDuckGo (search & browser)
 Chrome &rarr; Settings &rarr; Search engine &rarr; DuckDuckGo.
 Install DuckDuckGo Private Browser (Android).
 Enable App Tracking Protection (Android).
+
+## Other Google Services
+
+The migration steps above cover Mail, Drive, Photos, Contacts, Calendar, and Keep. Everything else Google knows about you lives in [Google Takeout](https://takeout.google.com) too — ~70 products, and **select-all is cheap insurance**: archive now, decide later.
+
+### Before anything else: hidden app-data
+
+Some of the most valuable data in your account is **invisible to Takeout**: Drive "app-data" — the hidden per-app storage used by **WhatsApp chat backups, Signal backups, and some game saves**. It does not appear in the Shared Folder method or rclone copy, and it dies with the account. For each app that backs up to Google Drive, use its built-in transfer **before cancellation** — e.g. WhatsApp: Settings → Chats → **Transfer chats** to the new device/account. No Takeout export rescues this category.
+
+### Google Voice — the unrecoverable number (do this before cancellation)
+
+A Voice number on a deleted Google account is **gone for good**, and call history/voicemails never transfer with the number.
+
+1. Workspace Voice numbers are **org-owned**. Free the number via the Workspace Admin console (transfer it to another account) — or unlock it at [voice.google.com](https://voice.google.com) → Settings → Unlock, then **port it to a personal carrier**.
+2. Export anything worth keeping: Takeout → **Google Voice** (recordings as audio files + transcripts).
+3. Timing matters: complete the port/transfer **before** the 30-day soak in §4 — a number on a cancelled account is unrecoverable.
+
+### Sweep the rest
+
+| Takeout item | Re-importable? | Note |
+|---|---|---|
+| Tasks, Reminders | No | Hand-copy active items to the generic account before cancelling |
+| YouTube playlists | Via URL list | Export, then rebuild in the destination account |
+| Google Pay / Play balance | N/A | Spend down any Play balance first |
+| Fit, Timeline, My Activity, Chat | No | Archive-only; export for the record |
+| Chrome sync, Passwords | Covered above | See Vaultwarden and Chrome sync sections |
 
 ---
 
