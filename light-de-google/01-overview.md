@@ -30,7 +30,7 @@ This scales to **multiple custom domains**: each domain's MX points at PurelyMai
 The Workspace mailbox does **not** survive cancellation — its contents vanish when the subscription ends. Import historical mail **before** cancelling:
 
 - **Zero extra tools:** Google Takeout (select Mail → exports `.mbox` archives) → Thunderbird's built-in Import → optionally drag the imported folders onto the Gmail archive's IMAP folders to make them server-side. Thunderbird is already this guide's required client.
-- **Phone-only (no desktop, no homelab):** move every message into the inbox (`-in:inbox` → select all → Move to Inbox) and run Google's [Transfer tool](https://takeout.google.com/transfer) to the new Gmail — full steps in §2 step 7.
+- **Phone-only (no desktop, no homelab):** move every message into the inbox (`-in:inbox` → select all → Move to Inbox). Note: Google's [Transfer tool](https://takeout.google.com/transfer) is restricted to Education accounts. For standard accounts, use the "Shared Folder" or "Standard Takeout" methods described in §3.
 - **Fast path (homelab):** `imapsync` (app passwords on both accounts; resumable). Command in §2 step 7.
 - **Legacy:** Gmail's "Check mail from other accounts" (POP fetch) is being removed — readers who enabled it before Q1 2026 can use it until January 2027; new setups cannot.
 
