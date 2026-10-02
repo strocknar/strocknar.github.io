@@ -4,6 +4,8 @@
 
 {% include guide-toc.html toc=site.data.de-google-toc %}
 
+[← Overview & Strategy](./01-overview) | [Next: Migration →](03-migration)
+
 This section covers everything you need to set up your new infrastructure *before* touching your existing Google Workspace configuration. The goal is to ensure your new email handler (PurelyMail) and archive (Gmail) are ready to receive mail and that your mail client (Thunderbird) is configured.
 
 ## 1. Create the free Gmail archive account

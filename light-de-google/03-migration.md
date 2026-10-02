@@ -4,6 +4,8 @@
 
 {% include guide-toc.html toc=site.data.de-google-toc %}
 
+[← Workspace Prework](./02-workspace-prework) | [Next: Cutover & Post-migration →](04-cutover-and-post-migration)
+
 This section covers the actual data movement. Choose your track for data (Email, Drive, Photos, etc.) and handle your notes, passwords, and privacy settings.
 
 ## 1. Historical Mail Import

@@ -4,6 +4,8 @@
 
 {% include guide-toc.html toc=site.data.de-google-toc %}
 
+[← Migration](./03-migration)
+
 This section covers the final steps: verifying your new setup, notifying contacts, and the final destruction of the Google Workspace account.
 
 ### 1. Thunderbird Configuration Checklist
