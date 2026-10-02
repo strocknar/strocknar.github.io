@@ -1,10 +1,8 @@
 - title: Overview & Strategy
   file: light-de-google/01-overview.md
 - title: Email Migration
-  file: light-de-google/02-email-migration.md
+  file: light-de-google/02-workspace-prework.md
 - title: Data Migration
-  file: light-de-google/03-data-migration.md
-- title: Notes, Passwords & Privacy
-  file: light-de-google/04-notes-passwords-privacy.md
-- title: Post-Migration & Cancellation
-  file: light-de-google/05-post-migration.md
+  file: light-de-google/03-migration.md
+- title: Cutover and Post Migration
+  file: light-de-google/04-cutover-and-post-migration.md
