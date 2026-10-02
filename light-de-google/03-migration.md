@@ -8,41 +8,25 @@
 
 This section covers the actual data movement. Choose your track for data (Email, Drive, Photos, etc.) and handle your notes, passwords, and privacy settings.
 
-## 1. Historical Mail Import
-The Workspace mailbox dies at cancellation; anything not imported is gone forever. Start this early; it runs in the background.
-
-- **Run the Transfer path below if Drive stays in Google (Track A)** — it moves mail and Drive (+ owned Photos) in one server-side shot, no desktop needed. **Skip it if Track B:** `imapsync` (or the Takeout path) here plus §3's rclone moves mail and Drive separately.
-- **Alternative workflows (since Transfer tool is restricted):**
-    1. **Drive (Shared Folder Method):** Create a migration folder in the old account &rarr; move files there &rarr; share with new account (Editor) &rarr; in new account, copy files to ensure ownership transfer.
-    2. **Mail (Standard Takeout Method):** Use [Google Takeout](https://takeout.google.com/) &rarr; export Mail as `.mbox` &rarr; import into Thunderbird/new account.
-- **Zero extra tools (desktop):** Google Takeout &rarr; select only **Mail** &rarr; download the `.mbox` archives &rarr; Thunderbird: Tools &rarr; Import &rarr; Mail files &rarr; import each `.mbox`. Drag the imported folders onto the Gmail archive account's folders to copy the mail server-side (slow for large mailboxes; hands-off once started).
-- **Fast path:** `imapsync` on the homelab. Requires 2FA + app passwords on **both** accounts: turn on 2-Step Verification, then create a 16-digit app password at [myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords) — app passwords require 2SV, and on Google Workspace the option can be<0xA0>disabled by your admin. Resumable by default — safe to re-run:
-    ```bash
-    imapsync --gmail1 --host1 imap.gmail.com --user1 you@yourdomain.com \
-             --password1 "WORKSPACE-APP-PASSWORD" \
-             --gmail2 --host2 imap.gmail.com --user2 yourname.archive@gmail.com \
-             --password2 "GMAIL-APP-PASSWORD"
-    ```
-
-## 2. Data Migration Tracks
-
-Pick a track below; both use server-side moves wherever possible so bulk data never queues on your home connection.
-
-> **rclone between two Google accounts is server-side:** with `--server-side-across-configs`, Drive&rarr;Drive copies happen inside Google — zero local bandwidth.
-
 ### Choose your track
 
-- **Track A — Gmail sink:** no homelab, or you want to keep Google Photos' polish. Written for an Android phone only — no desktop required. Everything lands in the free account's 15GB. Simplest path; requires quota vigilance.
+- **Track A — Gmail sink:** no homelab, or you want to keep Google Photos’ polish. Written for an Android phone only — no desktop required. Everything lands in the free account’s 15GB. Simplest path; requires quota vigilance.
 - **Track B — Homelab exit:** data leaves Google entirely — files to Nextcloud, photos to Immich, contacts/calendar to Nextcloud CalDAV/CardDAV. More work; assumes a running homelab.
 
-### Track A — Gmail sink (no homlab)
+### Track A — Gmail sink (no homelab)
 
 This track is written for someone with **only an Android phone** — every step happens in Chrome or a Google app on the phone. Desktop readers can follow the same steps in a desktop browser.
 
-1. **Drive & Photos — verify the §2 transfer copy** — if you ran the Transfer path in §2, the copy is already in the archive account; verify before touching anything:
-   - [ ] Photos: photo count in the new account's Photos app matches the old
-   - [ ] Drive: spot-check transferred files open in the new account
-2. **Google Photos — Partner Sharing (optional)** — The easiest method is **Google Photos Partner Sharing**, followed by a separate backup with **Google Takeout**.
+1. **Historical mail — forward keepers, archive the rest** — bulk mail can’t be merged into the Gmail pool from a phone: Thunderbird for Android cannot import `.mbox` archives. The phone-only equivalent is two moves:
+   1. **Forward the keepers:** in the Workspace Gmail, forward important messages to your custom-domain address — the PurelyMail catch-all set up in §2 lands them in the archive account.
+   2. **Archive the bulk:** [takeout.google.com](https://takeout.google.com) → **Deselect all** → select **Mail** → export the `.mbox` zip → keep it in Drive or Downloads as a permanent backup, readable in any desktop Thunderbird.
+   > **Desktop readers:** to merge bulk mail into the archive account instead, import the `.mbox` files (Thunderbird: Tools → Import → Mail files) and drag the folders onto the archive account’s IMAP folders — or run Track B’s `imapsync`.
+2. **Drive (Shared Folder Method):**
+   1. Create a migration folder in the old account
+   2. Move files there
+   3. Share with new account (Editor)
+   4. In new account, copy files to ensure ownership transfer.
+3. **Google Photos — Partner Sharing (optional)** — The easiest method is **Google Photos Partner Sharing**, followed by a separate backup with **Google Takeout**.
    - **Option 1: Transfer within Google Photos**
      1. Sign in to your Workspace account at [photos.google.com](https://photos.google.com).
      2. Open **Settings &rarr; Sharing &rarr; Partner sharing**.
@@ -55,14 +39,16 @@ This track is written for someone with **only an Android phone** — every step 
      2. Click **Deselect all**, then select **Google Photos**.
      3. Create the export and download all parts.
      4. Afterward, you can upload the files to the personal Gmail account using Google Photos’ **Import** option.
-3. **Contacts — export `.vcf`, then import** — the transfer tool's contact handling isn't documented; don't rely on it.
+4. **Contacts — export `.vcf`, then import** — the transfer tool’s contact handling isn’t documented; don’t rely on it.
    1. Chrome, **old** account &rarr; [contacts.google.com](https://contacts.google.com) &rarr; **Export** (left menu) &rarr; **Google vCard** &rarr; **Export** — the `.vcf` downloads to the phone.
    2. Switch Chrome to the **new** account &rarr; [contacts.google.com](https://contacts.google.com) &rarr; **Import** &rarr; pick the `.vcf` from Downloads.
-4. **Calendar — export `.ics`, then import** — Calendar is not part of the transfer.
+5. **Calendar — export `.ics`, then import** — Calendar is not part of the transfer.
    1. Chrome, **old** account &rarr; [calendar.google.com](https://calendar.google.com) with **Desktop site** on &rarr; gear ⚙ &rarr; **Settings** &rarr; **Import & export** &rarr; **Export** — a `.zip` downloads.
    2. Open **Files by Google** &rarr; Downloads &rarr; extract the zip; note the `.ics` inside.
    3. **New** account &rarr; [calendar.google.com](https://calendar.google.com) &rarr; gear ⚙ &rarr; **Settings** &rarr; **Import & export** &rarr; **Import** &rarr; select the extracted `.ics`.
-5. **Quota check — this track's failure mode** — mail, Drive, and Photos share the new account's single 15GB pool. When it fills, **inbound mail bounces back to the sender — new mail never arrives**, not just uploads. Check [one.google.com/storage](https://one.google.com/storage) and set a recurring reminder.
+6. **Quota check — this track’s failure mode** — mail, Drive, and Photos share the new account’s single 15GB pool. When it fills, **inbound mail bounces back to the sender — new mail never arrives**, not just uploads. Check [one.google.com/storage](https://one.google.com/storage) and set a recurring reminder.
+
+Finish Track A by working through **Notes, Passwords & Privacy** and **Other Google Services** below — they apply to both tracks.
 
 ### Track B — Homelab exit
 
@@ -106,7 +92,7 @@ This track is written for someone with **only an Android phone** — every step 
 Notes live in the account that created them and do not follow an email change. There is **no bulk native transfer**: Keep isn't part and of Google's Transfer tool, Takeout's export is JSON backup only — not re-importable.
 - Path: multi-select notes &rarr; Collaborator &rarr; add the generic Gmail; add the generic account to the Keep app on Android and switch.
 - **WARNING — shared notes are not copies.** A shared note stays **owned by the original account**: Google's own docs state that deleting a note you own deletes it for everyone. If the Workspace account dies without owned copies existing, every shared note dies with it. **Required follow-up:** from the generic account, open each shared note &rarr; ⋮ &rarr; **Make a copy** — only the copy is owned by the archive account and survives cancellation. This step is per-note; no bulk copy exists, so budget time if you have many notes.
-- **Track B destination:** once owned copies exist in the generic account, move notes into Nextcloud Notes. No official bulk conversion exists; Nextcloud Notes is a folder of markdown files, so community Takeout-JSON&rarr;markdown converters can bulk-infest them — unofficial, so review the tool before trusting it with your notes.
+- **Track B destination:** once owned copies exist in the generic account, move notes into Nextcloud Notes. No official bulk conversion exists; Nextcloud Notes is a folder of markdown files, so community Takeout-JSON&rarr;markdown converters can bulk-ingest them — unofficial, so review the tool before trusting it with your notes.
 
 ### 2. Vaultwarden (replaces Chrome Password Manager)
 If you don't have a vault yet, [build it first](../home-ai-guide/16-vaultwarden).
