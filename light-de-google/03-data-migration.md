@@ -29,13 +29,13 @@ This track is written for someone with **only an Android phone** — every step 
 
 ### Option 1: Transfer within Google Photos
 
-    1. Sign in to your Workspace account at [photos.google.com](https://photos.google.com).
-    2. Open **Settings → Sharing → Partner sharing**.
-    3. Choose **All photos** and select your personal Gmail account.
-    4. Send the invitation.
-    5. Sign in to the personal Gmail account and accept the invitation.
-    6. In the personal account, go to **Settings → Sharing → Partner sharing**.
-    7. Under **Save to your account**, choose **All photos** and click **Done**.
+1. Sign in to your Workspace account at [photos.google.com](https://photos.google.com).
+2. Open **Settings → Sharing → Partner sharing**.
+3. Choose **All photos** and select your personal Gmail account.
+4. Send the invitation.
+5. Sign in to the personal Gmail account and accept the invitation.
+6. In the personal account, go to **Settings → Sharing → Partner sharing**.
+7. Under **Save to your account**, choose **All photos** and click **Done**.
 
 **Important:** Partner Sharing may not preserve every organizational detail exactly as it was—such as some albums, edits, or metadata. Check important albums and dates manually.
 
@@ -43,14 +43,14 @@ This track is written for someone with **only an Android phone** — every step 
 
 For maximum safety:
 
-    1. While signed in to the Workspace account, go to [takeout.google.com](https://takeout.google.com).
-    2. Click **Deselect all**, then select **Google Photos**.
-    3. Choose **Export once**.
-    4. Select either:
-       - **Send download link via email**, to download the files to your computer or external drive; or
-       - **Add to Google Drive**, if you have enough space in another location.
-    5. Create the export and download all parts.
-    6. Afterward, you can upload the files to the personal Gmail account using Google Photos’ **Import** option.
+1. While signed in to the Workspace account, go to [takeout.google.com](https://takeout.google.com).
+2. Click **Deselect all**, then select **Google Photos**.
+3. Choose **Export once**.
+4. Select either:
+   - **Send download link via email**, to download the files to your computer or external drive; or
+   - **Add to Google Drive**, if you have enough space in another location.
+5. Create the export and download all parts.
+6. Afterward, you can upload the files to the personal Gmail account using Google Photos’ **Import** option.
 
 3. **Contacts — export `.vcf`, then import** — the transfer tool's contact handling isn't documented; don't rely on it.
    1. Chrome, **old** account → [contacts.google.com](https://contacts.google.com) → **Export** (left menu) → **Google vCard** → **Export** — the `.vcf` downloads to the phone.
