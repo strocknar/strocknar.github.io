@@ -50,7 +50,7 @@ The Workspace mailbox does **not** survive cancellation — its contents vanish 
 | Drive files | **Track A:** Shared Folder method (§3 Track A) · **Track B:** rclone server-side &rarr; homelab |
 | Photos | **Track A:** Partner Sharing (§3 Track A) · **Track B:** Takeout &rarr; `immich-go` &rarr; Immich |
 | Contacts / Calendar | **Track A:** export `.vcf`/`.ics` &rarr; import to Gmail · **Track B:** Takeout &rarr; Nextcloud + DAVx⁵ |
-| Docs/Sheets/Slides | Move with the §2 transfer (Track A) or your track's rclone step (§3) — stay native, no export needed; Takeout office export only if you want offline copies (§3) |
+| Docs/Sheets/Slides | Share/copy via the Track A folder method (§3) or your track's rclone step (§3) — stay native, no export needed; Takeout office export only if you want offline copies (§3) |
 | Keep | Collaborator share &rarr; re-link account (§3, Notes section) |
 | "Sign in with Google" logins | Password auth with the same custom-domain address — it survives via PurelyMail (§4, Retire Google Sign-In) |
 | Shared Drives | Not in the Transfer tool — rclone or admin Data export (§3) |

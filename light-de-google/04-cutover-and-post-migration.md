@@ -63,7 +63,7 @@ The Google account is deleted at cancellation; your email address is not — it 
    - **Password login, same address** — set a password and keep the custom-domain address as the login ID. Works precisely because the address survives; nothing about your account at that service changes.
    - **Re-link to the generic Gmail's Google account** — for services that insist on Google sign-in and offer no password option.
    - **New account** — last resort, migrate data out if the service holds any.
-3. **Gmail filters:** the §2 transfer carries labels but not filters. Export filters as XML (Gmail desktop &rarr; Settings &rarr; **Filters and Blocked Addresses** &rarr; select &rarr; Export) and re-import them in the archive account (**Import filters**)
+3. **Gmail filters:** labels move with the §3 mail import, but filters do not. Export filters as XML (Gmail desktop &rarr; Settings &rarr; **Filters and Blocked Addresses** &rarr; select &rarr; Export) and re-import them in the archive account (**Import filters**)
 4. **Google Voice:** if the Workspace account holds a Voice number, port or free it **before** cancellation — see §3, Other Google Services. (Moved there because it's data movement, not sign-in retirement.)
 
 ### 6. Cancellation

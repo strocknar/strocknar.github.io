@@ -39,10 +39,10 @@ This track is written for someone with **only an Android phone** — every step 
      2. Click **Deselect all**, then select **Google Photos**.
      3. Create the export and download all parts.
      4. Afterward, you can upload the files to the personal Gmail account using Google Photos’ **Import** option.
-4. **Contacts — export `.vcf`, then import** — the transfer tool’s contact handling isn’t documented; don’t rely on it.
+4. **Contacts — export `.vcf`, then import** — there is no automated contact transfer; don’t rely on one.
    1. Chrome, **old** account &rarr; [contacts.google.com](https://contacts.google.com) &rarr; **Export** (left menu) &rarr; **Google vCard** &rarr; **Export** — the `.vcf` downloads to the phone.
    2. Switch Chrome to the **new** account &rarr; [contacts.google.com](https://contacts.google.com) &rarr; **Import** &rarr; pick the `.vcf` from Downloads.
-5. **Calendar — export `.ics`, then import** — Calendar is not part of the transfer.
+5. **Calendar — export `.ics`, then import** — no automated path exists for Calendar either.
    1. Chrome, **old** account &rarr; [calendar.google.com](https://calendar.google.com) with **Desktop site** on &rarr; gear ⚙ &rarr; **Settings** &rarr; **Import & export** &rarr; **Export** — a `.zip` downloads.
    2. Open **Files by Google** &rarr; Downloads &rarr; extract the zip; note the `.ics` inside.
    3. **New** account &rarr; [calendar.google.com](https://calendar.google.com) &rarr; gear ⚙ &rarr; **Settings** &rarr; **Import & export** &rarr; **Import** &rarr; select the extracted `.ics`.
@@ -117,7 +117,7 @@ The Google account being deleted is an authentication anchor in three ways:
 - **Google Authenticator** syncs its codes to the signed-in Google account — the one being deleted. Before cancellation, either re-point individual codes at the generic Gmail account (swipe a code &rarr; Edit &rarr; change the Google Account it's saved to) or export everything (⋮ &rarr; Transfer codes &rarr; Export codes) and re-import on the other side.
 - **Passkeys** stored in the Workspace account's Google Password Manager die with the account. Inventory them at [g.co/passkeys](https://g.co/passkeys) and re-enroll each service on the generic account or a hardware key before cancellation.
 - **Recovery contacts need no sweep.** A recovery email at your custom domain keeps working after cancellation — reset codes land in the Gmail archive, readable in Thunderbird. Two caveats: the archive must stay under quota (a full quota bounces recovery mail like every/every other message — [Track A quota check](#track-a--gmail-sink-no-homelab)) and the **generic Gmail's** recovery email to your custom-domain address — the one recovery pointer guaranteed to outlive everything Google.
-- **Family access** — see §4.
+- **Family access** — see §3 Track B step 6.
 
 ### Chrome sync (everything passwords weren't)
 Bookmarks, history, open tabs, and autofill entries ride Chrome sync, not the password CSV you exported for Vaultwarden. On every device, sign Chrome into the <strong>generic Gmail account</strong> (profile icon &rarr; Turn on sync) and confirm bookmarks and tabs appear **before** the Workspace account loses access.
@@ -133,7 +133,7 @@ The migration steps above cover Mail, Drive, Photos, Contacts, Calendar, and Kee
 
 ### Before anything else: hidden app-data
 
-Some of the most valuable data in your account is **invisible to Takeout**: Drive "app-data" — the hidden per-app storage used by **WhatsApp chat backups, Signal backups, and some game saves**. It does not appear in the Shared Folder method or rclone copy, and it dies with the account. For each app that backs up to Google Drive, use its built-in transfer **before cancellation** — e.g. WhatsApp: Settings → Chats → **Transfer chats** to the new device/account. No Takeout export rescues this category.
+Some of the most valuable data in your account is **invisible to Takeout**: Drive "app-data" — the hidden per-app storage used by **WhatsApp chat backups and some game saves**. It does not appear in the Shared Folder method or rclone copy, and it dies with the account. For each app that backs up to Google Drive, use its built-in transfer **before cancellation** — e.g. WhatsApp: Settings → Chats → **Transfer chats** to the new device/account. (Signal dropped Google Drive backups in 2020 — its backups are local files moved by Signal's own device-transfer, so it needs no Google-side sweep.) No Takeout export rescues this category.
 
 ### Google Voice — the unrecoverable number (do this before cancellation)
 
