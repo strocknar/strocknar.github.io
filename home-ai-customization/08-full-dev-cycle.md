@@ -48,28 +48,6 @@ gh auth status
 
 SSH access allows Git operations over SSH. It does not necessarily authenticate GitHub CLI API operations, so confirm `gh auth status` succeeds before automating PR creation and merging.
 
-Create a workspace:
-
-```bash
-mkdir -p ~/workspace
-mkdir -p ~/logs
-```
-
-Clone a test repository:
-
-```bash
-cd ~/workspace
-git clone git@github.com:<owner>/<repository>.git
-cd <repository>
-git remote -v
-```
-
-The Hermes installation command used on this VM is:
-
-```bash
-curl -fsSL https://hermes-agent.nousresearch.com/install.sh | bash
-```
-
 ## 2. Verify Ollama connectivity
 
 Set the remote Ollama server address:
