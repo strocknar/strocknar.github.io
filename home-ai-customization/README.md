@@ -23,4 +23,8 @@ A continuation of the [Home AI Guide](../home-ai-guide/) — once your core home
 6. [Model Reference](06-model-reference.md)
 7. [Hermes Agent Integration](07-hermes.md)
 
+<<<<<<< Updated upstream
 Not on this stack yet because Google still holds your mail and files? Start with the [Light De-Google guide](../light-de-google/) to break that dependency first.
+=======
+26|Not on this stack yet because Google still holds your mail and files? Start with the [Light De-Google guide](../light-de-google/) to break that dependency first.
+>>>>>>> Stashed changes
